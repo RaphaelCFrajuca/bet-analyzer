@@ -1,3 +1,5 @@
+import { EventList } from "../sofascore/interfaces/events.interface";
+
 export interface DataProviderInterface {
-    getConfig(): any;
+    getEvents(date: string): Promise<EventList>;
 }

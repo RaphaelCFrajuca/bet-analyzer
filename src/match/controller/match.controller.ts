@@ -8,7 +8,7 @@ export class MatchController {
     constructor(private readonly matchService: MatchService) {}
 
     @Get(":marketDate")
-    getMatch(@Param() params: GetMatchDataDto): string {
+    getMatch(@Param() params: GetMatchDataDto) {
         return this.matchService.getMatch(params.marketDate.toISOString().split("T")[0]);
     }
 }

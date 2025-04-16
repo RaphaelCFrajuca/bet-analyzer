@@ -8,8 +8,7 @@ export class MatchService {
         private readonly dataProvider: DataProviderInterface,
     ) {}
 
-    getMatch(day: string): string {
-        console.log(this.dataProvider.getConfig());
-        return day;
+    async getMatch(day: string): Promise<any> {
+        return await this.dataProvider.getEvents(day);
     }
 }

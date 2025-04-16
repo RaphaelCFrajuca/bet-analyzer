@@ -13,10 +13,10 @@ import { SofascoreConfig } from "src/providers/sofascore/interfaces/sofascore-co
             } as SofascoreConfig,
         },
         {
-            provide: "DATA_PROVIDER",
+            provide: "PROVIDER",
             useValue: process.env.PROVIDER,
         },
     ],
-    exports: ["SOFASCORE_CONFIG", "DATA_PROVIDER"],
+    exports: ["SOFASCORE_CONFIG", "PROVIDER"],
 })
 export class EnvironmentModule {}

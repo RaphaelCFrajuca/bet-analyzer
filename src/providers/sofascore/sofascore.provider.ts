@@ -47,9 +47,10 @@ export class SofascoreProvider implements DataProviderInterface {
                 return market;
             });
             return parsedBody;
-        } catch (error) {
+        } catch (error: unknown) {
             console.error(error);
-            throw new InternalServerErrorException("Failed to fetch market odds", error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new InternalServerErrorException("Failed to fetch market odds", errorMessage);
         }
     }
 }

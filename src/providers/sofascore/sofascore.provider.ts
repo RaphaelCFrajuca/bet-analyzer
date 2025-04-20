@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import puppeteer from "puppeteer";
 import { DataProviderInterface } from "../interfaces/data-providers.interface";
+import { EventStatistics } from "./interfaces/event-statistics.interface";
 import { EventList } from "./interfaces/events.interface";
 import { MarketsResponse } from "./interfaces/market.interface";
 import { RecentFormResponse } from "./interfaces/recent-form.interface";
@@ -63,6 +64,18 @@ export class SofascoreProvider implements DataProviderInterface {
         await page.goto(`${this.config.apiUrl}/team/${teamId}/performance`);
         const body: string = await page.evaluate(() => document.body.innerText);
         const parsedBody = JSON.parse(body) as RecentFormResponse;
+        await browser.close();
+        return parsedBody;
+    }
+
+    async getMatchStatisticsByEventId(eventId: number): Promise<EventStatistics> {
+        const browser = await puppeteer.launch({
+            headless: true,
+        });
+        const page = await browser.newPage();
+        await page.goto(`${this.config.apiUrl}/event/${eventId}/statistics`);
+        const body: string = await page.evaluate(() => document.body.innerText);
+        const parsedBody = JSON.parse(body) as EventStatistics;
         await browser.close();
         return parsedBody;
     }

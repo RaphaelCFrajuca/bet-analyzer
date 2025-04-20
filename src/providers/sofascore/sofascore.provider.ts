@@ -3,6 +3,7 @@ import puppeteer from "puppeteer";
 import { DataProviderInterface } from "../interfaces/data-providers.interface";
 import { EventList } from "./interfaces/events.interface";
 import { MarketsResponse } from "./interfaces/market.interface";
+import { RecentFormResponse } from "./interfaces/recent-form.interface";
 import { SofascoreConfig } from "./interfaces/sofascore-config.interface";
 
 @Injectable()
@@ -52,5 +53,17 @@ export class SofascoreProvider implements DataProviderInterface {
             const errorMessage = error instanceof Error ? error.message : String(error);
             throw new InternalServerErrorException("Failed to fetch market odds", errorMessage);
         }
+    }
+
+    async getRecentPerformanceByTeamId(teamId: number): Promise<RecentFormResponse> {
+        const browser = await puppeteer.launch({
+            headless: true,
+        });
+        const page = await browser.newPage();
+        await page.goto(`${this.config.apiUrl}/team/${teamId}/performance`);
+        const body: string = await page.evaluate(() => document.body.innerText);
+        const parsedBody = JSON.parse(body) as RecentFormResponse;
+        await browser.close();
+        return parsedBody;
     }
 }

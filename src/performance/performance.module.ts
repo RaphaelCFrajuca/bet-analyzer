@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
-import { BetAnalyzerModule } from "src/bet-analyzer.module";
+import { DataProvidersModule } from "src/providers/data-providers.module";
 import { PerformanceService } from "./services/performance.service";
 
 @Module({
-    imports: [BetAnalyzerModule],
+    imports: [DataProvidersModule],
     providers: [PerformanceService],
     exports: [PerformanceService],
 })

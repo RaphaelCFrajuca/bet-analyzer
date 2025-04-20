@@ -3,6 +3,8 @@ export interface RecentFormStatistics {
     date: Date;
     homeTeam: string;
     awayTeam: string;
+    homeTeamScore: TeamScore;
+    awayTeamScore: TeamScore;
     tournament: string;
     ballPossession: Statistic;
     expectedGoals: Statistic;
@@ -17,7 +19,13 @@ export interface RecentFormStatistics {
     redCards: Statistic;
 }
 
+export interface TeamScore {
+    total: number;
+    firstHalf: number;
+    secondHalf: number;
+}
+
 export interface Statistic {
-    home: number | string;
-    away: number | string;
+    home: string;
+    away: string;
 }

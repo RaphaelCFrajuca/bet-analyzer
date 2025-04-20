@@ -20,6 +20,16 @@ export class PerformanceService {
                     date: new Date(event.startTimestamp * 1000),
                     homeTeam: event.homeTeam.name,
                     awayTeam: event.awayTeam.name,
+                    homeTeamScore: {
+                        total: event.homeScore.current,
+                        firstHalf: event.homeScore.period1,
+                        secondHalf: event.homeScore.period2,
+                    },
+                    awayTeamScore: {
+                        total: event.awayScore.current,
+                        firstHalf: event.awayScore.period1,
+                        secondHalf: event.awayScore.period2,
+                    },
                     tournament: event.tournament.name,
                     ballPossession: {
                         home: statistics.statistics[0].groups[0].statisticsItems[0].home,

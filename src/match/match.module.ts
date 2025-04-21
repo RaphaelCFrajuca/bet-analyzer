@@ -8,5 +8,6 @@ import { MatchService } from "./service/match.service";
     imports: [DataProvidersModule, PerformanceModule],
     controllers: [MatchController],
     providers: [MatchService],
+    exports: [MatchService],
 })
 export class MatchModule {}

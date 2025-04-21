@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { PerformanceService } from "src/performance/services/performance.service";
 import { DataProviderInterface } from "src/providers/interfaces/data-providers.interface";
 import { EventList } from "src/providers/interfaces/events-list.interface";
-import { Match } from "../interfaces/match.interface";
+import { Market, Match } from "../interfaces/match.interface";
 
 @Injectable()
 export class MatchService {
@@ -28,82 +28,82 @@ export class MatchService {
                         this.dataProvider.getRecentDuelsByEventId(event.id),
                     ]);
 
-                    if (markets.markets.length >= 0) {
-                        return {
-                            id: event.id,
-                            date: new Date(event.startTimestamp * 1000),
-                            homeTeam: event.homeTeam.name,
-                            awayTeam: event.awayTeam.name,
-                            tournament: event.tournament.name,
-                            status: event.status,
-                            recentDuels,
-                            roundInfo: {
-                                round: event.roundInfo?.round,
-                            },
-                            referee: {
-                                id: event.referee?.id,
-                                name: event.referee?.name,
-                                yellowCards: event.referee?.yellowCards,
-                                redCards: event.referee?.redCards,
-                                games: event.referee?.games,
-                            },
-                            lineups: {
-                                confirmed: lineups?.confirmed,
-                                homeTeam: {
-                                    formation: lineups?.home?.formation,
-                                    players: lineups?.home?.players?.map(player => ({
-                                        avgRating: player?.avgRating,
-                                        id: player?.player?.id,
-                                        name: player?.player?.name,
-                                        jerseyNumber: player?.jerseyNumber,
-                                        position: player?.position,
-                                        substitute: player?.substitute,
-                                    })),
-                                    missingPlayers: lineups?.home?.missingPlayers?.map(missingPlayer => ({
-                                        id: missingPlayer?.player?.id,
-                                        name: missingPlayer?.player?.name,
-                                        jerseyNumber: missingPlayer?.player?.jerseyNumber,
-                                        position: missingPlayer?.player?.position,
-                                    })),
-                                },
-                                awayTeam: {
-                                    formation: lineups?.away?.formation,
-                                    players: lineups?.away?.players?.map(player => ({
-                                        avgRating: player?.avgRating,
-                                        id: player?.player?.id,
-                                        name: player?.player?.name,
-                                        jerseyNumber: player?.jerseyNumber,
-                                        position: player?.position,
-                                        substitute: player?.substitute,
-                                    })),
-                                    missingPlayers: lineups?.away?.missingPlayers?.map(missingPlayer => ({
-                                        id: missingPlayer?.player?.id,
-                                        name: missingPlayer?.player?.name,
-                                        jerseyNumber: missingPlayer?.player?.jerseyNumber,
-                                        position: missingPlayer?.player?.position,
-                                    })),
-                                },
-                            },
-                            homeTeamPerformance: {
-                                homeTeamRecentForm,
-                            },
-                            awayTeamPerformance: {
-                                awayTeamRecentForm,
-                            },
-                            markets: markets.markets.map(market => ({
-                                marketId: market.marketId,
-                                marketName: market.marketName,
-                                choiceGroup: market?.choiceGroup,
-                                choices: market.choices.map(choice => ({
-                                    name: choice.name,
-                                    initialOddValue: choice.initialFractionalValue,
-                                    oddValue: choice.fractionalValue,
-                                    slipContent: choice.slipContent,
-                                    change: choice.change,
+                    const marketsList: Market[] = markets?.markets?.map(market => ({
+                        marketId: market.marketId,
+                        marketName: market.marketName,
+                        choiceGroup: market?.choiceGroup,
+                        choices: market.choices.map(choice => ({
+                            name: choice.name,
+                            initialOddValue: String(choice.initialFractionalValue),
+                            oddValue: String(choice.fractionalValue),
+                            slipContent: choice.slipContent,
+                            change: choice.change,
+                        })),
+                    }));
+
+                    return {
+                        id: event.id,
+                        date: new Date(event.startTimestamp * 1000),
+                        homeTeam: event.homeTeam.name,
+                        awayTeam: event.awayTeam.name,
+                        tournament: event.tournament.name,
+                        status: event.status,
+                        recentDuels,
+                        roundInfo: {
+                            round: event.roundInfo?.round,
+                        },
+                        referee: {
+                            id: event.referee?.id,
+                            name: event.referee?.name,
+                            yellowCards: event.referee?.yellowCards,
+                            redCards: event.referee?.redCards,
+                            games: event.referee?.games,
+                        },
+                        lineups: {
+                            confirmed: lineups?.confirmed,
+                            homeTeam: {
+                                formation: lineups?.home?.formation,
+                                players: lineups?.home?.players?.map(player => ({
+                                    avgRating: player?.avgRating,
+                                    id: player?.player?.id,
+                                    name: player?.player?.name,
+                                    jerseyNumber: player?.jerseyNumber,
+                                    position: player?.position,
+                                    substitute: player?.substitute,
                                 })),
-                            })),
-                        };
-                    }
+                                missingPlayers: lineups?.home?.missingPlayers?.map(missingPlayer => ({
+                                    id: missingPlayer?.player?.id,
+                                    name: missingPlayer?.player?.name,
+                                    jerseyNumber: missingPlayer?.player?.jerseyNumber,
+                                    position: missingPlayer?.player?.position,
+                                })),
+                            },
+                            awayTeam: {
+                                formation: lineups?.away?.formation,
+                                players: lineups?.away?.players?.map(player => ({
+                                    avgRating: player?.avgRating,
+                                    id: player?.player?.id,
+                                    name: player?.player?.name,
+                                    jerseyNumber: player?.jerseyNumber,
+                                    position: player?.position,
+                                    substitute: player?.substitute,
+                                })),
+                                missingPlayers: lineups?.away?.missingPlayers?.map(missingPlayer => ({
+                                    id: missingPlayer?.player?.id,
+                                    name: missingPlayer?.player?.name,
+                                    jerseyNumber: missingPlayer?.player?.jerseyNumber,
+                                    position: missingPlayer?.player?.position,
+                                })),
+                            },
+                        },
+                        homeTeamPerformance: {
+                            homeTeamRecentForm,
+                        },
+                        awayTeamPerformance: {
+                            awayTeamRecentForm,
+                        },
+                        markets: marketsList,
+                    };
                 }),
         )) as Match[];
         return matches;

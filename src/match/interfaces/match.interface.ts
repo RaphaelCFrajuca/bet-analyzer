@@ -15,7 +15,7 @@ export interface Match {
     lineups: Lineup;
     homeTeamPerformance: HomeTeamPerformance;
     awayTeamPerformance: AwayTeamPerformance;
-    markets: Market[];
+    markets?: Market[];
 }
 
 interface Round {
@@ -59,7 +59,7 @@ interface AwayTeamPerformance {
     awayTeamRecentForm?: RecentFormStatistics[];
 }
 
-interface Market {
+export interface Market {
     marketId: number;
     marketName: string;
     choiceGroup?: string;

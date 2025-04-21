@@ -61,12 +61,12 @@ export class SofascoreProvider implements DataProviderInterface {
         try {
             const browser = await this.getBrowserInstance();
             const page = await browser.newPage();
-            await page.goto(`${this.config.apiUrl}/event/${eventId}/odds/100/all`);
+            await page.goto(`${this.config.apiUrl}/event/${eventId}/odds/1/all`);
             const body: string = await page.evaluate(() => document.body.innerText);
             const parsedBody = JSON.parse(body) as MarketsResponse;
             await page.close();
 
-            parsedBody.markets = parsedBody.markets.map(market => {
+            parsedBody.markets = parsedBody?.markets?.map(market => {
                 market.choices = market.choices.map(choice => {
                     if (typeof choice.initialFractionalValue === "string") {
                         const [numerator, denominator] = choice.initialFractionalValue.split("/").map(Number);

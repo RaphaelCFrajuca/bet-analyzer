@@ -5,6 +5,7 @@ import { Run } from "openai/resources/beta/threads/runs/runs";
 import { Thread } from "openai/resources/beta/threads/threads";
 import { AiInterface } from "src/ai/interfaces/ai.interface";
 import { BettingResponse } from "src/ai/interfaces/betting-response.interface";
+import { BettingSuggestions } from "src/ai/interfaces/betting-suggestions.interface";
 import { Match } from "src/match/interfaces/match.interface";
 import { MatchService } from "src/match/service/match.service";
 import { OpenAiConfig } from "./interfaces/openai.config.interface";
@@ -22,12 +23,18 @@ export class OpenAiProvider implements AiInterface {
         });
     }
 
-    async getBettingSuggestions(date: string): Promise<BettingResponse[]> {
-        const matches = await this.matchService.getMatch(date);
-        return Promise.all(
+    async getBettingSuggestions(date: string): Promise<BettingSuggestions[]> {
+        const matches: Match[] = await this.matchService.getMatch(date);
+        return await Promise.all(
             matches.map(async match => {
                 const bettingResponse = await this.getBettingSuggestionsByMatch(match);
-                return bettingResponse;
+                return {
+                    date: match.date,
+                    homeTeam: match.homeTeam,
+                    awayTeam: match.awayTeam,
+                    leagueName: match.tournament,
+                    bettingSuggestions: bettingResponse.suggestions,
+                } as BettingSuggestions;
             }),
         );
     }

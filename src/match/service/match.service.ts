@@ -19,14 +19,12 @@ export class MatchService {
                 .filter(event => event.status.code !== 100)
                 .slice(0, 10)
                 .map(async event => {
-                    // const [markets, homeTeamRecentForm, awayTeamRecentForm] = await Promise.all([
-                    //     this.dataProvider.getMarketOddsByEventId(event.id),
-                    //     this.performanceService.getRecentFormByTeamId(event.homeTeam.id),
-                    //     this.performanceService.getRecentFormByTeamId(event.awayTeam.id),
-                    // ]);
-                    const markets = await this.dataProvider.getMarketOddsByEventId(event.id);
-                    const homeTeamRecentForm = await this.performanceService.getRecentFormByTeamId(event.homeTeam.id);
-                    const awayTeamRecentForm = await this.performanceService.getRecentFormByTeamId(event.awayTeam.id);
+                    const [markets, homeTeamRecentForm, awayTeamRecentForm] = await Promise.all([
+                        this.dataProvider.getMarketOddsByEventId(event.id),
+                        this.performanceService.getRecentFormByTeamId(event.homeTeam.id),
+                        this.performanceService.getRecentFormByTeamId(event.awayTeam.id),
+                    ]);
+
                     if (markets.markets.length >= 0) {
                         return {
                             id: event.id,
@@ -44,6 +42,7 @@ export class MatchService {
                             markets: markets.markets.map(market => ({
                                 marketId: market.marketId,
                                 marketName: market.marketName,
+                                choiceGroup: market?.choiceGroup,
                                 choices: market.choices.map(choice => ({
                                     name: choice.name,
                                     initialOddValue: choice.initialFractionalValue,

@@ -5,6 +5,7 @@ import { EventStatistics } from "../interfaces/event-statistics.interface";
 import { EventList } from "../interfaces/events.interface";
 import { Lineup } from "../interfaces/lineup.interface";
 import { MarketsResponse } from "../interfaces/market.interface";
+import { RecentDuels } from "../interfaces/recent-duels.interface";
 import { RecentFormResponse } from "../interfaces/recent-form.interface";
 import { SofascoreConfig } from "./interfaces/sofascore-config.interface";
 
@@ -89,12 +90,22 @@ export class SofascoreProvider implements DataProviderInterface {
         return parsedBody;
     }
 
-    async getMatchLineupsByEventId(eventId: number): Promise<any> {
+    async getMatchLineupsByEventId(eventId: number): Promise<Lineup> {
         const browser = await this.getBrowserInstance();
         const page = await browser.newPage();
         await page.goto(`${this.config.apiUrl}/event/${eventId}/lineups`);
         const body: string = await page.evaluate(() => document.body.innerText);
         const parsedBody = JSON.parse(body) as Lineup;
+        await page.close();
+        return parsedBody;
+    }
+
+    async getRecentDuelsByEventId(eventId: number): Promise<RecentDuels> {
+        const browser = await this.getBrowserInstance();
+        const page = await browser.newPage();
+        await page.goto(`${this.config.apiUrl}/event/${eventId}/h2h`);
+        const body: string = await page.evaluate(() => document.body.innerText);
+        const parsedBody = JSON.parse(body) as RecentDuels;
         await page.close();
         return parsedBody;
     }

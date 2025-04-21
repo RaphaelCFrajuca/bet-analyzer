@@ -17,7 +17,7 @@ export class MatchService {
 
         const matches: Match[] = (await Promise.all(
             events.events
-                .filter(event => event.status.code !== 100)
+                .filter(event => event.status.code !== 100 && event.status.code !== 60)
                 .slice(0, 10)
                 .map(async event => {
                     const [markets, homeTeamRecentForm, awayTeamRecentForm, lineups, recentDuels] = await Promise.all([

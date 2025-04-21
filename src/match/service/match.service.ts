@@ -19,10 +19,11 @@ export class MatchService {
                 .filter(event => event.status.code !== 100)
                 .slice(0, 10)
                 .map(async event => {
-                    const [markets, homeTeamRecentForm, awayTeamRecentForm] = await Promise.all([
+                    const [markets, homeTeamRecentForm, awayTeamRecentForm, lineups] = await Promise.all([
                         this.dataProvider.getMarketOddsByEventId(event.id),
                         this.performanceService.getRecentFormByTeamId(event.homeTeam.id),
                         this.performanceService.getRecentFormByTeamId(event.awayTeam.id),
+                        this.dataProvider.getMatchLineupsByEventId(event.id),
                     ]);
 
                     if (markets.markets.length >= 0) {
@@ -33,6 +34,43 @@ export class MatchService {
                             awayTeam: event.awayTeam.name,
                             tournament: event.tournament.name,
                             status: event.status,
+                            lineups: {
+                                confirmed: lineups?.confirmed,
+                                homeTeam: {
+                                    formation: lineups?.home?.formation,
+                                    players: lineups?.home?.players?.map(player => ({
+                                        avgRating: player?.avgRating,
+                                        id: player?.player?.id,
+                                        name: player?.player?.name,
+                                        jerseyNumber: player?.jerseyNumber,
+                                        position: player?.position,
+                                        substitute: player?.substitute,
+                                    })),
+                                    missingPlayers: lineups?.home?.missingPlayers?.map(missingPlayer => ({
+                                        id: missingPlayer?.player?.id,
+                                        name: missingPlayer?.player?.name,
+                                        jerseyNumber: missingPlayer?.player?.jerseyNumber,
+                                        position: missingPlayer?.player?.position,
+                                    })),
+                                },
+                                awayTeam: {
+                                    formation: lineups?.away?.formation,
+                                    players: lineups?.away?.players?.map(player => ({
+                                        avgRating: player?.avgRating,
+                                        id: player?.player?.id,
+                                        name: player?.player?.name,
+                                        jerseyNumber: player?.jerseyNumber,
+                                        position: player?.position,
+                                        substitute: player?.substitute,
+                                    })),
+                                    missingPlayers: lineups?.away?.missingPlayers?.map(missingPlayer => ({
+                                        id: missingPlayer?.player?.id,
+                                        name: missingPlayer?.player?.name,
+                                        jerseyNumber: missingPlayer?.player?.jerseyNumber,
+                                        position: missingPlayer?.player?.position,
+                                    })),
+                                },
+                            },
                             homeTeamPerformance: {
                                 homeTeamRecentForm,
                             },

@@ -16,7 +16,18 @@ import { SofascoreConfig } from "src/providers/sofascore/interfaces/sofascore-co
             provide: "PROVIDER",
             useValue: process.env.PROVIDER,
         },
+        {
+            provide: "AI_PROVIDER",
+            useValue: process.env.AI_PROVIDER,
+        },
+        {
+            provide: "OPENAI_PROVIDER_CONFIG",
+            useValue: {
+                apiKey: process.env.OPENAI_API_KEY,
+                assistantId: process.env.OPENAI_ASSISTANT_ID,
+            },
+        },
     ],
-    exports: ["SOFASCORE_CONFIG", "PROVIDER"],
+    exports: ["SOFASCORE_CONFIG", "PROVIDER", "AI_PROVIDER", "OPENAI_PROVIDER_CONFIG"],
 })
 export class EnvironmentModule {}

@@ -2,6 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { PerformanceService } from "src/performance/services/performance.service";
 import { DataProviderInterface } from "src/providers/interfaces/data-providers.interface";
 import { EventList } from "src/providers/interfaces/events-list.interface";
+import { Match } from "../interfaces/match.interface";
 
 @Injectable()
 export class MatchService {
@@ -11,10 +12,10 @@ export class MatchService {
         private readonly performanceService: PerformanceService,
     ) {}
 
-    async getMatch(day: string): Promise<any> {
+    async getMatch(day: string): Promise<Match[]> {
         const events: EventList = await this.dataProvider.getEvents(day);
 
-        const matches = Promise.all(
+        const matches: Match[] = (await Promise.all(
             events.events
                 .filter(event => event.status.code !== 100)
                 .slice(0, 10)
@@ -104,7 +105,7 @@ export class MatchService {
                         };
                     }
                 }),
-        );
+        )) as Match[];
         return matches;
     }
 }

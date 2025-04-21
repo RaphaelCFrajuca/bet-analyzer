@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { PerformanceService } from "src/performance/services/performance.service";
 import { DataProviderInterface } from "src/providers/interfaces/data-providers.interface";
-import { EventList } from "src/providers/sofascore/interfaces/events.interface";
+import { EventList } from "src/providers/interfaces/events.interface";
 
 @Injectable()
 export class MatchService {

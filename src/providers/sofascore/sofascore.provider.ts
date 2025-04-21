@@ -1,10 +1,11 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import puppeteer, { Browser } from "puppeteer";
 import { DataProviderInterface } from "../interfaces/data-providers.interface";
-import { EventStatistics } from "./interfaces/event-statistics.interface";
-import { EventList } from "./interfaces/events.interface";
-import { MarketsResponse } from "./interfaces/market.interface";
-import { RecentFormResponse } from "./interfaces/recent-form.interface";
+import { EventStatistics } from "../interfaces/event-statistics.interface";
+import { EventList } from "../interfaces/events.interface";
+import { Lineup } from "../interfaces/lineup.interface";
+import { MarketsResponse } from "../interfaces/market.interface";
+import { RecentFormResponse } from "../interfaces/recent-form.interface";
 import { SofascoreConfig } from "./interfaces/sofascore-config.interface";
 
 @Injectable()
@@ -84,6 +85,16 @@ export class SofascoreProvider implements DataProviderInterface {
         await page.goto(`${this.config.apiUrl}/event/${eventId}/statistics`);
         const body: string = await page.evaluate(() => document.body.innerText);
         const parsedBody = JSON.parse(body) as EventStatistics;
+        await page.close();
+        return parsedBody;
+    }
+
+    async getMatchLineupsByEventId(eventId: number): Promise<any> {
+        const browser = await this.getBrowserInstance();
+        const page = await browser.newPage();
+        await page.goto(`${this.config.apiUrl}/event/${eventId}/lineups`);
+        const body: string = await page.evaluate(() => document.body.innerText);
+        const parsedBody = JSON.parse(body) as Lineup;
         await page.close();
         return parsedBody;
     }

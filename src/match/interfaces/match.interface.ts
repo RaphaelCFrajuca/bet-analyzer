@@ -7,6 +7,7 @@ export interface Match {
     homeTeam: string;
     awayTeam: string;
     date: Date;
+    country: string;
     tournament: string;
     status: Status;
     recentDuels?: RecentDuels;

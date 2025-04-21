@@ -17,8 +17,8 @@ export class MatchService {
 
         const matches: Match[] = (await Promise.all(
             events.events
-                .filter(event => event.status.code !== 100 && event.status.code !== 60)
-                .slice(0, 10)
+                .filter(event => event.status.code !== 100 && event.status.code !== 60 && event.status.code !== 120)
+                .slice(0, 30)
                 .map(async event => {
                     const [markets, homeTeamRecentForm, awayTeamRecentForm, lineups, recentDuels] = await Promise.all([
                         this.dataProvider.getMarketOddsByEventId(event.id),
@@ -47,6 +47,7 @@ export class MatchService {
                         homeTeam: event.homeTeam.name,
                         awayTeam: event.awayTeam.name,
                         tournament: event.tournament.name,
+                        country: event.venue?.country?.name,
                         status: event.status,
                         recentDuels,
                         roundInfo: {
@@ -107,6 +108,16 @@ export class MatchService {
                 }),
         )) as Match[];
         matches.sort((a, b) => a.date.getTime() - b.date.getTime());
+        // sort pelo pais Brazil (event->venue->country->name)
+        matches.sort((a, b) => {
+            if (a.country === "Brazil" && b.country !== "Brazil") {
+                return -1;
+            } else if (a.country !== "Brazil" && b.country === "Brazil") {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
         return matches;
     }
 }

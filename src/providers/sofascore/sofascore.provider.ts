@@ -38,7 +38,7 @@ export class SofascoreProvider implements DataProviderInterface {
         await page.close();
 
         const newEvents = await Promise.all(
-            parsedBody.events.slice(0, 10).map(async event => {
+            parsedBody.events.slice(0, 100).map(async event => {
                 const newEvent = await this.getEventByEventId(event.id);
                 return newEvent;
             }),

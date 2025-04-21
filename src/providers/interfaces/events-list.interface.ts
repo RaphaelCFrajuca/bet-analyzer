@@ -2,7 +2,7 @@ export interface EventList {
     events: Event[];
 }
 
-interface Event {
+export interface Event {
     tournament: Tournament;
     season: Season;
     roundInfo?: RoundInfo;
@@ -25,6 +25,48 @@ interface Event {
     feedLocked: boolean;
     isEditor: boolean;
     winnerCode?: number;
+
+    venue?: Venue;
+    referee?: Referee;
+    defaultPeriodCount?: number;
+    defaultPeriodLength?: number;
+    defaultOvertimeLength?: number;
+    fanRatingEvent?: boolean;
+    seasonStatisticsType?: string;
+    showTotoPromo?: boolean;
+    isLive?: boolean;
+    priority?: number;
+    competitionType?: number;
+}
+
+export interface Venue {
+    city?: {
+        name: string;
+    };
+    hidden?: boolean;
+    slug?: string;
+    name?: string;
+    capacity?: number;
+    id?: number;
+    country?: Country;
+    fieldTranslations?: FieldTranslations;
+    stadium?: {
+        name: string;
+        capacity: number;
+    };
+}
+
+export interface Referee {
+    name: string;
+    slug: string;
+    yellowCards: number;
+    redCards: number;
+    yellowRedCards: number;
+    games: number;
+    sport: Sport;
+    id: number;
+    country: Country;
+    fieldTranslations?: FieldTranslations;
 }
 
 interface Tournament {
@@ -90,6 +132,7 @@ interface Status {
 
 interface Team {
     name: string;
+    class?: number;
     slug: string;
     shortName: string;
     gender: string;

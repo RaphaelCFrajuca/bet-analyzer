@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import puppeteer, { Browser } from "puppeteer";
 import { DataProviderInterface } from "../interfaces/data-providers.interface";
 import { EventStatistics } from "../interfaces/event-statistics.interface";
-import { EventList } from "../interfaces/events-list.interface";
+import { Event, EventList } from "../interfaces/events-list.interface";
 import { Lineup } from "../interfaces/lineup.interface";
 import { MarketsResponse } from "../interfaces/market.interface";
 import { RecentDuels } from "../interfaces/recent-duels.interface";
@@ -35,6 +35,24 @@ export class SofascoreProvider implements DataProviderInterface {
         await page.goto(`${this.config.apiUrl}/sport/football/scheduled-events/${date}`);
         const body: string = await page.evaluate(() => document.body.innerText);
         const parsedBody = JSON.parse(body) as EventList;
+        await page.close();
+
+        const newEvents = await Promise.all(
+            parsedBody.events.slice(0, 10).map(async event => {
+                const newEvent = await this.getEventByEventId(event.id);
+                return newEvent;
+            }),
+        );
+
+        return { ...parsedBody, events: newEvents };
+    }
+
+    private async getEventByEventId(eventId: number): Promise<Event> {
+        const browser = await this.getBrowserInstance();
+        const page = await browser.newPage();
+        await page.goto(`${this.config.apiUrl}/event/${eventId}`);
+        const body: string = await page.evaluate(() => document.body.innerText);
+        const parsedBody = (JSON.parse(body) as { event: Event }).event;
         await page.close();
         return parsedBody;
     }

@@ -46,6 +46,8 @@ export class MatchService {
                         date: new Date(event.startTimestamp * 1000 - 3 * 60 * 60 * 1000),
                         homeTeam: event.homeTeam.name,
                         awayTeam: event.awayTeam.name,
+                        actualHomeScore: event.homeScore.current,
+                        actualAwayScore: event.awayScore.current,
                         tournament: event.tournament.name,
                         country: event.venue?.country?.name,
                         status: event.status,

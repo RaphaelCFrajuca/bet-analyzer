@@ -6,6 +6,8 @@ export interface Match {
     id: number;
     homeTeam: string;
     awayTeam: string;
+    actualHomeScore: number;
+    actualAwayScore: number;
     date: Date;
     country: string;
     tournament: string;

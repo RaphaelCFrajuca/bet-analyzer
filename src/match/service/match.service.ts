@@ -19,11 +19,12 @@ export class MatchService {
                 .filter(event => event.status.code !== 100)
                 .slice(0, 10)
                 .map(async event => {
-                    const [markets, homeTeamRecentForm, awayTeamRecentForm, lineups] = await Promise.all([
+                    const [markets, homeTeamRecentForm, awayTeamRecentForm, lineups, recentDuels] = await Promise.all([
                         this.dataProvider.getMarketOddsByEventId(event.id),
                         this.performanceService.getRecentFormByTeamId(event.homeTeam.id),
                         this.performanceService.getRecentFormByTeamId(event.awayTeam.id),
                         this.dataProvider.getMatchLineupsByEventId(event.id),
+                        this.dataProvider.getRecentDuelsByEventId(event.id),
                     ]);
 
                     if (markets.markets.length >= 0) {
@@ -34,6 +35,7 @@ export class MatchService {
                             awayTeam: event.awayTeam.name,
                             tournament: event.tournament.name,
                             status: event.status,
+                            recentDuels,
                             lineups: {
                                 confirmed: lineups?.confirmed,
                                 homeTeam: {

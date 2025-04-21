@@ -1,5 +1,5 @@
 import { EventStatistics } from "./event-statistics.interface";
-import { EventList } from "./events.interface";
+import { EventList } from "./events-list.interface";
 import { Lineup } from "./lineup.interface";
 import { MarketsResponse } from "./market.interface";
 import { RecentDuels } from "./recent-duels.interface";

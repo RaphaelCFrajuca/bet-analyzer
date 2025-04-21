@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import puppeteer, { Browser } from "puppeteer";
 import { DataProviderInterface } from "../interfaces/data-providers.interface";
 import { EventStatistics } from "../interfaces/event-statistics.interface";
-import { EventList } from "../interfaces/events.interface";
+import { EventList } from "../interfaces/events-list.interface";
 import { Lineup } from "../interfaces/lineup.interface";
 import { MarketsResponse } from "../interfaces/market.interface";
 import { RecentDuels } from "../interfaces/recent-duels.interface";

@@ -43,7 +43,7 @@ export class MatchService {
 
                     return {
                         id: event.id,
-                        date: new Date(event.startTimestamp * 1000),
+                        date: new Date(event.startTimestamp * 1000 - 3 * 60 * 60 * 1000),
                         homeTeam: event.homeTeam.name,
                         awayTeam: event.awayTeam.name,
                         tournament: event.tournament.name,
@@ -106,6 +106,7 @@ export class MatchService {
                     };
                 }),
         )) as Match[];
+        matches.sort((a, b) => a.date.getTime() - b.date.getTime());
         return matches;
     }
 }

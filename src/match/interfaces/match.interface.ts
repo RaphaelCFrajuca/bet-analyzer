@@ -13,9 +13,9 @@ export interface Match {
     tournament: string;
     status: Status;
     recentDuels?: RecentDuels;
-    roundInfo: Round;
-    referee: Referee;
-    lineups: Lineup;
+    roundInfo?: Round;
+    referee?: Referee;
+    lineups?: Lineup;
     homeTeamPerformance: HomeTeamPerformance;
     awayTeamPerformance: AwayTeamPerformance;
     markets?: Market[];

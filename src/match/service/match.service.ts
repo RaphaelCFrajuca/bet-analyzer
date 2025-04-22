@@ -100,11 +100,11 @@ export class MatchService {
                 round: event.roundInfo?.round,
             },
             referee: {
-                id: event.referee?.id,
-                name: event.referee?.name,
-                yellowCards: event.referee?.yellowCards,
-                redCards: event.referee?.redCards,
-                games: event.referee?.games,
+                id: event?.referee?.id,
+                name: event?.referee?.name,
+                yellowCards: event?.referee?.yellowCards,
+                redCards: event?.referee?.redCards,
+                games: event?.referee?.games,
             },
             lineups: {
                 confirmed: lineups?.confirmed,

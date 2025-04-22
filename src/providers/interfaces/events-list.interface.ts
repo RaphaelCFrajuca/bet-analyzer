@@ -10,8 +10,8 @@ export interface Event {
     status: Status;
     homeTeam: Team;
     awayTeam: Team;
-    homeScore: Score;
-    awayScore: Score;
+    homeScore?: Score;
+    awayScore?: Score;
     time: Time;
     changes: Changes;
     hasGlobalHighlights: boolean;

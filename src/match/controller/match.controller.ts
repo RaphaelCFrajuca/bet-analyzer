@@ -11,4 +11,10 @@ export class MatchController {
     getMatch(@Param() params: GetMatchDataDto) {
         return this.matchService.getMatch(params.marketDate.toISOString().split("T")[0]);
     }
+
+    @Get()
+    getMatchByActualDate() {
+        const date = new Date();
+        return this.matchService.getMatch(date.toISOString().split("T")[0]);
+    }
 }

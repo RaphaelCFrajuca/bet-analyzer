@@ -1,0 +1,58 @@
+name: Deploy to Google Cloud Run
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Cache node_modules
+              uses: actions/cache@v3
+              with:
+                  path: node_modules
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-node-
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+
+            - name: Authenticate with Google Cloud
+              uses: google-github-actions/auth@v1
+              with:
+                  credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+            - name: Configure Docker for Google Cloud
+              run: gcloud auth configure-docker
+
+            - name: Build Docker image
+              run: |
+                  docker build \
+                    --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
+                    --build-arg OPENAI_ASSISTANT_ID=${{ secrets.OPENAI_ASSISTANT_ID }} \
+                    --build-arg SOFASCORE_PROVIDER_API_URL=${{ vars.SOFASCORE_PROVIDER_API_URL }} \
+                    --build-arg PROVIDER=${{ vars.PROVIDER }} \
+                    --build-arg AI_PROVIDER=${{ vars.AI_PROVIDER }} \
+                    -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/bet-analyzer:latest .
+
+            - name: Push Docker image to Google Container Registry
+              run: |
+                  docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/bet-analyzer:latest
+
+            - name: Deploy to Google Cloud Run
+              run: |
+                  gcloud run deploy bet-analyzer \
+                    --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/bet-analyzer:latest \
+                    --platform managed \
+                    --region us-central1 \
+                    --allow-unauthenticated \
+                    --set-env-vars "SOFASCORE_PROVIDER_API_URL=${{ vars.SOFASCORE_PROVIDER_API_URL }},PROVIDER=${{ vars.PROVIDER }},AI_PROVIDER=${{ vars.AI_PROVIDER }},OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},OPENAI_ASSISTANT_ID=${{ secrets.OPENAI_ASSISTANT_ID }}"

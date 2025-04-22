@@ -17,7 +17,7 @@ export class SofascoreProvider implements DataProviderInterface {
 
     private async getBrowserInstance(): Promise<Browser> {
         if (!this.browser) {
-            this.browser = await puppeteer.launch({ headless: true });
+            this.browser = await puppeteer.launch({ headless: true, args: ["--no-sandbox", "--disable-setuid-sandbox"] });
         }
         return this.browser;
     }

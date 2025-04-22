@@ -59,5 +59,5 @@ jobs:
                     --allow-unauthenticated \
                     --memory 16Gi \
                     --cpu 8 \
-                    --vpc-connector bet-analyzer \
+                    --clear-vpc-connector \
                     --set-env-vars "SOFASCORE_PROVIDER_API_URL=${{ vars.SOFASCORE_PROVIDER_API_URL }},PROVIDER=${{ vars.PROVIDER }},AI_PROVIDER=${{ vars.AI_PROVIDER }},OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},OPENAI_ASSISTANT_ID=${{ secrets.OPENAI_ASSISTANT_ID }},REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=${{ secrets.REDIS_PORT }}" \

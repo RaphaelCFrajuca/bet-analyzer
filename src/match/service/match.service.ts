@@ -43,7 +43,7 @@ export class MatchService {
 
                     return {
                         id: event.id,
-                        date: new Date(event.startTimestamp * 1000 - 3 * 60 * 60 * 1000),
+                        date: new Date(event.startTimestamp * 1000),
                         homeTeam: event.homeTeam.name,
                         awayTeam: event.awayTeam.name,
                         actualHomeScore: event.homeScore.current,

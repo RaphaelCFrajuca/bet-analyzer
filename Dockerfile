@@ -1,6 +1,9 @@
 # Use the official Node.js image as the base image
 FROM node:20-slim
 
+# Container name
+LABEL name="bet-analyzer"
+
 # Set the working directory
 WORKDIR /usr/src/app
 

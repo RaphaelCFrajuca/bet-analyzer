@@ -57,6 +57,13 @@ export class MatchService {
     }
 
     async getMatchByEvent(event: Event): Promise<Match> {
+        const cachedMatch = await this.redis.get(`match_${event.id}`);
+        if (cachedMatch) {
+            console.log(`Cache hit for event.id: ${event.id}`);
+            return JSON.parse(cachedMatch) as Match;
+        }
+        console.log(`Cache miss for event.id: ${event.id}`);
+
         const [markets, homeTeamRecentForm, awayTeamRecentForm, lineups, recentDuels] = await Promise.all([
             this.dataProvider.getMarketOddsByEventId(event.id),
             this.performanceService.getRecentFormByTeamId(event.homeTeam.id),
@@ -78,7 +85,7 @@ export class MatchService {
             })),
         }));
 
-        return {
+        const match = {
             id: event.id,
             date: new Date(event.startTimestamp * 1000),
             homeTeam: event.homeTeam.name,
@@ -144,6 +151,8 @@ export class MatchService {
             },
             markets: marketsList,
         };
+        await this.redis.set(`match_${event.id}`, JSON.stringify(match), "EX", 3600);
+        return match;
     }
 
     async getMatchByEventId(eventId: number): Promise<Match> {

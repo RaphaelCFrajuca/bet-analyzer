@@ -34,16 +34,16 @@ export class OpenAiProvider implements AiInterface {
         });
     }
 
-    async getBettingSuggestionsByEventId(eventId: number): Promise<BettingResponse> {
-        const match = await this.matchService.getMatchByEventId(eventId, false);
+    async getBettingSuggestionsByEventId(eventId: number, live: boolean): Promise<BettingResponse> {
+        const match = await this.matchService.getMatchByEventId(eventId, live);
         if (!match) throw new NotFoundException("Match not found.");
-        return await this.getBettingSuggestionsByMatch(match);
+        return await this.getBettingSuggestionsByMatch(match, live);
     }
 
-    async getBettingSuggestions(date: string): Promise<BettingSuggestions[]> {
+    async getBettingSuggestions(date: string, live: boolean): Promise<BettingSuggestions[]> {
         const cachedSuggestions = await this.redis.get(`betting_suggestions_${date}`);
 
-        if (cachedSuggestions) {
+        if (cachedSuggestions && live) {
             console.log(`Cache hit for date: ${date}`);
             return JSON.parse(cachedSuggestions) as BettingSuggestions[];
         }
@@ -54,7 +54,7 @@ export class OpenAiProvider implements AiInterface {
         const suggestions = await Promise.all(
             matches.map(match =>
                 limit(async () => {
-                    const bettingResponse = await this.getBettingSuggestionsByMatch(match);
+                    const bettingResponse = await this.getBettingSuggestionsByMatch(match, live);
                     return {
                         date: match.date,
                         homeTeam: match.homeTeam,
@@ -70,9 +70,9 @@ export class OpenAiProvider implements AiInterface {
         return suggestions;
     }
 
-    async getBettingSuggestionsByMatch(match: Match): Promise<BettingResponse> {
+    async getBettingSuggestionsByMatch(match: Match, live: boolean): Promise<BettingResponse> {
         const cachedBettingResponse = await this.redis.get(`betting_response_${match.id}`);
-        if (cachedBettingResponse) {
+        if (cachedBettingResponse && !live) {
             console.log(`Cache hit for match.id: ${match.id}`);
             return JSON.parse(cachedBettingResponse) as BettingResponse;
         }

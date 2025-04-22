@@ -5,7 +5,9 @@ import { RecentDuels } from "src/providers/interfaces/recent-duels.interface";
 export interface Match {
     id: number;
     homeTeam: string;
+    homeTeamId: number;
     awayTeam: string;
+    awayTeamId: number;
     actualHomeScore?: number;
     actualAwayScore?: number;
     date: Date;

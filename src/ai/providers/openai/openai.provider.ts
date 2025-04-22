@@ -71,6 +71,13 @@ export class OpenAiProvider implements AiInterface {
     }
 
     async getBettingSuggestionsByMatch(match: Match): Promise<BettingResponse> {
+        const cachedBettingResponse = await this.redis.get(`betting_response_${match.id}`);
+        if (cachedBettingResponse) {
+            console.log(`Cache hit for match.id: ${match.id}`);
+            return JSON.parse(cachedBettingResponse) as BettingResponse;
+        }
+        console.log(`Cache miss for match.id: ${match.id}`);
+
         const thread = await this.generateThread(match);
         let run = await this.runThread(thread);
 
@@ -82,6 +89,8 @@ export class OpenAiProvider implements AiInterface {
 
         try {
             const parsedResponse: BettingResponse = await this.getMessage(thread);
+
+            await this.redis.set(`betting_response_${match.id}`, JSON.stringify(parsedResponse), "EX", 3600);
 
             return parsedResponse;
         } catch (error) {

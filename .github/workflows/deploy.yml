@@ -55,4 +55,6 @@ jobs:
                     --platform managed \
                     --region us-central1 \
                     --allow-unauthenticated \
+                    --memory 8Gi \
+                    --cpu 2 \
                     --set-env-vars "SOFASCORE_PROVIDER_API_URL=${{ vars.SOFASCORE_PROVIDER_API_URL }},PROVIDER=${{ vars.PROVIDER }},AI_PROVIDER=${{ vars.AI_PROVIDER }},OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},OPENAI_ASSISTANT_ID=${{ secrets.OPENAI_ASSISTANT_ID }}"

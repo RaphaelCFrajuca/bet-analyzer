@@ -1,4 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
+import Redis from "ioredis";
+import { RedisConfig } from "src/ai/providers/openai/interfaces/redis.config.interface";
 import { PerformanceService } from "src/performance/services/performance.service";
 import { DataProviderInterface } from "src/providers/interfaces/data-providers.interface";
 import { Event, EventList } from "src/providers/interfaces/events-list.interface";
@@ -6,13 +8,29 @@ import { Market, Match } from "../interfaces/match.interface";
 
 @Injectable()
 export class MatchService {
+    private redis: Redis;
+
     constructor(
         @Inject("DATA_PROVIDER")
         private readonly dataProvider: DataProviderInterface,
         private readonly performanceService: PerformanceService,
-    ) {}
+        @Inject("REDIS_CONFIG")
+        private readonly redisConfig: RedisConfig,
+    ) {
+        this.redis = new Redis({
+            host: this.redisConfig.host,
+            port: this.redisConfig.port,
+        });
+    }
 
     async getMatch(day: string): Promise<Match[]> {
+        const cachedMatches = await this.redis.get(`matches_${day}`);
+        if (cachedMatches) {
+            console.log(`Cache hit for date: ${day}`);
+            return JSON.parse(cachedMatches) as Match[];
+        }
+        console.log(`Cache miss for date: ${day}`);
+
         const events: EventList = await this.dataProvider.getEvents(day);
 
         const matches: Match[] = await Promise.all(
@@ -34,6 +52,8 @@ export class MatchService {
                 return 0;
             }
         });
+
+        await this.redis.set(`matches_${day}`, JSON.stringify(matches), "EX", 43200); // Cache for 1 hour
         return matches;
     }
 

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import Redis from "ioredis";
 import OpenAI from "openai";
 import { TextContentBlock } from "openai/resources/beta/threads/messages";
 import { Run } from "openai/resources/beta/threads/runs/runs";
@@ -12,17 +13,24 @@ import { BettingSuggestions } from "src/ai/interfaces/betting-suggestions.interf
 import { Match } from "src/match/interfaces/match.interface";
 import { MatchService } from "src/match/service/match.service";
 import { OpenAiConfig } from "./interfaces/openai.config.interface";
+import { RedisConfig } from "./interfaces/redis.config.interface";
 
 @Injectable()
 export class OpenAiProvider implements AiInterface {
     private openAi: OpenAI;
+    private redis: Redis;
 
     constructor(
         private readonly openAiConfig: OpenAiConfig,
         private readonly matchService: MatchService,
+        private readonly redisConfig: RedisConfig,
     ) {
         this.openAi = new OpenAI({
             apiKey: openAiConfig.apiKey,
+        });
+        this.redis = new Redis({
+            host: this.redisConfig.host,
+            port: this.redisConfig.port,
         });
     }
 
@@ -33,9 +41,17 @@ export class OpenAiProvider implements AiInterface {
     }
 
     async getBettingSuggestions(date: string): Promise<BettingSuggestions[]> {
+        const cachedSuggestions = await this.redis.get(`betting_suggestions_${date}`);
+
+        if (cachedSuggestions) {
+            console.log(`Cache hit for date: ${date}`);
+            return JSON.parse(cachedSuggestions) as BettingSuggestions[];
+        }
+
+        console.log(`Cache miss for date: ${date}`);
         const limit = pLimit(10);
         const matches: Match[] = await this.matchService.getMatch(date);
-        return await Promise.all(
+        const suggestions = await Promise.all(
             matches.map(match =>
                 limit(async () => {
                     const bettingResponse = await this.getBettingSuggestionsByMatch(match);
@@ -49,6 +65,9 @@ export class OpenAiProvider implements AiInterface {
                 }),
             ),
         );
+
+        await this.redis.set(`betting_suggestions_${date}`, JSON.stringify(suggestions), "EX", 43200);
+        return suggestions;
     }
 
     async getBettingSuggestionsByMatch(match: Match): Promise<BettingResponse> {

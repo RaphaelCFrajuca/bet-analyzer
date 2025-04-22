@@ -11,7 +11,7 @@ import { aiProviderFactory } from "./providers/provider.factory";
     providers: [
         {
             provide: "AI_SERVICE",
-            inject: ["AI_PROVIDER", "OPENAI_PROVIDER_CONFIG", MatchService],
+            inject: ["AI_PROVIDER", "OPENAI_PROVIDER_CONFIG", MatchService, "REDIS_CONFIG"],
             useFactory: aiProviderFactory,
         },
     ],

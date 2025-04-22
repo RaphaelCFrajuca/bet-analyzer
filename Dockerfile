@@ -26,11 +26,11 @@ COPY package*.json ./
 # Install app dependencies including Puppeteer
 RUN npm install
 
-# Build the application
-RUN npm run build
-
 # Bundle app source code
 COPY . .
+
+# Build the application
+RUN npm run build
 
 # Expose the port on which your app will run
 EXPOSE 8080

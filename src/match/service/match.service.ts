@@ -42,7 +42,6 @@ export class MatchService {
                 }),
         );
         matches.sort((a, b) => a.date.getTime() - b.date.getTime());
-        // sort pelo pais Brazil (event->venue->country->name)
         matches.sort((a, b) => {
             if (a.country === "Brazil" && b.country !== "Brazil") {
                 return -1;
@@ -148,12 +147,21 @@ export class MatchService {
     }
 
     async getMatchByEventId(eventId: number): Promise<Match> {
+        const cachedMatch = await this.redis.get(`match_${eventId}`);
+        if (cachedMatch) {
+            console.log(`Cache hit for eventId: ${eventId}`);
+            return JSON.parse(cachedMatch) as Match;
+        }
+        console.log(`Cache miss for eventId: ${eventId}`);
+
         const event: Event = await this.dataProvider.getEventByEventId(eventId);
 
         if (!event) {
             throw new Error("Event not found");
         }
 
-        return this.getMatchByEvent(event);
+        const match = await this.getMatchByEvent(event);
+        await this.redis.set(`match_${eventId}`, JSON.stringify(match), "EX", 3600);
+        return match;
     }
 }

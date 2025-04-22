@@ -32,13 +32,14 @@ export class SofascoreProvider implements DataProviderInterface {
     async getEvents(date: string): Promise<EventList> {
         const browser = await this.getBrowserInstance();
         const page = await browser.newPage();
+        page.setDefaultNavigationTimeout(120000);
         await page.goto(`${this.config.apiUrl}/sport/football/scheduled-events/${date}`);
         const body: string = await page.evaluate(() => document.body.innerText);
         const parsedBody = JSON.parse(body) as EventList;
         await page.close();
 
         const newEvents = await Promise.all(
-            parsedBody.events.slice(0, 100).map(async event => {
+            parsedBody.events.slice(0, 50).map(async event => {
                 const newEvent = await this.getEventByEventId(event.id);
                 return newEvent;
             }),
@@ -50,6 +51,7 @@ export class SofascoreProvider implements DataProviderInterface {
     private async getEventByEventId(eventId: number): Promise<Event> {
         const browser = await this.getBrowserInstance();
         const page = await browser.newPage();
+        page.setDefaultNavigationTimeout(120000);
         await page.goto(`${this.config.apiUrl}/event/${eventId}`);
         const body: string = await page.evaluate(() => document.body.innerText);
         const parsedBody = (JSON.parse(body) as { event: Event }).event;
@@ -61,6 +63,7 @@ export class SofascoreProvider implements DataProviderInterface {
         try {
             const browser = await this.getBrowserInstance();
             const page = await browser.newPage();
+            page.setDefaultNavigationTimeout(120000);
             await page.goto(`${this.config.apiUrl}/event/${eventId}/odds/1/all`);
             const body: string = await page.evaluate(() => document.body.innerText);
             const parsedBody = JSON.parse(body) as MarketsResponse;
@@ -91,6 +94,7 @@ export class SofascoreProvider implements DataProviderInterface {
     async getRecentPerformanceByTeamId(teamId: number): Promise<RecentFormResponse> {
         const browser = await this.getBrowserInstance();
         const page = await browser.newPage();
+        page.setDefaultNavigationTimeout(120000);
         await page.goto(`${this.config.apiUrl}/team/${teamId}/performance`);
         const body: string = await page.evaluate(() => document.body.innerText);
         const parsedBody = JSON.parse(body) as RecentFormResponse;
@@ -101,6 +105,7 @@ export class SofascoreProvider implements DataProviderInterface {
     async getMatchStatisticsByEventId(eventId: number): Promise<EventStatistics> {
         const browser = await this.getBrowserInstance();
         const page = await browser.newPage();
+        page.setDefaultNavigationTimeout(120000);
         await page.goto(`${this.config.apiUrl}/event/${eventId}/statistics`);
         const body: string = await page.evaluate(() => document.body.innerText);
         const parsedBody = JSON.parse(body) as EventStatistics;
@@ -111,6 +116,7 @@ export class SofascoreProvider implements DataProviderInterface {
     async getMatchLineupsByEventId(eventId: number): Promise<Lineup> {
         const browser = await this.getBrowserInstance();
         const page = await browser.newPage();
+        page.setDefaultNavigationTimeout(120000);
         await page.goto(`${this.config.apiUrl}/event/${eventId}/lineups`);
         const body: string = await page.evaluate(() => document.body.innerText);
         const parsedBody = JSON.parse(body) as Lineup;
@@ -121,6 +127,7 @@ export class SofascoreProvider implements DataProviderInterface {
     async getRecentDuelsByEventId(eventId: number): Promise<RecentDuels> {
         const browser = await this.getBrowserInstance();
         const page = await browser.newPage();
+        page.setDefaultNavigationTimeout(120000);
         await page.goto(`${this.config.apiUrl}/event/${eventId}/h2h`);
         const body: string = await page.evaluate(() => document.body.innerText);
         const parsedBody = JSON.parse(body) as RecentDuels;

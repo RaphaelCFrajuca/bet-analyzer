@@ -18,7 +18,7 @@ export class MatchService {
         const matches: Match[] = (await Promise.all(
             events.events
                 .filter(event => event.status.code !== 100 && event.status.code !== 60 && event.status.code !== 120)
-                .slice(0, 30)
+                .slice(0, 15)
                 .map(async event => {
                     const [markets, homeTeamRecentForm, awayTeamRecentForm, lineups, recentDuels] = await Promise.all([
                         this.dataProvider.getMarketOddsByEventId(event.id),

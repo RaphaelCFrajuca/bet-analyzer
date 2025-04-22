@@ -48,7 +48,7 @@ export class SofascoreProvider implements DataProviderInterface {
         return { ...parsedBody, events: newEvents };
     }
 
-    private async getEventByEventId(eventId: number): Promise<Event> {
+    async getEventByEventId(eventId: number): Promise<Event> {
         const browser = await this.getBrowserInstance();
         const page = await browser.newPage();
         page.setDefaultNavigationTimeout(120000);

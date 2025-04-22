@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import OpenAI from "openai";
 import { TextContentBlock } from "openai/resources/beta/threads/messages";
 import { Run } from "openai/resources/beta/threads/runs/runs";
@@ -24,6 +24,12 @@ export class OpenAiProvider implements AiInterface {
         this.openAi = new OpenAI({
             apiKey: openAiConfig.apiKey,
         });
+    }
+
+    async getBettingSuggestionsByEventId(eventId: number): Promise<BettingResponse> {
+        const match = await this.matchService.getMatchByEventId(eventId);
+        if (!match) throw new NotFoundException("Match not found.");
+        return await this.getBettingSuggestionsByMatch(match);
     }
 
     async getBettingSuggestions(date: string): Promise<BettingSuggestions[]> {

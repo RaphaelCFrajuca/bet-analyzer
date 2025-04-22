@@ -5,4 +5,5 @@ import { BettingSuggestions } from "./betting-suggestions.interface";
 export interface AiInterface {
     getBettingSuggestions(date: string): Promise<BettingSuggestions[]>;
     getBettingSuggestionsByMatch(match: Match): Promise<BettingResponse>;
+    getBettingSuggestionsByEventId(eventId: number): Promise<BettingResponse>;
 }

@@ -16,4 +16,10 @@ export class AiController {
     async getBettingSuggestionsByEventId(@Param() params: GetSuggestionsEventDto) {
         return this.aiService.getBettingSuggestionsByEventId(params.eventId);
     }
+
+    @Get("betting/suggestions")
+    async getBettingSuggestionsByActualDate() {
+        const date = new Date();
+        return this.aiService.getBettingSuggestions(date.toISOString().split("T")[0]);
+    }
 }

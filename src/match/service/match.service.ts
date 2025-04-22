@@ -23,9 +23,9 @@ export class MatchService {
         });
     }
 
-    async getMatch(day: string): Promise<Match[]> {
+    async getMatch(day: string, live: boolean): Promise<Match[]> {
         const cachedMatches = await this.redis.get(`matches_${day}`);
-        if (cachedMatches) {
+        if (cachedMatches && !live) {
             console.log(`Cache hit for date: ${day}`);
             return JSON.parse(cachedMatches) as Match[];
         }
@@ -38,7 +38,7 @@ export class MatchService {
                 .filter(event => event.status.code !== 100 && event.status.code !== 60 && event.status.code !== 120)
                 .slice(0, 15)
                 .map(async event => {
-                    return this.getMatchByEvent(event);
+                    return this.getMatchByEvent(event, live);
                 }),
         );
         matches.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -52,13 +52,13 @@ export class MatchService {
             }
         });
 
-        await this.redis.set(`matches_${day}`, JSON.stringify(matches), "EX", 43200); // Cache for 1 hour
+        await this.redis.set(`matches_${day}`, JSON.stringify(matches), "EX", 43200);
         return matches;
     }
 
-    async getMatchByEvent(event: Event): Promise<Match> {
+    async getMatchByEvent(event: Event, live: boolean): Promise<Match> {
         const cachedMatch = await this.redis.get(`match_${event.id}`);
-        if (cachedMatch) {
+        if (cachedMatch && !live) {
             console.log(`Cache hit for event.id: ${event.id}`);
             return JSON.parse(cachedMatch) as Match;
         }
@@ -155,9 +155,9 @@ export class MatchService {
         return match;
     }
 
-    async getMatchByEventId(eventId: number): Promise<Match> {
+    async getMatchByEventId(eventId: number, live: boolean): Promise<Match> {
         const cachedMatch = await this.redis.get(`match_${eventId}`);
-        if (cachedMatch) {
+        if (cachedMatch && !live) {
             console.log(`Cache hit for eventId: ${eventId}`);
             return JSON.parse(cachedMatch) as Match;
         }
@@ -169,7 +169,7 @@ export class MatchService {
             throw new Error("Event not found");
         }
 
-        const match = await this.getMatchByEvent(event);
+        const match = await this.getMatchByEvent(event, live);
         await this.redis.set(`match_${eventId}`, JSON.stringify(match), "EX", 3600);
         return match;
     }

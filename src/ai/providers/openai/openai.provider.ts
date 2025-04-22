@@ -35,7 +35,7 @@ export class OpenAiProvider implements AiInterface {
     }
 
     async getBettingSuggestionsByEventId(eventId: number): Promise<BettingResponse> {
-        const match = await this.matchService.getMatchByEventId(eventId);
+        const match = await this.matchService.getMatchByEventId(eventId, false);
         if (!match) throw new NotFoundException("Match not found.");
         return await this.getBettingSuggestionsByMatch(match);
     }
@@ -50,7 +50,7 @@ export class OpenAiProvider implements AiInterface {
 
         console.log(`Cache miss for date: ${date}`);
         const limit = pLimit(10);
-        const matches: Match[] = await this.matchService.getMatch(date);
+        const matches: Match[] = await this.matchService.getMatch(date, false);
         const suggestions = await Promise.all(
             matches.map(match =>
                 limit(async () => {

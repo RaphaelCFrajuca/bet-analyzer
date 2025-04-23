@@ -64,12 +64,13 @@ export class MatchService {
         }
         console.log(`Cache miss for event.id: ${event.id}`);
 
-        const [markets, homeTeamRecentForm, awayTeamRecentForm, lineups, recentDuels] = await Promise.all([
+        const [markets, homeTeamRecentForm, awayTeamRecentForm, lineups, recentDuels, actualMatchStatistics] = await Promise.all([
             this.dataProvider.getMarketOddsByEventId(event.id),
             this.performanceService.getRecentFormByTeamId(event.homeTeam.id),
             this.performanceService.getRecentFormByTeamId(event.awayTeam.id),
             this.dataProvider.getMatchLineupsByEventId(event.id),
             this.dataProvider.getRecentDuelsByEventId(event.id),
+            this.performanceService.getMatchStatisticsByEventId(event),
         ]);
 
         const marketsList: Market[] = markets?.markets?.map(market => ({
@@ -95,6 +96,7 @@ export class MatchService {
             actualHomeScore: event?.homeScore?.current,
             actualAwayScore: event?.awayScore?.current,
             tournament: event.tournament.name,
+            actualMatchStatistics,
             country: event.venue?.country?.name,
             status: event.status,
             recentDuels,

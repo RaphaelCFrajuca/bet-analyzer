@@ -134,4 +134,16 @@ export class SofascoreProvider implements DataProviderInterface {
         await page.close();
         return parsedBody;
     }
+
+    async getTeamImageByTeamId(teamId: number): Promise<Buffer> {
+        const browser = await this.getBrowserInstance();
+        const page = await browser.newPage();
+        page.setDefaultNavigationTimeout(120000);
+        const response = await page.goto(`${this.config.apiUrl}/team/${teamId}/image`);
+        if (!response) {
+            throw new InternalServerErrorException("Failed to fetch team image: response is null");
+        }
+        const buffer = await response.buffer();
+        return buffer;
+    }
 }

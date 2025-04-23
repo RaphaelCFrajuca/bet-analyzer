@@ -1,4 +1,5 @@
-import { Controller, Get, Injectable, Param } from "@nestjs/common";
+import { Controller, Get, Injectable, Param, Res } from "@nestjs/common";
+import { Response } from "express";
 import { GetMatchDataDto } from "../dtos/get-match-data.dto";
 import { GetMatchEventDto } from "../dtos/get-match-event.dto";
 import { MatchService } from "../service/match.service";
@@ -39,5 +40,12 @@ export class MatchController {
     @Get("event/:eventId")
     getMatchByEventId(@Param() params: GetMatchEventDto) {
         return this.matchService.getMatchByEventId(params.eventId, false);
+    }
+
+    @Get("team-image/:teamId")
+    async getTeamImages(@Param("teamId") teamId: number, @Res() res: Response) {
+        const buffer = await this.matchService.getTeamImage(teamId);
+        res.setHeader("Content-Type", "image/png");
+        res.send(buffer);
     }
 }

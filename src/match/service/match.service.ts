@@ -175,4 +175,9 @@ export class MatchService {
         await this.redis.set(`match_${eventId}`, JSON.stringify(match), "EX", 3600);
         return match;
     }
+
+    async getTeamImage(teamId: number): Promise<Buffer> {
+        const teamImage = await this.dataProvider.getTeamImageByTeamId(teamId);
+        return teamImage;
+    }
 }

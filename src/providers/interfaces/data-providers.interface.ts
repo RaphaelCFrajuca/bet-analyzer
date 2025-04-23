@@ -13,4 +13,5 @@ export interface DataProviderInterface {
     getMatchLineupsByEventId(eventId: number): Promise<Lineup>;
     getRecentDuelsByEventId(eventId: number): Promise<RecentDuels>;
     getEventByEventId(eventId: number): Promise<Event>;
+    getTeamImageByTeamId(teamId: number): Promise<Buffer>;
 }

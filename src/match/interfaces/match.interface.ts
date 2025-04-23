@@ -1,3 +1,4 @@
+import { Bet } from "src/ai/interfaces/betting-response.interface";
 import { RecentFormStatistics } from "src/performance/interfaces/recent-form-statistics.interface";
 import { Status } from "src/providers/interfaces/events-list.interface";
 import { RecentDuels } from "src/providers/interfaces/recent-duels.interface";
@@ -22,6 +23,7 @@ export interface Match {
     homeTeamPerformance: HomeTeamPerformance;
     awayTeamPerformance: AwayTeamPerformance;
     markets?: Market[];
+    bettingSuggestions?: Bet[];
 }
 
 interface Round {

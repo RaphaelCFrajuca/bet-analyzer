@@ -95,6 +95,9 @@ export class OpenAiProvider implements AiInterface {
         console.log(`Cache miss for eventId: ${eventId}`);
 
         const match = await this.matchService.getMatchByEventId(eventId, live);
+        const bettingSuggestions = await this.getBettingSuggestionsByMatch(match, live);
+        match.bettingSuggestions = bettingSuggestions.suggestions;
+
         if (!match) throw new NotFoundException("Match not found.");
 
         const thread = await this.generateThread(match);
@@ -104,18 +107,10 @@ export class OpenAiProvider implements AiInterface {
     private async getMessage(thread: OpenAI.Beta.Threads.Thread, assistantId?: string): Promise<BettingResponse | BettingVerifiedResponse> {
         let run = await this.runThread(thread, assistantId);
 
-        while (run.status === "failed" && run.last_error?.code === "rate_limit_exceeded") {
-            console.log("Rate limit exceeded. Retrying in 10 seconds...");
+        while (run.status !== "completed") {
+            console.log(`${run.status} - ${run.last_error?.message} retrying... in 10 seconds`);
             await new Promise(resolve => setTimeout(resolve, 10000));
             run = await this.runThread(thread, assistantId);
-        }
-
-        try {
-            await this.getMessage(thread);
-        } catch (error) {
-            console.log(run);
-            console.error(error);
-            throw new InternalServerErrorException("Failed to get message from thread.", thread.id);
         }
 
         const messages = await this.openAi.beta.threads.messages.list(thread.id);

@@ -31,6 +31,8 @@ export class OpenAiProvider implements AiInterface {
         this.redis = new Redis({
             host: this.redisConfig.host,
             port: this.redisConfig.port,
+            password: this.redisConfig.password,
+            username: this.redisConfig.user,
         });
     }
 
@@ -66,7 +68,7 @@ export class OpenAiProvider implements AiInterface {
             ),
         );
 
-        await this.redis.set(`betting_suggestions_${date}`, JSON.stringify(suggestions), "EX", 43200);
+        await this.redis.set(`betting_suggestions_${date}`, JSON.stringify(suggestions), "EX", 86400);
         return suggestions;
     }
 

@@ -44,6 +44,8 @@ jobs:
                     --build-arg AI_PROVIDER=${{ vars.AI_PROVIDER }} \
                     --build-arg REDIS_HOST=${{ secrets.REDIS_HOST }} \
                     --build-arg REDIS_PORT=${{ secrets.REDIS_PORT }} \
+                    --build-arg REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} \
+                    --build-arg REDIS_USER=${{ secrets.REDIS_USER }} \
                     -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/bet-analyzer:latest .
 
             - name: Push Docker image to Google Container Registry
@@ -62,4 +64,4 @@ jobs:
                     --clear-vpc-connector \
                     --network=default \
                     --subnet=default \
-                    --set-env-vars "SOFASCORE_PROVIDER_API_URL=${{ vars.SOFASCORE_PROVIDER_API_URL }},PROVIDER=${{ vars.PROVIDER }},AI_PROVIDER=${{ vars.AI_PROVIDER }},OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},OPENAI_ASSISTANT_ID=${{ secrets.OPENAI_ASSISTANT_ID }},REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=${{ secrets.REDIS_PORT }}" \
+                    --set-env-vars "SOFASCORE_PROVIDER_API_URL=${{ vars.SOFASCORE_PROVIDER_API_URL }},PROVIDER=${{ vars.PROVIDER }},AI_PROVIDER=${{ vars.AI_PROVIDER }},OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},OPENAI_ASSISTANT_ID=${{ secrets.OPENAI_ASSISTANT_ID }},REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=${{ secrets.REDIS_PORT }},REDIS_USER=${{ secrets.REDIS_USER }},REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" \

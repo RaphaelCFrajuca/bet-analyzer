@@ -20,6 +20,8 @@ export class MatchService {
         this.redis = new Redis({
             host: this.redisConfig.host,
             port: this.redisConfig.port,
+            password: this.redisConfig.password,
+            username: this.redisConfig.user,
         });
     }
 
@@ -52,7 +54,7 @@ export class MatchService {
             }
         });
 
-        await this.redis.set(`matches_${day}`, JSON.stringify(matches), "EX", 43200);
+        await this.redis.set(`matches_${day}`, JSON.stringify(matches), "EX", 86400);
         return matches;
     }
 

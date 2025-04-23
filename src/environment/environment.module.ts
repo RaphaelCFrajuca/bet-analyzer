@@ -12,6 +12,8 @@ import { SofascoreConfig } from "src/providers/sofascore/interfaces/sofascore-co
             useValue: {
                 host: process.env.REDIS_HOST,
                 port: process.env.REDIS_PORT,
+                password: process.env.REDIS_PASSWORD,
+                user: process.env.REDIS_USER,
             } as unknown as RedisConfig,
         },
         {

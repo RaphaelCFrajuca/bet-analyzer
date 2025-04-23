@@ -38,4 +38,9 @@ export class AiController {
         const date = new Date();
         return this.aiService.getBettingSuggestions(date.toISOString().split("T")[0], false);
     }
+
+    @Get("betting/verify/event/:eventId")
+    async getBettingVerifiedByEventId(@Param() params: GetSuggestionsEventDto) {
+        return this.aiService.getBettingVerifiedByEventId(params.eventId, false);
+    }
 }

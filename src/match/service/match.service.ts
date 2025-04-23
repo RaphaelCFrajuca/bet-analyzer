@@ -157,7 +157,7 @@ export class MatchService {
             },
             markets: marketsList,
         };
-        await this.redis.set(`match_${event.id}`, JSON.stringify(match), "EX", 3600);
+        await this.redis.set(`match_${event.id}`, JSON.stringify(match), "EX", 86400);
         return match;
     }
 
@@ -176,7 +176,7 @@ export class MatchService {
         }
 
         const match = await this.getMatchByEvent(event, live);
-        await this.redis.set(`match_${eventId}`, JSON.stringify(match), "EX", 3600);
+        await this.redis.set(`match_${eventId}`, JSON.stringify(match), "EX", 86400);
         return match;
     }
 

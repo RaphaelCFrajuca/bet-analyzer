@@ -58,7 +58,7 @@ export class OpenAiProvider implements AiInterface {
             matches.map(match =>
                 limit(async () => {
                     const bettingResponse = await this.getBettingSuggestionsByMatch(match, live);
-                    await this.redis.set(`betting_response_${match.id}`, JSON.stringify(bettingResponse), "EX", 3600);
+                    await this.redis.set(`betting_response_${match.id}`, JSON.stringify(bettingResponse), "EX", 86400);
                     return {
                         date: match.date,
                         homeTeam: match.homeTeam,

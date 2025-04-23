@@ -39,6 +39,7 @@ jobs:
                   docker build \
                     --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
                     --build-arg OPENAI_ASSISTANT_ID=${{ secrets.OPENAI_ASSISTANT_ID }} \
+                    --build-arg OPENAI_GREEN_ASSISTANT_ID=${{ secrets.OPENAI_GREEN_ASSISTANT_ID }} \
                     --build-arg SOFASCORE_PROVIDER_API_URL=${{ vars.SOFASCORE_PROVIDER_API_URL }} \
                     --build-arg PROVIDER=${{ vars.PROVIDER }} \
                     --build-arg AI_PROVIDER=${{ vars.AI_PROVIDER }} \
@@ -64,4 +65,4 @@ jobs:
                     --clear-vpc-connector \
                     --network=default \
                     --subnet=default \
-                    --set-env-vars "SOFASCORE_PROVIDER_API_URL=${{ vars.SOFASCORE_PROVIDER_API_URL }},PROVIDER=${{ vars.PROVIDER }},AI_PROVIDER=${{ vars.AI_PROVIDER }},OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},OPENAI_ASSISTANT_ID=${{ secrets.OPENAI_ASSISTANT_ID }},REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=${{ secrets.REDIS_PORT }},REDIS_USER=${{ secrets.REDIS_USER }},REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" \
+                    --set-env-vars "SOFASCORE_PROVIDER_API_URL=${{ vars.SOFASCORE_PROVIDER_API_URL }},PROVIDER=${{ vars.PROVIDER }},AI_PROVIDER=${{ vars.AI_PROVIDER }},OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},OPENAI_ASSISTANT_ID=${{ secrets.OPENAI_ASSISTANT_ID }},OPENAI_GREEN_ASSISTANT_ID=${{ secrets.OPENAI_GREEN_ASSISTANT_ID }},REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=${{ secrets.REDIS_PORT }},REDIS_USER=${{ secrets.REDIS_USER }},REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" \

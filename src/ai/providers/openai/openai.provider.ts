@@ -101,7 +101,9 @@ export class OpenAiProvider implements AiInterface {
         if (!match) throw new NotFoundException("Match not found.");
 
         const thread = await this.generateThread(match);
-        return (await this.getMessage(thread, this.openAiConfig.greenAssistantId)) as BettingVerifiedResponse;
+        const bettingVerifiedResponse = (await this.getMessage(thread, this.openAiConfig.greenAssistantId)) as BettingVerifiedResponse;
+        await this.redis.set(`betting_verified_response_${eventId}`, JSON.stringify(bettingVerifiedResponse), "EX", 86400);
+        return bettingVerifiedResponse;
     }
 
     private async getMessage(thread: OpenAI.Beta.Threads.Thread, assistantId?: string): Promise<BettingResponse | BettingVerifiedResponse> {

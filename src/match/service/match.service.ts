@@ -43,7 +43,7 @@ export class MatchService {
                     return this.getMatchByEvent(event, live);
                 }),
         );
-        matches.sort((a, b) => a.date.getTime() - b.date.getTime());
+        matches.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         matches.sort((a, b) => {
             if (a.country === "Brazil" && b.country !== "Brazil") {
                 return -1;

@@ -10,6 +10,7 @@ import pLimit from "p-limit";
 import { AiInterface } from "src/ai/interfaces/ai.interface";
 import { BettingResponse } from "src/ai/interfaces/betting-response.interface";
 import { BettingSuggestions } from "src/ai/interfaces/betting-suggestions.interface";
+import { BettingVerifiedResponse } from "src/ai/interfaces/betting-verified.interface";
 import { Match } from "src/match/interfaces/match.interface";
 import { MatchService } from "src/match/service/match.service";
 import { OpenAiConfig } from "./interfaces/openai.config.interface";
@@ -57,6 +58,7 @@ export class OpenAiProvider implements AiInterface {
             matches.map(match =>
                 limit(async () => {
                     const bettingResponse = await this.getBettingSuggestionsByMatch(match, live);
+                    await this.redis.set(`betting_response_${match.id}`, JSON.stringify(bettingResponse), "EX", 3600);
                     return {
                         date: match.date,
                         homeTeam: match.homeTeam,
@@ -81,29 +83,41 @@ export class OpenAiProvider implements AiInterface {
         console.log(`Cache miss for match.id: ${match.id}`);
 
         const thread = await this.generateThread(match);
-        let run = await this.runThread(thread);
+        return (await this.getMessage(thread)) as BettingResponse;
+    }
+
+    async getBettingVerifiedByEventId(eventId: number, live: boolean): Promise<BettingVerifiedResponse> {
+        const cachedBettingVeridiedResponse = await this.redis.get(`betting_verified_response_${eventId}`);
+        if (cachedBettingVeridiedResponse && !live) {
+            console.log(`Cache hit for eventId: ${eventId}`);
+            return JSON.parse(cachedBettingVeridiedResponse) as BettingVerifiedResponse;
+        }
+        console.log(`Cache miss for eventId: ${eventId}`);
+
+        const match = await this.matchService.getMatchByEventId(eventId, live);
+        if (!match) throw new NotFoundException("Match not found.");
+
+        const thread = await this.generateThread(match);
+        return (await this.getMessage(thread, this.openAiConfig.greenAssistantId)) as BettingVerifiedResponse;
+    }
+
+    private async getMessage(thread: OpenAI.Beta.Threads.Thread, assistantId?: string): Promise<BettingResponse | BettingVerifiedResponse> {
+        let run = await this.runThread(thread, assistantId);
 
         while (run.status === "failed" && run.last_error?.code === "rate_limit_exceeded") {
             console.log("Rate limit exceeded. Retrying in 10 seconds...");
             await new Promise(resolve => setTimeout(resolve, 10000));
-            run = await this.runThread(thread);
+            run = await this.runThread(thread, assistantId);
         }
 
         try {
-            const parsedResponse: BettingResponse = await this.getMessage(thread);
-
-            await this.redis.set(`betting_response_${match.id}`, JSON.stringify(parsedResponse), "EX", 3600);
-
-            return parsedResponse;
+            await this.getMessage(thread);
         } catch (error) {
-            console.log("Error getting message:", match.id);
             console.log(run);
             console.error(error);
             throw new InternalServerErrorException("Failed to get message from thread.", thread.id);
         }
-    }
 
-    private async getMessage(thread: OpenAI.Beta.Threads.Thread) {
         const messages = await this.openAi.beta.threads.messages.list(thread.id);
 
         const assistantMessage = messages.data.find(message => message.role === "assistant")?.content[0] as TextContentBlock;
@@ -111,13 +125,13 @@ export class OpenAiProvider implements AiInterface {
         if (!messageParsed) {
             throw new InternalServerErrorException("Failed to parse assistant message.");
         }
-        const parsedResponse = JSON.parse(assistantMessage?.text?.value) as BettingResponse;
+        const parsedResponse = JSON.parse(assistantMessage?.text?.value) as BettingResponse | BettingVerifiedResponse;
         return parsedResponse;
     }
 
-    private async runThread(thread: OpenAI.Beta.Threads.Thread): Promise<Run> {
+    private async runThread(thread: OpenAI.Beta.Threads.Thread, assistantId?: string): Promise<Run> {
         return await this.openAi.beta.threads.runs.createAndPoll(thread.id, {
-            assistant_id: this.openAiConfig.assistantId,
+            assistant_id: assistantId ? assistantId : this.openAiConfig.assistantId,
         });
     }
 

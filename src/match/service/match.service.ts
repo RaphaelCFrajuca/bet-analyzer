@@ -64,7 +64,7 @@ export class MatchService {
             console.log(`Cache hit for event.id: ${event.id}`);
             return JSON.parse(cachedMatch) as Match;
         }
-        console.log(`Cache miss for event.id: ${event.id}`);
+        console.log(`Cache miss for event id: ${event.id}`);
 
         const [markets, homeTeamRecentForm, awayTeamRecentForm, lineups, recentDuels, actualMatchStatistics] = await Promise.all([
             this.dataProvider.getMarketOddsByEventId(event.id),

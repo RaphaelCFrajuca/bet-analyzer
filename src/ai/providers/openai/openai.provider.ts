@@ -87,7 +87,9 @@ export class OpenAiProvider implements AiInterface {
         console.log(`Cache miss for match.id: ${match.id}`);
 
         const thread = await this.generateThread(match);
-        return (await this.getMessage(thread)) as BettingResponse;
+        const bettingResponse = (await this.getMessage(thread)) as BettingResponse;
+        await this.redis.set(`betting_response_${match.id}`, JSON.stringify(bettingResponse), "EX", 86400);
+        return bettingResponse;
     }
 
     async getBettingVerifiedByEventId(eventId: number, live: boolean): Promise<BettingVerifiedResponse> {

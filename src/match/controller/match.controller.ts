@@ -16,7 +16,6 @@ export class MatchController {
 
     @Get("live/today")
     getLiveMatchByActualDate() {
-        console.log("getLiveMatchByActualDate called");
         const date = new Date();
         return this.matchService.getMatch(date.toISOString().split("T")[0], true);
     }

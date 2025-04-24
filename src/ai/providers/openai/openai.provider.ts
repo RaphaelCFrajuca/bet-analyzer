@@ -46,7 +46,7 @@ export class OpenAiProvider implements AiInterface {
     async getBettingSuggestions(date: string, live: boolean): Promise<BettingSuggestions[]> {
         const cachedSuggestions = await this.redis.get(`betting_suggestions_${date}`);
 
-        if (cachedSuggestions && live) {
+        if (cachedSuggestions && !live) {
             console.log(`Cache hit for date: ${date}`);
             return JSON.parse(cachedSuggestions) as BettingSuggestions[];
         }
@@ -58,7 +58,7 @@ export class OpenAiProvider implements AiInterface {
             matches.map(match =>
                 limit(async () => {
                     const bettingResponse = await this.getBettingSuggestionsByMatch(
-                        { ...match, actualHomeScore: undefined, actualAwayScore: undefined, actualMatchStatistics: undefined },
+                        { ...match, actualHomeScore: undefined, actualAwayScore: undefined, actualMatchStatistics: undefined, status: undefined },
                         live,
                     );
                     await this.redis.set(`betting_response_${match.id}`, JSON.stringify(bettingResponse), "EX", 86400);

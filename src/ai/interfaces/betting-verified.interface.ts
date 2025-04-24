@@ -1,5 +1,5 @@
 interface BetVerified {
-    success: boolean;
+    betPredicted: boolean;
     marketName: string;
     bet: string;
 }

@@ -14,7 +14,7 @@ export interface Match {
     date: Date;
     country?: string;
     tournament: string;
-    status: Status;
+    status?: Status;
     actualMatchStatistics?: RecentFormStatistics;
     recentDuels?: RecentDuels;
     roundInfo?: Round;

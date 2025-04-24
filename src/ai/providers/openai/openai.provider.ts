@@ -74,7 +74,6 @@ export class OpenAiProvider implements AiInterface {
             ),
         );
 
-        await this.redis.set(`betting_suggestions_${date}`, JSON.stringify(suggestions), "EX", 86400);
         return suggestions;
     }
 

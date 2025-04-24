@@ -54,7 +54,6 @@ export class MatchService {
             }
         });
 
-        await this.redis.set(`matches_${day}`, JSON.stringify(matches), "EX", 86400);
         return matches;
     }
 

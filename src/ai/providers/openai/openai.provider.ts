@@ -61,6 +61,7 @@ export class OpenAiProvider implements AiInterface {
                         { ...match, actualHomeScore: undefined, actualAwayScore: undefined, actualMatchStatistics: undefined, status: undefined },
                         live,
                     );
+                    await this.redis.set(`betting_response_${match.id}`, JSON.stringify(bettingResponse), "EX", 86400);
                     return {
                         matchId: match.id,
                         date: match.date,

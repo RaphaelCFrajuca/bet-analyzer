@@ -1,4 +1,5 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { zonedTimeToUtc } from "date-fns-tz";
 import puppeteer, { Browser } from "puppeteer";
 import { DataProviderInterface } from "../interfaces/data-providers.interface";
 import { EventStatistics } from "../interfaces/event-statistics.interface";
@@ -38,12 +39,10 @@ export class SofascoreProvider implements DataProviderInterface {
         const parsedBody = JSON.parse(body) as EventList;
         await page.close();
 
-        const localDayStart = new Date(`${date}T00:00:00`);
-        const localDayEnd = new Date(`${date}T23:59:59`);
+        const timeZone = "America/Sao_Paulo";
 
-        const dayStartUtc = new Date(localDayStart.getTime() - localDayStart.getTimezoneOffset() * 60 * 1000);
-        const dayEndUtc = new Date(localDayEnd.getTime() - localDayEnd.getTimezoneOffset() * 60 * 1000);
-
+        const dayStartUtc = zonedTimeToUtc(`${date}T00:00:00`, timeZone);
+        const dayEndUtc = zonedTimeToUtc(`${date}T23:59:59`, timeZone);
         console.log("actualDate", new Date().toISOString());
         console.log("dayStartUtc", dayStartUtc, "dayEndUtc", dayEndUtc);
 

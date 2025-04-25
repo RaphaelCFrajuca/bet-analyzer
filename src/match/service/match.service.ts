@@ -54,6 +54,24 @@ export class MatchService {
             }
         });
 
+        const finishedEvents = events.events.filter(event => event.status.code === 100).slice(0, 10);
+        const finishedMatches: Match[] = await Promise.all(
+            finishedEvents.map(async event => {
+                return this.getMatchByEvent(event, live);
+            }),
+        );
+        finishedMatches.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        finishedMatches.sort((a, b) => {
+            if (a.country === "Brazil" && b.country !== "Brazil") {
+                return -1;
+            } else if (a.country !== "Brazil" && b.country === "Brazil") {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+        matches.push(...finishedMatches);
+
         return matches;
     }
 

@@ -38,14 +38,23 @@ export class SofascoreProvider implements DataProviderInterface {
         const parsedBody = JSON.parse(body) as EventList;
         await page.close();
 
-        const newEvents = await Promise.all(
-            parsedBody.events.slice(0, 50).map(async event => {
-                const newEvent = await this.getEventByEventId(event.id);
-                return newEvent;
-            }),
-        );
+        const finishedEvents = parsedBody.events.filter(event => event.status.code === 100).slice(0, 10);
+        const [newFinishedEvents, newEvents] = await Promise.all([
+            Promise.all(
+                finishedEvents.map(async event => {
+                    const newEvent = await this.getEventByEventId(event.id);
+                    return newEvent;
+                }),
+            ),
+            Promise.all(
+                parsedBody.events.slice(0, 50).map(async event => {
+                    const newEvent = await this.getEventByEventId(event.id);
+                    return newEvent;
+                }),
+            ),
+        ]);
 
-        return { ...parsedBody, events: newEvents };
+        return { ...parsedBody, events: { ...newEvents, ...newFinishedEvents } };
     }
 
     async getEventByEventId(eventId: number): Promise<Event> {

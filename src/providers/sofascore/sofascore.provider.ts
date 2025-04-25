@@ -46,29 +46,31 @@ export class SofascoreProvider implements DataProviderInterface {
 
         const dayStartUtc = toZonedTime(localDayStart, timeZone);
         const dayEndUtc = toZonedTime(localDayEnd, timeZone);
+        console.log("actualDate", new Date().toISOString());
+        console.log("dayStartUtc", dayStartUtc, "dayEndUtc", dayEndUtc);
 
         parsedBody.events = parsedBody.events.filter(event => {
             const eventDateUtc = new Date(event.startTimestamp * 1000);
             return eventDateUtc >= dayStartUtc && eventDateUtc <= dayEndUtc;
         });
 
-        console.log({
-            severity: "INFO",
-            message: "Filtered events",
-            events: parsedBody.events.map(event => ({
-                id: event.id,
-                date: new Date(event.startTimestamp * 1000).toISOString(),
-                dateLocal: new Date(event.startTimestamp * 1000).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }),
-                dayStartUtc: dayStartUtc.toISOString(),
-                dayEndUtc: dayEndUtc.toISOString(),
-                localDayStart: localDayStart.toISOString(),
-                localDayEnd: localDayEnd.toISOString(),
-                startTimestamp: event.startTimestamp,
-                status: event.status.code,
-                homeTeam: event.homeTeam.name,
-                awayTeam: event.awayTeam.name,
-            })),
-        });
+        // console.log({
+        //     severity: "INFO",
+        //     message: "Filtered events",
+        //     events: parsedBody.events.map(event => ({
+        //         id: event.id,
+        //         date: new Date(event.startTimestamp * 1000).toISOString(),
+        //         dateLocal: new Date(event.startTimestamp * 1000).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }),
+        //         dayStartUtc: dayStartUtc.toISOString(),
+        //         dayEndUtc: dayEndUtc.toISOString(),
+        //         localDayStart: localDayStart.toISOString(),
+        //         localDayEnd: localDayEnd.toISOString(),
+        //         startTimestamp: event.startTimestamp,
+        //         status: event.status.code,
+        //         homeTeam: event.homeTeam.name,
+        //         awayTeam: event.awayTeam.name,
+        //     })),
+        // });
 
         const finishedEvents = parsedBody.events.filter(event => event.status.code === 100).slice(0, 50);
         const [newFinishedEvents, newEvents] = await Promise.all([

@@ -71,7 +71,7 @@ export class MatchService {
             this.performanceService.getRecentFormByTeamId(event.awayTeam.id),
             this.dataProvider.getMatchLineupsByEventId(event.id),
             this.dataProvider.getRecentDuelsByEventId(event.id),
-            this.performanceService.getMatchStatisticsByEventId(event),
+            this.performanceService.getMatchStatisticsByEvent(event),
         ]);
 
         const marketsList: Market[] = markets?.markets?.map(market => ({

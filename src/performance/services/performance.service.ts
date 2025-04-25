@@ -103,48 +103,48 @@ export class PerformanceService {
             },
             tournament: event?.tournament?.name,
             ballPossession: {
-                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Ball possession")?.home || null,
-                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Ball possession")?.away || null,
+                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Ball possession")?.home,
+                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Ball possession")?.away,
             },
             expectedGoals: {
-                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Expected goals")?.home || null,
-                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Expected goals")?.away || null,
+                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Expected goals")?.home,
+                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Expected goals")?.away,
             },
             totalShots: {
-                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Total shots")?.home || null,
-                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Total shots")?.away || null,
+                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Total shots")?.home,
+                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Total shots")?.away,
             },
             goalkeeperSaves: {
-                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Goalkeeper saves")?.home || null,
-                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Goalkeeper saves")?.away || null,
+                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Goalkeeper saves")?.home,
+                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Goalkeeper saves")?.away,
             },
             cornerKicks: {
-                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Corner kicks")?.home || null,
-                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Corner kicks")?.away || null,
+                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Corner kicks")?.home,
+                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Corner kicks")?.away,
             },
             fouls: {
-                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Fouls")?.home || null,
-                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Fouls")?.away || null,
+                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Fouls")?.home,
+                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Fouls")?.away,
             },
             passes: {
-                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Passes")?.home || null,
-                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Passes")?.away || null,
+                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Passes")?.home,
+                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Passes")?.away,
             },
             tackles: {
-                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Tackles")?.home || null,
-                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Tackles")?.away || null,
+                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Tackles")?.home,
+                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Tackles")?.away,
             },
             freeKicks: {
-                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Free kicks")?.home || null,
-                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Free kicks")?.away || null,
+                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Free kicks")?.home,
+                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Free kicks")?.away,
             },
             yellowCards: {
-                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Yellow cards")?.home || null,
-                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Yellow cards")?.away || null,
+                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Yellow cards")?.home,
+                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Yellow cards")?.away,
             },
             redCards: {
-                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Red cards")?.home || null,
-                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Red cards")?.away || null,
+                home: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Red cards")?.home,
+                away: statistics?.statistics?.[0]?.groups[0]?.statisticsItems?.find(item => item.name === "Red cards")?.away,
             },
         } as RecentFormStatistics;
     }

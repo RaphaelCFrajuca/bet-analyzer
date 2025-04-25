@@ -59,7 +59,7 @@ export class OpenAiProvider implements AiInterface {
                         { ...match, actualHomeScore: undefined, actualAwayScore: undefined, actualMatchStatistics: undefined, status: undefined },
                         live,
                     );
-                    await this.redis.set(`betting_response_${match.id}`, JSON.stringify(bettingResponse), "EX", 86400);
+                    await this.redis.set(`betting_response_${match.id}`, JSON.stringify(bettingResponse), "EX", 259200);
                     return {
                         matchId: match.id,
                         date: match.date,
@@ -85,7 +85,7 @@ export class OpenAiProvider implements AiInterface {
 
         const thread = await this.generateThread(match);
         const bettingResponse = (await this.getMessage(thread)) as BettingResponse;
-        await this.redis.set(`betting_response_${match.id}`, JSON.stringify(bettingResponse), "EX", 86400);
+        await this.redis.set(`betting_response_${match.id}`, JSON.stringify(bettingResponse), "EX", 259200);
         return bettingResponse;
     }
 
@@ -105,7 +105,7 @@ export class OpenAiProvider implements AiInterface {
 
         const thread = await this.generateThread(match);
         const bettingVerifiedResponse = (await this.getMessage(thread, this.openAiConfig.greenAssistantId)) as BettingVerifiedResponse;
-        await this.redis.set(`betting_verified_response_${eventId}`, JSON.stringify(bettingVerifiedResponse), "EX", 86400);
+        await this.redis.set(`betting_verified_response_${eventId}`, JSON.stringify(bettingVerifiedResponse), "EX", 259200);
         return bettingVerifiedResponse;
     }
 

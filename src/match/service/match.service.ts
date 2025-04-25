@@ -54,7 +54,7 @@ export class MatchService {
             }
         });
 
-        const finishedEvents = events.events.filter(event => event.status.code === 100).slice(0, 10);
+        const finishedEvents = events.events.filter(event => event.status.code === 100).slice(0, 20);
         const finishedMatches: Match[] = await Promise.all(
             finishedEvents.map(async event => {
                 return this.getMatchByEvent(event, live);

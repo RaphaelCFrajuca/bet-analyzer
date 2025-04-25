@@ -17,6 +17,7 @@ export interface RecentFormStatistics {
     freeKicks?: Statistic;
     yellowCards?: Statistic;
     redCards?: Statistic;
+    shots;
 }
 
 export interface TeamScore {
@@ -28,4 +29,5 @@ export interface TeamScore {
 export interface Statistic {
     home: string;
     away: string;
+    statisticsType?: string;
 }

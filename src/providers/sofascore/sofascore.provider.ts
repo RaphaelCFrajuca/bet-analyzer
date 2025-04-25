@@ -54,7 +54,9 @@ export class SofascoreProvider implements DataProviderInterface {
             ),
         ]);
 
-        return { ...parsedBody, events: { ...newEvents, ...newFinishedEvents } };
+        newEvents.push(...newFinishedEvents);
+
+        return { ...parsedBody, events: newEvents };
     }
 
     async getEventByEventId(eventId: number): Promise<Event> {

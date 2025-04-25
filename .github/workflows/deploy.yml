@@ -58,7 +58,7 @@ jobs:
                   gcloud run deploy bet-analyzer \
                     --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/bet-analyzer:latest \
                     --platform managed \
-                    --region us-central1 \
+                    --region southamerica-east1 \
                     --allow-unauthenticated \
                     --memory 16Gi \
                     --cpu 8 \

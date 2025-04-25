@@ -17,7 +17,54 @@ export interface RecentFormStatistics {
     freeKicks?: Statistic;
     yellowCards?: Statistic;
     redCards?: Statistic;
-    shots;
+    shots?: {
+        totalShots?: Statistic;
+        shotsOnTarget?: Statistic;
+        hitWoodwork?: Statistic;
+        shotsOffTarget?: Statistic;
+        blockedShots?: Statistic;
+        shotsInsideBox?: Statistic;
+        shotsOutsideBox?: Statistic;
+    };
+    attack?: {
+        bigChancesScored?: Statistic;
+        bigChancesMissed?: Statistic;
+        throughBalls?: Statistic;
+        touchesInPenaltyArea?: Statistic;
+        fouledInFinalThird?: Statistic;
+        offsides?: Statistic;
+    };
+    passesDetails?: {
+        accuratePasses?: Statistic;
+        throwIns?: Statistic;
+        finalThirdEntries?: Statistic;
+        finalThirdPhase?: Statistic;
+        longBalls?: Statistic;
+        crosses?: Statistic;
+    };
+    duels?: {
+        duels?: Statistic;
+        dispossessed?: Statistic;
+        groundDuels?: Statistic;
+        aerialDuels?: Statistic;
+        dribbles?: Statistic;
+    };
+    defending?: {
+        tacklesWon?: Statistic;
+        totalTackles?: Statistic;
+        interceptions?: Statistic;
+        recoveries?: Statistic;
+        clearances?: Statistic;
+        errorsLeadingToShot?: Statistic;
+        errorsLeadingToGoal?: Statistic;
+    };
+    goalkeeping?: {
+        totalSaves?: Statistic;
+        goalsPrevented?: Statistic;
+        bigSaves?: Statistic;
+        punches?: Statistic;
+        goalKicks?: Statistic;
+    };
 }
 
 export interface TeamScore {

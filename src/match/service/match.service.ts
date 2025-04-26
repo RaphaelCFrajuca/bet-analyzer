@@ -34,6 +34,7 @@ export class MatchService {
         console.log(`Cache miss for date: ${day}`);
 
         const events: EventList = await this.dataProvider.getEvents(day);
+        console.log(`Events length: ${events.events.length}`);
 
         const matches: Match[] = await Promise.all(
             events.events
@@ -43,6 +44,7 @@ export class MatchService {
                     return this.getMatchByEvent(event, live);
                 }),
         );
+        console.log(`Matches length: ${matches.length}`);
         matches.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         matches.sort((a, b) => {
             if (a.country === "Brazil" && b.country !== "Brazil") {
@@ -53,6 +55,7 @@ export class MatchService {
                 return 0;
             }
         });
+        console.log(`Sorted matches length: ${matches.length}`);
 
         return matches;
     }

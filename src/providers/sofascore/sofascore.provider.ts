@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { zonedTimeToUtc } from "date-fns-tz";
-import puppeteer, { Browser } from "puppeteer";
+import { Browser, chromium, Page } from "playwright"; // <-- PLAYWRIGHT
 import { DataProviderInterface } from "../interfaces/data-providers.interface";
 import { EventStatistics } from "../interfaces/event-statistics.interface";
 import { Event, EventList } from "../interfaces/events-list.interface";
@@ -14,11 +14,11 @@ import { SofascoreConfig } from "./interfaces/sofascore-config.interface";
 export class SofascoreProvider implements DataProviderInterface {
     constructor(private readonly config: SofascoreConfig) {}
 
-    private browser: Browser | null;
+    private browser: Browser | null = null;
 
     private async getBrowserInstance(): Promise<Browser> {
         if (!this.browser) {
-            this.browser = await puppeteer.launch({ headless: true, args: ["--no-sandbox", "--disable-setuid-sandbox"] });
+            this.browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--disable-setuid-sandbox"] });
         }
         return this.browser;
     }
@@ -30,17 +30,23 @@ export class SofascoreProvider implements DataProviderInterface {
         }
     }
 
-    async getEvents(date: string): Promise<EventList> {
+    private async getPage(): Promise<Page> {
         const browser = await this.getBrowserInstance();
-        const page = await browser.newPage();
+        const context = await browser.newContext();
+        const page = await context.newPage();
         page.setDefaultNavigationTimeout(120000);
+        return page;
+    }
+
+    async getEvents(date: string): Promise<EventList> {
+        const page = await this.getPage();
         await page.goto(`${this.config.apiUrl}/sport/football/scheduled-events/${date}`);
-        const body: string = await page.evaluate(() => document.body.innerText);
-        const parsedBody = JSON.parse(body) as EventList;
+        const body = await page.locator("body").innerText();
         await page.close();
 
-        const timeZone = "America/Sao_Paulo";
+        const parsedBody = JSON.parse(body) as EventList;
 
+        const timeZone = "America/Sao_Paulo";
         const dayStartUtc = zonedTimeToUtc(`${date}T00:00:00`, timeZone);
         const dayEndUtc = zonedTimeToUtc(`${date}T23:59:59`, timeZone);
 
@@ -51,8 +57,7 @@ export class SofascoreProvider implements DataProviderInterface {
 
         const events = await Promise.all(
             parsedBody.events.slice(0, 50).map(async event => {
-                const newEvent = await this.getEventByEventId(event.id);
-                return newEvent;
+                return await this.getEventByEventId(event.id);
             }),
         );
 
@@ -60,25 +65,20 @@ export class SofascoreProvider implements DataProviderInterface {
     }
 
     async getEventByEventId(eventId: number): Promise<Event> {
-        const browser = await this.getBrowserInstance();
-        const page = await browser.newPage();
-        page.setDefaultNavigationTimeout(120000);
+        const page = await this.getPage();
         await page.goto(`${this.config.apiUrl}/event/${eventId}`);
-        const body: string = await page.evaluate(() => document.body.innerText);
-        const parsedBody = (JSON.parse(body) as { event: Event }).event;
+        const body = await page.locator("body").innerText();
         await page.close();
-        return parsedBody;
+        return (JSON.parse(body) as { event: Event }).event;
     }
 
     async getMarketOddsByEventId(eventId: number): Promise<MarketsResponse> {
         try {
-            const browser = await this.getBrowserInstance();
-            const page = await browser.newPage();
-            page.setDefaultNavigationTimeout(120000);
+            const page = await this.getPage();
             await page.goto(`${this.config.apiUrl}/event/${eventId}/odds/1/all`);
-            const body: string = await page.evaluate(() => document.body.innerText);
-            const parsedBody = JSON.parse(body) as MarketsResponse;
+            const body = await page.locator("body").innerText();
             await page.close();
+            const parsedBody = JSON.parse(body) as MarketsResponse;
 
             parsedBody.markets = parsedBody?.markets?.map(market => {
                 market.choices = market.choices.map(choice => {
@@ -94,6 +94,7 @@ export class SofascoreProvider implements DataProviderInterface {
                 });
                 return market;
             });
+
             return parsedBody;
         } catch (error: unknown) {
             console.error(error);
@@ -103,58 +104,45 @@ export class SofascoreProvider implements DataProviderInterface {
     }
 
     async getRecentPerformanceByTeamId(teamId: number): Promise<RecentFormResponse> {
-        const browser = await this.getBrowserInstance();
-        const page = await browser.newPage();
-        page.setDefaultNavigationTimeout(120000);
+        const page = await this.getPage();
         await page.goto(`${this.config.apiUrl}/team/${teamId}/performance`);
-        const body: string = await page.evaluate(() => document.body.innerText);
-        const parsedBody = JSON.parse(body) as RecentFormResponse;
+        const body = await page.locator("body").innerText();
         await page.close();
-        return parsedBody;
+        return JSON.parse(body) as RecentFormResponse;
     }
 
     async getMatchStatisticsByEventId(eventId: number): Promise<EventStatistics> {
-        const browser = await this.getBrowserInstance();
-        const page = await browser.newPage();
-        page.setDefaultNavigationTimeout(120000);
+        const page = await this.getPage();
         await page.goto(`${this.config.apiUrl}/event/${eventId}/statistics`);
-        const body: string = await page.evaluate(() => document.body.innerText);
-        const parsedBody = JSON.parse(body) as EventStatistics;
+        const body = await page.locator("body").innerText();
         await page.close();
-        return parsedBody;
+        return JSON.parse(body) as EventStatistics;
     }
 
     async getMatchLineupsByEventId(eventId: number): Promise<Lineup> {
-        const browser = await this.getBrowserInstance();
-        const page = await browser.newPage();
-        page.setDefaultNavigationTimeout(120000);
+        const page = await this.getPage();
         await page.goto(`${this.config.apiUrl}/event/${eventId}/lineups`);
-        const body: string = await page.evaluate(() => document.body.innerText);
-        const parsedBody = JSON.parse(body) as Lineup;
+        const body = await page.locator("body").innerText();
         await page.close();
-        return parsedBody;
+        return JSON.parse(body) as Lineup;
     }
 
     async getRecentDuelsByEventId(eventId: number): Promise<RecentDuels> {
-        const browser = await this.getBrowserInstance();
-        const page = await browser.newPage();
-        page.setDefaultNavigationTimeout(120000);
+        const page = await this.getPage();
         await page.goto(`${this.config.apiUrl}/event/${eventId}/h2h`);
-        const body: string = await page.evaluate(() => document.body.innerText);
-        const parsedBody = JSON.parse(body) as RecentDuels;
+        const body = await page.locator("body").innerText();
         await page.close();
-        return parsedBody;
+        return JSON.parse(body) as RecentDuels;
     }
 
     async getTeamImageByTeamId(teamId: number): Promise<Buffer> {
-        const browser = await this.getBrowserInstance();
-        const page = await browser.newPage();
-        page.setDefaultNavigationTimeout(120000);
+        const page = await this.getPage();
         const response = await page.goto(`${this.config.apiUrl}/team/${teamId}/image`);
         if (!response) {
             throw new InternalServerErrorException("Failed to fetch team image: response is null");
         }
-        const buffer = await response.buffer();
+        const buffer = await response.body(); // <-- Playwright usa response.body() para Buffer
+        await page.close();
         return buffer;
     }
 }

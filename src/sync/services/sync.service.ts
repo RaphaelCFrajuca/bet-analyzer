@@ -25,8 +25,9 @@ export class SyncService {
     }
 
     async syncAllData(): Promise<void> {
-        // new Date(Date.now() + 24 * 60 * 60 * 1000)
-        const date = utcToZonedTime(new Date(), "America/Sao_Paulo").toISOString().split("T")[0];
+        const date = utcToZonedTime(new Date(Date.now() + 24 * 60 * 60 * 1000), "America/Sao_Paulo")
+            .toISOString()
+            .split("T")[0];
         console.log("Syncing all matches for day ", date);
         const matches: Match[] = await this.matchService.getMatch(date, true);
 

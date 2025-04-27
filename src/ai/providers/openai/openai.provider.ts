@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import Redis from "ioredis";
 import OpenAI, { toFile } from "openai";
+import { Response } from "openai/core";
 import { Batch } from "openai/resources/batches";
 import { TextContentBlock } from "openai/resources/beta/threads/messages";
 import { Run } from "openai/resources/beta/threads/runs/runs";
@@ -13,6 +14,8 @@ import { BettingSuggestions } from "src/ai/interfaces/betting-suggestions.interf
 import { BettingVerifiedResponse } from "src/ai/interfaces/betting-verified.interface";
 import { Match } from "src/match/interfaces/match.interface";
 import { MatchService } from "src/match/service/match.service";
+import { BatchBettingResponse } from "./interfaces/batch-betting-response.interface";
+import { BatchResponseItem } from "./interfaces/batch-response-item.interface";
 import { OpenAiConfig } from "./interfaces/openai.config.interface";
 import { RedisConfig } from "./interfaces/redis.config.interface";
 import { bettingSuggestionPrompt } from "./prompts/betting-suggestion.prompt";
@@ -162,7 +165,7 @@ export class OpenAiProvider implements AiInterface {
         await this.redis.set(`actual_batch`, batch.id, "EX", 259200);
     }
 
-    async verifySync(): Promise<Match[]> {
+    async verifySync(): Promise<BatchBettingResponse[]> {
         const batchId = await this.redis.get(`actual_batch`);
         if (!batchId) throw new NotFoundException("Batch not found.");
 
@@ -170,26 +173,36 @@ export class OpenAiProvider implements AiInterface {
         if (!batch) throw new NotFoundException("Batch not found.");
 
         if (batch.status === "completed") {
-            const parsedMatches = await this.retrieveAndParseMatches(batch);
-            return parsedMatches;
+            const parsedSuggestions = await this.retrieveAndParseSuggestions(batch);
+            return parsedSuggestions;
         } else if (batch.status === "failed") {
             throw new InternalServerErrorException("Batch failed.");
         } else {
             console.log(`Batch status: ${batch.status}. (${batch.request_counts?.completed}/${batch.request_counts?.total}) Waiting for completion...`);
-            return [] as Match[];
+            return [] as BatchBettingResponse[];
         }
     }
 
-    private async retrieveAndParseMatches(batch: OpenAI.Batches.Batch) {
-        const file = await this.openAi.files.retrieve(batch.input_file_id);
-        const fileResponse = await this.openAi.files.content(file.id);
-        const fileContent = await fileResponse.text();
+    private async retrieveAndParseSuggestions(batch: OpenAI.Batches.Batch): Promise<BatchBettingResponse[]> {
+        const file: FileObject = await this.openAi.files.retrieve(batch.output_file_id!);
+        const lines = await this.getFileLines(file);
+        const parsedSugestions: BatchBettingResponse[] = this.extractBettingResponses(lines);
+        return parsedSugestions;
+    }
+
+    private async getFileLines(file: OpenAI.Files.FileObject) {
+        const fileResponse: Response = await this.openAi.files.content(file.id);
+        const fileContent: string = await fileResponse.text();
+
         const lines = fileContent.split("\n").filter(line => line.trim() !== "");
-        const parsedMatches = lines.map(line => {
-            const match = JSON.parse(line) as Match;
-            return match;
+        return lines;
+    }
+
+    private extractBettingResponses(lines: string[]): BatchBettingResponse[] {
+        return lines.map(line => {
+            const suggestion = JSON.parse((JSON.parse(line) as BatchResponseItem).response?.body.choices[0].message.content ?? "{}") as BettingResponse;
+            return { matchId: Number((JSON.parse(line) as BatchResponseItem).custom_id), bettingResponse: suggestion };
         });
-        return parsedMatches;
     }
 
     private async getBatchById(batchId: string): Promise<Batch> {

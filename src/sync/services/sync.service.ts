@@ -2,6 +2,7 @@ import { Inject } from "@nestjs/common";
 import { utcToZonedTime } from "date-fns-tz";
 import Redis from "ioredis";
 import { AiInterface } from "src/ai/interfaces/ai.interface";
+import { BatchBettingResponse } from "src/ai/providers/openai/interfaces/batch-betting-response.interface";
 import { RedisConfig } from "src/ai/providers/openai/interfaces/redis.config.interface";
 import { Match } from "src/match/interfaces/match.interface";
 import { MatchService } from "src/match/service/match.service";
@@ -42,12 +43,12 @@ export class SyncService {
     }
 
     async getSync() {
-        const matches: Match[] = await this.aiService.verifySync();
-        console.log("Matches length: ", matches.length);
-        for (const match of matches) {
-            await this.redis.set(`match_${match.id}`, JSON.stringify(match), "EX", 259200);
+        const suggestions: BatchBettingResponse[] = await this.aiService.verifySync();
+        console.log("Betting Suggestions length: ", suggestions.length);
+        for (const suggestion of suggestions) {
+            await this.redis.set(`betting_response_${suggestion.matchId}`, JSON.stringify(suggestion.bettingResponse), "EX", 259200);
         }
-        if (matches.length > 0) return true;
+        if (suggestions.length > 0) return true;
         return false;
     }
 }

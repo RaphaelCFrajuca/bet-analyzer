@@ -1,4 +1,5 @@
 import { Match } from "src/match/interfaces/match.interface";
+import { BatchBettingResponse } from "../providers/openai/interfaces/batch-betting-response.interface";
 import { BettingResponse } from "./betting-response.interface";
 import { BettingSuggestions } from "./betting-suggestions.interface";
 import { BettingVerifiedResponse } from "./betting-verified.interface";
@@ -9,5 +10,5 @@ export interface AiInterface {
     getBettingSuggestionsByEventId(eventId: number, live: boolean): Promise<BettingResponse>;
     getBettingVerifiedByEventId(eventId: number, live: boolean): Promise<BettingVerifiedResponse>;
     syncBettingSuggestionsByMatch(matches: Match[]): Promise<void>;
-    verifySync(): Promise<Match[]>;
+    verifySync(): Promise<BatchBettingResponse[]>;
 }

@@ -97,7 +97,7 @@ export class OpenAiProvider implements AiInterface {
         }
         console.log(`Cache miss for eventId: ${eventId}`);
 
-        const match = await this.matchService.getMatchByEventId(eventId, live);
+        const match = await this.matchService.getMatchByEventId(eventId, true);
         const bettingSuggestions = await this.getBettingSuggestionsByMatch(match, live);
         match.bettingSuggestions = bettingSuggestions.suggestions;
 

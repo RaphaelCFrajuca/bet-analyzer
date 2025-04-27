@@ -5,7 +5,7 @@ import { SyncService } from "../services/sync.service";
 export class SyncController {
     constructor(private readonly syncService: SyncService) {}
 
-    @Post("sync")
+    @Post("")
     async sync() {
         return this.syncService.syncAllData();
     }

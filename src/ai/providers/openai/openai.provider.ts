@@ -175,6 +175,7 @@ export class OpenAiProvider implements AiInterface {
         } else if (batch.status === "failed") {
             throw new InternalServerErrorException("Batch failed.");
         } else {
+            console.log(`Batch status: ${batch.status}. (${batch.request_counts?.completed}/${batch.request_counts?.total}) Waiting for completion...`);
             return [] as Match[];
         }
     }

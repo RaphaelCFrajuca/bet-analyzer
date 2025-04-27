@@ -25,19 +25,16 @@ export class SyncService {
     }
 
     async syncAllData(): Promise<void> {
-        console.log(
-            "Syncing all matches for day ",
-            utcToZonedTime(new Date(Date.now() + 24 * 60 * 60 * 1000), "America/Sao_Paulo")
-                .toISOString()
-                .split("T")[0],
-        );
-        const matches: Match[] = await this.matchService.getMatch(
-            utcToZonedTime(new Date(Date.now() + 24 * 60 * 60 * 1000), "America/Sao_Paulo")
-                .toISOString()
-                .split("T")[0],
-            true,
-        );
+        const date = utcToZonedTime(new Date(Date.now() + 24 * 60 * 60 * 1000), "America/Sao_Paulo")
+            .toISOString()
+            .split("T")[0];
+        console.log("Syncing all matches for day ", date);
+        const matches: Match[] = await this.matchService.getMatch(date, true);
 
+        console.log("Matches length: ", matches.length);
+        if (matches.length === 0) return;
+
+        console.log("Syncing Betting Suggestions...");
         await this.aiService.syncBettingSuggestionsByMatch(matches);
         console.log("Sync batched successfully.");
     }

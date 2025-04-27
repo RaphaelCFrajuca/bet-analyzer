@@ -1,4 +1,5 @@
 import { Controller, Get, Inject, Param } from "@nestjs/common";
+import { getActualDate } from "src/utils/get-actual-date";
 import { GetSuggestionsDataDto } from "../dtos/get-suggestions-data.dto";
 import { GetSuggestionsEventDto } from "../dtos/get-suggestions-event.dto";
 import { AiInterface } from "../interfaces/ai.interface";
@@ -35,12 +36,7 @@ export class AiController {
 
     @Get("betting/suggestions")
     async getBettingSuggestionsByActualDate() {
-        const date = new Date(Date.now() + 24 * 60 * 60 * 1000);
-        const options = { timeZone: "America/Sao_Paulo" };
-        const dateInSaoPaulo = date.toLocaleDateString("pt-BR", options);
-        const [day, month, year] = dateInSaoPaulo.split("/");
-        const formattedDate = `${year}-${month}-${day}`;
-        return this.aiService.getBettingSuggestions(formattedDate, false);
+        return this.aiService.getBettingSuggestions(getActualDate(), false);
     }
 
     @Get("betting/verify/event/:eventId")

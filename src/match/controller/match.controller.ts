@@ -1,5 +1,6 @@
 import { Controller, Get, Injectable, Param, Res } from "@nestjs/common";
 import { Response } from "express";
+import { getActualDate } from "src/utils/get-actual-date";
 import { GetMatchDataDto } from "../dtos/get-match-data.dto";
 import { GetMatchEventDto } from "../dtos/get-match-event.dto";
 import { MatchService } from "../service/match.service";
@@ -27,8 +28,7 @@ export class MatchController {
 
     @Get()
     getMatchByActualDate() {
-        const date = new Date();
-        return this.matchService.getMatch(date.toISOString().split("T")[0], false);
+        return this.matchService.getMatch(getActualDate(), false);
     }
 
     @Get("event/live/:eventId")

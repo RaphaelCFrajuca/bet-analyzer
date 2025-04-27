@@ -14,6 +14,7 @@ import { BettingSuggestions } from "src/ai/interfaces/betting-suggestions.interf
 import { BettingVerifiedResponse } from "src/ai/interfaces/betting-verified.interface";
 import { Match } from "src/match/interfaces/match.interface";
 import { MatchService } from "src/match/service/match.service";
+import { getActualDate } from "src/utils/get-actual-date";
 import { BatchBettingResponse } from "./interfaces/batch-betting-response.interface";
 import { BatchResponseItem } from "./interfaces/batch-response-item.interface";
 import { OpenAiConfig } from "./interfaces/openai.config.interface";
@@ -54,6 +55,11 @@ export class OpenAiProvider implements AiInterface {
         if (cachedSuggestions && !live) {
             console.log(`Cache hit for date: ${date}`);
             return JSON.parse(cachedSuggestions) as BettingSuggestions[];
+        }
+
+        if ((await this.verifySync()).length === 0 && getActualDate() === date) {
+            console.log("Daily sync not completed yet. Please try again later.");
+            return [] as BettingSuggestions[];
         }
 
         console.log(`Cache miss for date: ${date}`);

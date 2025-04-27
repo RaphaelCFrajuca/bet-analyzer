@@ -29,7 +29,16 @@ export class MatchService {
         const cachedMatches = await this.redis.get(`matches_${day}`);
         if (cachedMatches && !live) {
             console.log(`Cache hit for date: ${day}`);
-            return JSON.parse(cachedMatches) as Match[];
+            console.log("Getting matches...");
+            const matchesIds = JSON.parse(cachedMatches) as number[];
+            console.log(`Matches ids length: ${matchesIds.length}`);
+            const matches: Match[] = await Promise.all(
+                matchesIds.map(async matchId => {
+                    const cachedMatch = (await this.redis.get(`match_${matchId}`)) as string;
+                    return JSON.parse(cachedMatch) as Match;
+                }),
+            );
+            return matches;
         }
         console.log(`Cache miss for date: ${day}`);
 
@@ -56,6 +65,8 @@ export class MatchService {
             }
         });
         console.log(`Sorted matches length: ${matches.length}`);
+        const matchesIdsToCache = matches.map(match => match.id);
+        await this.redis.set(`matches_${day}`, JSON.stringify(matchesIdsToCache), "EX", 604800);
 
         return matches;
     }

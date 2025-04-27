@@ -35,8 +35,12 @@ export class AiController {
 
     @Get("betting/suggestions")
     async getBettingSuggestionsByActualDate() {
-        const date = new Date();
-        return this.aiService.getBettingSuggestions(date.toISOString().split("T")[0], false);
+        const date = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        const options = { timeZone: "America/Sao_Paulo" };
+        const dateInSaoPaulo = date.toLocaleDateString("pt-BR", options);
+        const [day, month, year] = dateInSaoPaulo.split("/");
+        const formattedDate = `${year}-${month}-${day}`;
+        return this.aiService.getBettingSuggestions(formattedDate, false);
     }
 
     @Get("betting/verify/event/:eventId")

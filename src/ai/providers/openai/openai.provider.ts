@@ -159,7 +159,42 @@ export class OpenAiProvider implements AiInterface {
         const file: FileObject = await this.uploadMatchesToOpenAI(matches);
         const batch: Batch = await this.initializeChatCompletionBatch(file);
 
-        await this.redis.set(`actual_batch`, JSON.stringify(batch.id), "EX", 259200);
+        await this.redis.set(`actual_batch`, batch.id, "EX", 259200);
+    }
+
+    async verifySync(): Promise<Match[]> {
+        const batchId = await this.redis.get(`actual_batch`);
+        if (!batchId) throw new NotFoundException("Batch not found.");
+
+        const batch = await this.getBatchById(batchId);
+        if (!batch) throw new NotFoundException("Batch not found.");
+
+        if (batch.status === "completed") {
+            const parsedMatches = await this.retrieveAndParseMatches(batch);
+            return parsedMatches;
+        } else if (batch.status === "failed") {
+            throw new InternalServerErrorException("Batch failed.");
+        } else {
+            return [] as Match[];
+        }
+    }
+
+    private async retrieveAndParseMatches(batch: OpenAI.Batches.Batch) {
+        const file = await this.openAi.files.retrieve(batch.input_file_id);
+        const fileResponse = await this.openAi.files.content(file.id);
+        const fileContent = await fileResponse.text();
+        const lines = fileContent.split("\n").filter(line => line.trim() !== "");
+        const parsedMatches = lines.map(line => {
+            const match = JSON.parse(line) as Match;
+            return match;
+        });
+        return parsedMatches;
+    }
+
+    private async getBatchById(batchId: string): Promise<Batch> {
+        const batch = await this.openAi.batches.retrieve(batchId);
+        if (!batch) throw new NotFoundException("Batch not found.");
+        return batch;
     }
 
     private async initializeChatCompletionBatch(file: OpenAI.Files.FileObject & { _request_id?: string | null }) {

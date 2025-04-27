@@ -15,6 +15,6 @@ import { aiProviderFactory } from "./providers/provider.factory";
             useFactory: aiProviderFactory,
         },
     ],
-    exports: [],
+    exports: ["AI_SERVICE"],
 })
 export class AiModule {}

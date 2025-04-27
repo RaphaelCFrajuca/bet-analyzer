@@ -1,9 +1,11 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import Redis from "ioredis";
-import OpenAI from "openai";
+import OpenAI, { toFile } from "openai";
+import { Batch } from "openai/resources/batches";
 import { TextContentBlock } from "openai/resources/beta/threads/messages";
 import { Run } from "openai/resources/beta/threads/runs/runs";
 import { Thread } from "openai/resources/beta/threads/threads";
+import { FileObject } from "openai/resources/files";
 import pLimit from "p-limit";
 import { AiInterface } from "src/ai/interfaces/ai.interface";
 import { BettingResponse } from "src/ai/interfaces/betting-response.interface";
@@ -13,6 +15,8 @@ import { Match } from "src/match/interfaces/match.interface";
 import { MatchService } from "src/match/service/match.service";
 import { OpenAiConfig } from "./interfaces/openai.config.interface";
 import { RedisConfig } from "./interfaces/redis.config.interface";
+import { bettingSuggestionPrompt } from "./prompts/betting-suggestion.prompt";
+import { bettingResponseSchema } from "./schemas/betting-suggestion.schema";
 
 @Injectable()
 export class OpenAiProvider implements AiInterface {
@@ -149,5 +153,58 @@ export class OpenAiProvider implements AiInterface {
             console.error(error);
             throw new InternalServerErrorException("Failed to generate thread.");
         }
+    }
+
+    async syncBettingSuggestionsByMatch(matches: Match[]): Promise<void> {
+        const file: FileObject = await this.uploadMatchesToOpenAI(matches);
+        const batch: Batch = await this.initializeChatCompletionBatch(file);
+
+        await this.redis.set(`actual_batch`, JSON.stringify(batch.id), "EX", 259200);
+    }
+
+    private async initializeChatCompletionBatch(file: OpenAI.Files.FileObject & { _request_id?: string | null }) {
+        return await this.openAi.batches.create({
+            completion_window: "24h",
+            endpoint: "/v1/chat/completions",
+            input_file_id: file.id,
+        });
+    }
+
+    private async uploadMatchesToOpenAI(matches: Match[]) {
+        return await this.openAi.files.create({
+            file: await toFile(new Blob([this.generateMatchesJsonLine(matches)], { type: "application/jsonl" }), "matches.jsonl"),
+            purpose: "batch",
+        });
+    }
+
+    generateMatchesJsonLine(matches: Match[]): string {
+        const matchesJsonl = matches.map(match => {
+            const matchJson: string = JSON.stringify(match, null, 2);
+            return {
+                custom_id: String(match.id),
+                method: "POST",
+                url: "/v1/chat/completions",
+                body: {
+                    model: "gpt-4.1-mini",
+                    messages: [
+                        {
+                            role: "system",
+                            content: bettingSuggestionPrompt,
+                        },
+                        {
+                            role: "user",
+                            content: matchJson,
+                        },
+                    ],
+                    response_format: {
+                        type: "json_schema",
+                        json_schema: bettingResponseSchema,
+                    },
+                    temperature: 0.0,
+                    top_p: 1,
+                },
+            };
+        });
+        return matchesJsonl.map(line => JSON.stringify(line)).join("\n");
     }
 }

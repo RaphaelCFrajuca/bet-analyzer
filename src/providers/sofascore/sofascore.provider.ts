@@ -61,6 +61,16 @@ export class SofascoreProvider implements DataProviderInterface {
             }),
         );
 
+        events.sort((a, b) => {
+            if (a.venue?.country?.name === "Brazil" && b.venue?.country?.name !== "Brazil") {
+                return -1;
+            } else if (a.venue?.country?.name !== "Brazil" && b.venue?.country?.name === "Brazil") {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+
         return { ...parsedBody, events };
     }
 

@@ -53,6 +53,11 @@ export class MatchService {
                     return this.getMatchByEvent(event, live);
                 }),
         );
+
+        matches.forEach(match => {
+            console.log(`Match: ${match.homeTeam} vs ${match.awayTeam} - Event ID: ${match.id}`);
+        });
+
         console.log(`Matches length: ${matches.length}`);
         matches.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         matches.sort((a, b) => {

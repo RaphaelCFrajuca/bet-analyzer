@@ -182,6 +182,7 @@ export class OpenAiProvider implements AiInterface {
             const parsedSuggestions = await this.retrieveAndParseSuggestions(batch);
             return parsedSuggestions;
         } else if (batch.status === "failed") {
+            console.error(batch.errors);
             throw new InternalServerErrorException("Batch failed.");
         } else {
             console.log(`Batch status: ${batch.status}. (${batch.request_counts?.completed}/${batch.request_counts?.total}) Waiting for completion...`);

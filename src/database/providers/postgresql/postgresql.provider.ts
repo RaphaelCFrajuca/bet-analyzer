@@ -19,10 +19,14 @@ export class PostgresqlProvider implements Database {
         });
     }
 
-    findById(id: string): Promise<Auth | null> {
-        throw new Error("Method not implemented.");
+    async findById(id: string): Promise<Auth | null> {
+        const dataSource = await this.connect();
+        const authRepository = dataSource.getRepository(Auth);
+        const auth = await authRepository.findOne({ where: { id } });
+        if (!auth) return null;
+        return auth;
     }
-    findByUsername(username: string): Promise<Auth | null> {
+    async findByUsername(username: string): Promise<Auth | null> {
         throw new Error("Method not implemented.");
     }
 

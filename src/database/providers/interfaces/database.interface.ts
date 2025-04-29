@@ -6,4 +6,5 @@ export interface Database {
     disconnect(): Promise<void>;
     findById(id: string): Promise<Auth | null>;
     findByUsername(username: string): Promise<Auth | null>;
+    createUser(username: string, password: string): Promise<void>;
 }

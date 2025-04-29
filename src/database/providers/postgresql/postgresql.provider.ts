@@ -1,4 +1,4 @@
-import { DataSource } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { Database } from "../interfaces/database.interface";
 import { Auth } from "./entities/auth.entity";
 import { PostgresqlConfig } from "./interfaces/postgresql-config.interface";
@@ -18,10 +18,19 @@ export class PostgresqlProvider implements Database {
             logging: false,
         });
     }
+    async createUser(username: string, password: string): Promise<void> {
+        const dataSource = await this.connect();
+        const authRepository: Repository<Auth> = dataSource.getRepository(Auth);
+        const auth = new Auth();
+        auth.username = username;
+        auth.password = password;
+        await authRepository.save(auth);
+        await this.disconnect();
+    }
 
     async findById(id: string): Promise<Auth | null> {
         const dataSource = await this.connect();
-        const authRepository = dataSource.getRepository(Auth);
+        const authRepository: Repository<Auth> = dataSource.getRepository(Auth);
         const auth = await authRepository.findOne({ where: { id } });
         if (!auth) return null;
         await this.disconnect();
@@ -29,7 +38,7 @@ export class PostgresqlProvider implements Database {
     }
     async findByUsername(username: string): Promise<Auth | null> {
         const dataSource = await this.connect();
-        const authRepository = dataSource.getRepository(Auth);
+        const authRepository: Repository<Auth> = dataSource.getRepository(Auth);
         const auth = await authRepository.findOne({ where: { username } });
         if (!auth) return null;
         await this.disconnect();

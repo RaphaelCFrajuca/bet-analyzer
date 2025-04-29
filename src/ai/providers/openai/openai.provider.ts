@@ -57,7 +57,7 @@ export class OpenAiProvider implements AiInterface {
             return JSON.parse(cachedSuggestions) as BettingSuggestions[];
         }
 
-        if ((await this.verifySync()).length === 0 && getActualDate() === date) {
+        if ((await this.verifySync()).length === 0 && getActualDate() === date && (await this.redis.get("actual_batch_date")) === date) {
             console.log("Daily sync not completed yet. Please try again later.");
             return [] as BettingSuggestions[];
         }

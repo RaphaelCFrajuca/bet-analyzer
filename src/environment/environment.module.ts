@@ -44,6 +44,10 @@ import { SofascoreConfig } from "src/providers/sofascore/interfaces/sofascore-co
             useValue: process.env.JWT_TOKEN_SECRET,
         },
         {
+            provide: "DATABASE",
+            useValue: process.env.DATABASE,
+        },
+        {
             provide: "POSTGRESQL_CONFIG",
             useValue: {
                 host: process.env.POSTGRESQL_HOST,
@@ -54,6 +58,6 @@ import { SofascoreConfig } from "src/providers/sofascore/interfaces/sofascore-co
             } as unknown as PostgresqlConfig,
         },
     ],
-    exports: ["REDIS_CONFIG", "SOFASCORE_CONFIG", "PROVIDER", "AI_PROVIDER", "OPENAI_PROVIDER_CONFIG", "JWT_TOKEN_SECRET", "POSTGRESQL_CONFIG"],
+    exports: ["REDIS_CONFIG", "SOFASCORE_CONFIG", "PROVIDER", "AI_PROVIDER", "OPENAI_PROVIDER_CONFIG", "JWT_TOKEN_SECRET", "DATABASE", "POSTGRESQL_CONFIG"],
 })
 export class EnvironmentModule {}

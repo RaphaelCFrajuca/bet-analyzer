@@ -24,10 +24,16 @@ export class PostgresqlProvider implements Database {
         const authRepository = dataSource.getRepository(Auth);
         const auth = await authRepository.findOne({ where: { id } });
         if (!auth) return null;
+        await this.disconnect();
         return auth;
     }
     async findByUsername(username: string): Promise<Auth | null> {
-        throw new Error("Method not implemented.");
+        const dataSource = await this.connect();
+        const authRepository = dataSource.getRepository(Auth);
+        const auth = await authRepository.findOne({ where: { username } });
+        if (!auth) return null;
+        await this.disconnect();
+        return auth;
     }
 
     async connect(): Promise<DataSource> {

@@ -1,11 +1,13 @@
-import { Controller, Get, Injectable, Param, Res } from "@nestjs/common";
+import { Controller, Get, Injectable, Param, Res, UseGuards } from "@nestjs/common";
 import { Response } from "express";
+import { AuthGuard } from "src/auth/guards/auth.guard";
 import { getActualDate } from "src/utils/get-actual-date";
 import { GetMatchDataDto } from "../dtos/get-match-data.dto";
 import { GetMatchEventDto } from "../dtos/get-match-event.dto";
 import { MatchService } from "../service/match.service";
 
 @Controller("match")
+@UseGuards(AuthGuard)
 @Injectable()
 export class MatchController {
     constructor(private readonly matchService: MatchService) {}

@@ -6,7 +6,6 @@ import { PostgresqlConfig } from "./interfaces/postgresql-config.interface";
 export class PostgresqlProvider implements Database {
     private dataSource: DataSource;
     constructor(private readonly postgresqlConfig: PostgresqlConfig) {
-        console.log("PostgresqlConfig", this.postgresqlConfig);
         this.dataSource = new DataSource({
             type: "postgres",
             host: this.postgresqlConfig.host,

@@ -32,16 +32,16 @@ export class PostgresqlProvider implements Database {
         const dataSource = await this.connect();
         const authRepository: Repository<Auth> = dataSource.getRepository(Auth);
         const auth = await authRepository.findOne({ where: { id } });
-        if (!auth) return null;
         await this.disconnect();
+        if (!auth) return null;
         return auth;
     }
     async findByUsername(username: string): Promise<Auth | null> {
         const dataSource = await this.connect();
         const authRepository: Repository<Auth> = dataSource.getRepository(Auth);
         const auth = await authRepository.findOne({ where: { username } });
-        if (!auth) return null;
         await this.disconnect();
+        if (!auth) return null;
         return auth;
     }
 

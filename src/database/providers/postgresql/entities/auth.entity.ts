@@ -1,8 +1,8 @@
-import { Column, Entity } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("auth")
 export class Auth {
-    @Column({ type: "uuid", primary: true, generated: true, nullable: false })
+    @PrimaryGeneratedColumn("uuid")
     id: string;
 
     @Column({ type: "varchar", length: 255, nullable: false })

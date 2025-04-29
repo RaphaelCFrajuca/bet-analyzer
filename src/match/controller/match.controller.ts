@@ -7,38 +7,43 @@ import { GetMatchEventDto } from "../dtos/get-match-event.dto";
 import { MatchService } from "../service/match.service";
 
 @Controller("match")
-@UseGuards(AuthGuard)
 @Injectable()
 export class MatchController {
     constructor(private readonly matchService: MatchService) {}
 
     @Get(":marketDate")
+    @UseGuards(AuthGuard)
     getMatch(@Param() params: GetMatchDataDto) {
         return this.matchService.getMatch(params.marketDate.toISOString().split("T")[0], false);
     }
 
     @Get("live/today")
+    @UseGuards(AuthGuard)
     getLiveMatchByActualDate() {
         const date = new Date();
         return this.matchService.getMatch(date.toISOString().split("T")[0], true);
     }
 
     @Get("live/:marketDate")
+    @UseGuards(AuthGuard)
     getLiveMatch(@Param() params: GetMatchDataDto) {
         return this.matchService.getMatch(params.marketDate.toISOString().split("T")[0], true);
     }
 
     @Get()
+    @UseGuards(AuthGuard)
     getMatchByActualDate() {
         return this.matchService.getMatch(getActualDate(), false);
     }
 
     @Get("event/live/:eventId")
+    @UseGuards(AuthGuard)
     getLiveMatchByEventId(@Param() params: GetMatchEventDto) {
         return this.matchService.getMatchByEventId(params.eventId, true);
     }
 
     @Get("event/:eventId")
+    @UseGuards(AuthGuard)
     getMatchByEventId(@Param() params: GetMatchEventDto) {
         return this.matchService.getMatchByEventId(params.eventId, false);
     }

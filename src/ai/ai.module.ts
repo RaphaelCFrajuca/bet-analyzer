@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { AuthModule } from "src/auth/auth.module";
 import { EnvironmentModule } from "src/environment/environment.module";
 import { MatchModule } from "src/match/match.module";
 import { MatchService } from "src/match/service/match.service";
@@ -6,7 +7,7 @@ import { AiController } from "./controllers/ai.controller";
 import { aiProviderFactory } from "./providers/provider.factory";
 
 @Module({
-    imports: [EnvironmentModule, MatchModule],
+    imports: [AuthModule, EnvironmentModule, MatchModule],
     controllers: [AiController],
     providers: [
         {

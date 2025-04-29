@@ -1,10 +1,12 @@
-import { Controller, Get, Inject, Param } from "@nestjs/common";
+import { Controller, Get, Inject, Param, UseGuards } from "@nestjs/common";
+import { AuthGuard } from "src/auth/guards/auth.guard";
 import { getActualDate } from "src/utils/get-actual-date";
 import { GetSuggestionsDataDto } from "../dtos/get-suggestions-data.dto";
 import { GetSuggestionsEventDto } from "../dtos/get-suggestions-event.dto";
 import { AiInterface } from "../interfaces/ai.interface";
 
 @Controller("ai")
+@UseGuards(AuthGuard)
 export class AiController {
     constructor(@Inject("AI_SERVICE") private readonly aiService: AiInterface) {}
 

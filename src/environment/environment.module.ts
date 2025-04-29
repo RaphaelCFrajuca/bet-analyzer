@@ -54,7 +54,7 @@ import { SofascoreConfig } from "src/providers/sofascore/interfaces/sofascore-co
                 port: parseInt(process.env.POSTGRESQL_PORT!, 10),
                 user: process.env.POSTGRESQL_USER,
                 password: process.env.POSTGRESQL_PASSWORD,
-                database: process.env.POSTGRESQL_DATABASE,
+                database: process.env.POSTGRESQL_DB,
             } as unknown as PostgresqlConfig,
         },
     ],

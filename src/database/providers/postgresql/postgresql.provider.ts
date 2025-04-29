@@ -19,6 +19,13 @@ export class PostgresqlProvider implements Database {
         });
     }
 
+    findById(id: string): Promise<Auth | null> {
+        throw new Error("Method not implemented.");
+    }
+    findByUsername(username: string): Promise<Auth | null> {
+        throw new Error("Method not implemented.");
+    }
+
     async connect(): Promise<DataSource> {
         return await this.dataSource.initialize();
     }

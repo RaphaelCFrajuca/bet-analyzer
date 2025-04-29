@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import { Database } from "../interfaces/database.interface";
+import { Auth } from "./entities/auth.entity";
 import { PostgresqlConfig } from "./interfaces/postgresql-config.interface";
 
 export class PostgresqlProvider implements Database {
@@ -12,6 +13,7 @@ export class PostgresqlProvider implements Database {
             username: this.postgresqlConfig.user,
             password: this.postgresqlConfig.password,
             database: this.postgresqlConfig.database,
+            entities: [Auth],
             synchronize: true,
             logging: false,
         });

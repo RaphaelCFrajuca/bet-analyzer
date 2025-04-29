@@ -9,6 +9,6 @@ export interface AiInterface {
     getBettingSuggestionsByMatch(match: Match, live: boolean): Promise<BettingResponse>;
     getBettingSuggestionsByEventId(eventId: number, live: boolean): Promise<BettingResponse>;
     getBettingVerifiedByEventId(eventId: number, live: boolean): Promise<BettingVerifiedResponse>;
-    syncBettingSuggestionsByMatch(matches: Match[]): Promise<void>;
+    syncBettingSuggestionsByMatch(matches: Match[], date: string): Promise<void>;
     verifySync(): Promise<BatchBettingResponse[]>;
 }

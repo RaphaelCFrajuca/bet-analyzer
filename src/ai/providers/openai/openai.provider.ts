@@ -164,11 +164,12 @@ export class OpenAiProvider implements AiInterface {
         }
     }
 
-    async syncBettingSuggestionsByMatch(matches: Match[]): Promise<void> {
+    async syncBettingSuggestionsByMatch(matches: Match[], date: string): Promise<void> {
         const file: FileObject = await this.uploadMatchesToOpenAI(matches);
         const batch: Batch = await this.initializeChatCompletionBatch(file);
 
         await this.redis.set(`actual_batch`, batch.id, "EX", 259200);
+        await this.redis.set("actual_batch_date", date, "EX", 259200);
     }
 
     async verifySync(): Promise<BatchBettingResponse[]> {

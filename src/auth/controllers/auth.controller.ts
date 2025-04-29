@@ -9,4 +9,9 @@ export class AuthController {
     login() {
         return "Login endpoint";
     }
+
+    @Post("register")
+    register() {
+        return "Register endpoint";
+    }
 }

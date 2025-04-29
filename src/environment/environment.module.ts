@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { RedisConfig } from "src/ai/providers/openai/interfaces/redis.config.interface";
+import { PostgresqlConfig } from "src/database/providers/postgresql/interfaces/postgresql-config.interface";
 import { SofascoreConfig } from "src/providers/sofascore/interfaces/sofascore-config.interface";
 
 @Module({
@@ -38,7 +39,21 @@ import { SofascoreConfig } from "src/providers/sofascore/interfaces/sofascore-co
                 greenAssistantId: process.env.OPENAI_GREEN_ASSISTANT_ID,
             },
         },
+        {
+            provide: "JWT_TOKEN_SECRET",
+            useValue: process.env.JWT_TOKEN_SECRET,
+        },
+        {
+            provide: "POSTGRESQL_CONFIG",
+            useValue: {
+                host: process.env.POSTGRESQL_HOST,
+                port: parseInt(process.env.POSTGRESQL_PORT!, 10),
+                user: process.env.POSTGRESQL_USER,
+                password: process.env.POSTGRESQL_PASSWORD,
+                database: process.env.POSTGRESQL_DATABASE,
+            } as unknown as PostgresqlConfig,
+        },
     ],
-    exports: ["REDIS_CONFIG", "SOFASCORE_CONFIG", "PROVIDER", "AI_PROVIDER", "OPENAI_PROVIDER_CONFIG"],
+    exports: ["REDIS_CONFIG", "SOFASCORE_CONFIG", "PROVIDER", "AI_PROVIDER", "OPENAI_PROVIDER_CONFIG", "JWT_TOKEN_SECRET", "POSTGRESQL_CONFIG"],
 })
 export class EnvironmentModule {}

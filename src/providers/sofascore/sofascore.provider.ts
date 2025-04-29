@@ -79,7 +79,6 @@ export class SofascoreProvider implements DataProviderInterface {
         await page.goto(`${this.config.apiUrl}/event/${eventId}`);
         const body = await page.locator("body").innerText();
         await page.close();
-        console.log(body);
         return (JSON.parse(body) as { event: Event }).event;
     }
 

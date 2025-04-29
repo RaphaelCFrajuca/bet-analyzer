@@ -14,10 +14,8 @@ export class AuthService {
     async login(username: string, password: string): Promise<AuthResponse> {
         const user = await this.databaseProvider.findByUsername(username);
         if (!user) {
+            console.log("User not found", username);
             throw new NotFoundException("User not found");
-        }
-        if (user.password !== password) {
-            throw new UnauthorizedException("Invalid password");
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);

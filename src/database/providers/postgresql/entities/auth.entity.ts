@@ -5,7 +5,7 @@ export class Auth {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column({ type: "varchar", length: 255, nullable: false })
+    @Column({ type: "varchar", length: 255, nullable: false, unique: true })
     username: string;
 
     @Column({ type: "varchar", length: 255, nullable: false })

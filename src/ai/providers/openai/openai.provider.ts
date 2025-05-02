@@ -256,7 +256,7 @@ export class OpenAiProvider implements AiInterface {
                         type: "json_schema",
                         json_schema: bettingResponseSchema,
                     },
-                    temperature: 0.0,
+                    reasoning_effort: "high",
                     top_p: 1,
                 },
             };

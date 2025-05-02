@@ -241,7 +241,7 @@ export class OpenAiProvider implements AiInterface {
                 method: "POST",
                 url: "/v1/chat/completions",
                 body: {
-                    model: "gpt-4.1-mini",
+                    model: "o4-mini",
                     messages: [
                         {
                             role: "system",

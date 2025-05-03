@@ -24,7 +24,7 @@ export class GoogleProvider implements AiInterface {
         this.geminiAi = new GoogleGenAI({
             vertexai: true,
             project: "bet-analyzer-457604",
-            location: "global",
+            location: "us-central1",
         });
 
         this.redis = new Redis({

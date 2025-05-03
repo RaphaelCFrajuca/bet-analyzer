@@ -77,15 +77,28 @@ export class GoogleProvider implements AiInterface {
         }
         console.log(`Cache miss for match.id: ${match.id}`);
 
+        let response: GenerateContentResponse;
         const chat = this.createChatSession(bettingResponseSchema, this.model);
 
-        const response = await chat.sendMessage({
-            message: [
-                {
-                    text: JSON.stringify(match),
-                },
-            ],
-        });
+        while (true) {
+            try {
+                response = await chat.sendMessage({
+                    message: [
+                        {
+                            text: JSON.stringify(match),
+                        },
+                    ],
+                });
+                break;
+            } catch (error) {
+                if (error instanceof Error && error.message.includes("limit exceeded")) {
+                    console.log("Limit exceeded, retrying in 10 seconds...");
+                    await new Promise(resolve => setTimeout(resolve, 10000));
+                } else {
+                    throw error;
+                }
+            }
+        }
 
         const message = this.parseResponse(response) as BettingResponse;
         await this.redis.set(`betting_response_${match.id}`, JSON.stringify(message), "EX", 259200);

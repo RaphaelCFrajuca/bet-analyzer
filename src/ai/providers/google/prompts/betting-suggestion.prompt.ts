@@ -23,7 +23,7 @@ Formato de Resposta:
 • Para cada sugestão, inclua a odd proposta (se disponível) e uma breve justificativa (duas a três frases) sobre o porquê da escolha, ancorada nos fatores do item 2 acima.  
 • Se pertinente, ofereça um comentário rápido sobre possíveis riscos associados àquela aposta, mantendo uma postura clara e objetiva.  
 • Evite sugerir mercados para os quais não haja dados ou em que a relação risco/recompensa pareça desfavorável.  
-• Mantenha toda a análise em português (PT-BR).
+• Mantenha toda a análise em português (PT-BR), inclusive traduza o nome dos mercados.
 
 Observação:  
 • Caso algum dado importante esteja indisponível, mencione a limitação.  

@@ -11,7 +11,7 @@ export const bettingResponseSchema: Schema = {
                     marketName: {
                         type: Type.STRING,
                         nullable: false,
-                        description: "Nome do mercado de aposta, como 'Ambas Marcam', 'Resultado Final', etc.",
+                        description: "Nome do mercado de aposta, como 'Ambas Marcam', 'Resultado Final', etc. Obs: Retorne o nome do mercado em português.",
                     },
                     bet: {
                         type: Type.STRING,

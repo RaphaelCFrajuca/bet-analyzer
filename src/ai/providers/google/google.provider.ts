@@ -1,4 +1,5 @@
 import { GenerateContentResponse, GoogleGenAI } from "@google/genai";
+import { NotFoundException } from "@nestjs/common";
 import Redis from "ioredis";
 import pLimit from "p-limit";
 import { AiInterface } from "src/ai/interfaces/ai.interface";
@@ -106,8 +107,10 @@ export class GoogleProvider implements AiInterface {
         });
     }
 
-    getBettingSuggestionsByEventId(eventId: number, live: boolean): Promise<BettingResponse> {
-        throw new Error("Method not implemented.");
+    async getBettingSuggestionsByEventId(eventId: number, live: boolean): Promise<BettingResponse> {
+        const match = await this.matchService.getMatchByEventId(eventId, live);
+        if (!match) throw new NotFoundException("Match not found.");
+        return await this.getBettingSuggestionsByMatch(match, live);
     }
     getBettingVerifiedByEventId(eventId: number, live: boolean): Promise<BettingVerifiedResponse> {
         throw new Error("Method not implemented.");

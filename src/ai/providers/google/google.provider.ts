@@ -1,4 +1,4 @@
-import { GenerateContentResponse, GoogleGenAI } from "@google/genai";
+import { GenerateContentResponse, GoogleGenAI, Schema } from "@google/genai";
 import { NotFoundException } from "@nestjs/common";
 import Redis from "ioredis";
 import pLimit from "p-limit";
@@ -11,6 +11,7 @@ import { MatchService } from "src/match/service/match.service";
 import { BatchBettingResponse } from "../openai/interfaces/batch-betting-response.interface";
 import { RedisConfig } from "../openai/interfaces/redis.config.interface";
 import { bettingResponseSchema } from "./schemas/betting-suggestion.schema";
+import { bettingVerifiedSchema } from "./schemas/betting-verified.schema";
 
 export class GoogleProvider implements AiInterface {
     private geminiAi: GoogleGenAI;
@@ -76,7 +77,7 @@ export class GoogleProvider implements AiInterface {
         }
         console.log(`Cache miss for match.id: ${match.id}`);
 
-        const chat = this.createChatSession();
+        const chat = this.createChatSession(bettingResponseSchema, this.model);
 
         const response = await chat.sendMessage({
             message: [
@@ -86,23 +87,23 @@ export class GoogleProvider implements AiInterface {
             ],
         });
 
-        const message = this.parseBettingResponse(response);
+        const message = this.parseResponse(response) as BettingResponse;
         await this.redis.set(`betting_response_${match.id}`, JSON.stringify(message), "EX", 259200);
         return message;
     }
-    private parseBettingResponse(response: GenerateContentResponse) {
-        return JSON.parse(response.text as string) as BettingResponse;
+    private parseResponse(response: GenerateContentResponse): BettingResponse | BettingVerifiedResponse {
+        return JSON.parse(response.text as string) as BettingResponse | BettingVerifiedResponse;
     }
 
-    private createChatSession() {
+    private createChatSession(schema: Schema, model?: string) {
         return this.geminiAi.chats.create({
-            model: this.model,
+            model: model ?? this.model,
             config: {
                 temperature: 0,
                 topP: 1,
                 seed: 0,
                 responseModalities: ["TEXT"],
-                responseSchema: bettingResponseSchema,
+                responseSchema: schema,
                 responseMimeType: "application/json",
             },
         });
@@ -127,15 +128,24 @@ export class GoogleProvider implements AiInterface {
 
         if (!match) throw new NotFoundException("Match not found.");
 
-        const thread = await this.generateThread(match);
-        const bettingVerifiedResponse = (await this.getMessage(thread, this.openAiConfig.greenAssistantId)) as BettingVerifiedResponse;
+        const chat = this.createChatSession(bettingVerifiedSchema, "gemini-2.5-flash-preview-04-17");
+
+        const response = await chat.sendMessage({
+            message: [
+                {
+                    text: JSON.stringify(match),
+                },
+            ],
+        });
+
+        const bettingVerifiedResponse = this.parseResponse(response) as BettingVerifiedResponse;
         await this.redis.set(`betting_verified_response_${eventId}`, JSON.stringify(bettingVerifiedResponse), "EX", 259200);
         return bettingVerifiedResponse;
     }
-    syncBettingSuggestionsByMatch(matches: Match[], date: string): Promise<void> {
-        throw new Error("Method not implemented.");
+    async syncBettingSuggestionsByMatch(matches: Match[], date: string): Promise<void> {
+        await this.getBettingSuggestions(date, true);
     }
     verifySync(): Promise<BatchBettingResponse[]> {
-        throw new Error("Method not implemented.");
+        return Promise.resolve([]);
     }
 }

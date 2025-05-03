@@ -112,8 +112,24 @@ export class GoogleProvider implements AiInterface {
         if (!match) throw new NotFoundException("Match not found.");
         return await this.getBettingSuggestionsByMatch(match, live);
     }
-    getBettingVerifiedByEventId(eventId: number, live: boolean): Promise<BettingVerifiedResponse> {
-        throw new Error("Method not implemented.");
+    async getBettingVerifiedByEventId(eventId: number, live: boolean): Promise<BettingVerifiedResponse> {
+        const cachedBettingVeridiedResponse = await this.redis.get(`betting_verified_response_${eventId}`);
+        if (cachedBettingVeridiedResponse && !live) {
+            console.log(`Cache hit for eventId: ${eventId}`);
+            return JSON.parse(cachedBettingVeridiedResponse) as BettingVerifiedResponse;
+        }
+        console.log(`Cache miss for eventId: ${eventId}`);
+
+        const match = await this.matchService.getMatchByEventId(eventId, true);
+        const bettingSuggestions = await this.getBettingSuggestionsByMatch(match, live);
+        match.bettingSuggestions = bettingSuggestions.suggestions;
+
+        if (!match) throw new NotFoundException("Match not found.");
+
+        const thread = await this.generateThread(match);
+        const bettingVerifiedResponse = (await this.getMessage(thread, this.openAiConfig.greenAssistantId)) as BettingVerifiedResponse;
+        await this.redis.set(`betting_verified_response_${eventId}`, JSON.stringify(bettingVerifiedResponse), "EX", 259200);
+        return bettingVerifiedResponse;
     }
     syncBettingSuggestionsByMatch(matches: Match[], date: string): Promise<void> {
         throw new Error("Method not implemented.");

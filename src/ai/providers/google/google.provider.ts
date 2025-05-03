@@ -1,4 +1,4 @@
-import { GenerateContentResponse, GoogleGenAI, Schema } from "@google/genai";
+import { Chat, GenerateContentResponse, GoogleGenAI, Schema } from "@google/genai";
 import { NotFoundException } from "@nestjs/common";
 import Redis from "ioredis";
 import pLimit from "p-limit";
@@ -15,7 +15,7 @@ import { bettingVerifiedSchema } from "./schemas/betting-verified.schema";
 
 export class GoogleProvider implements AiInterface {
     private geminiAi: GoogleGenAI;
-    private model = "gemini-2.5-pro-exp-03-25";
+    private model = "gemini-2.5-pro-preview-03-25";
     private redis: Redis;
 
     constructor(
@@ -78,7 +78,7 @@ export class GoogleProvider implements AiInterface {
         console.log(`Cache miss for match.id: ${match.id}`);
 
         let response: GenerateContentResponse;
-        const chat = this.createChatSession(bettingResponseSchema, this.model);
+        const chat = this.createChatSession(bettingResponseSchema, this.model, 0.7, 0.9);
 
         while (true) {
             try {
@@ -91,9 +91,9 @@ export class GoogleProvider implements AiInterface {
                 });
                 break;
             } catch (error) {
-                if (error instanceof Error && error.message.includes("limit exceeded")) {
-                    console.log("Limit exceeded, retrying in 10 seconds...");
-                    await new Promise(resolve => setTimeout(resolve, 10000));
+                if (error instanceof Error && error.message.includes("Quota exceeded")) {
+                    console.error("Quota exceeded, retrying in 30 seconds...", match.id, error);
+                    await new Promise(resolve => setTimeout(resolve, 30000));
                 } else {
                     throw error;
                 }
@@ -108,12 +108,12 @@ export class GoogleProvider implements AiInterface {
         return JSON.parse(response.text as string) as BettingResponse | BettingVerifiedResponse;
     }
 
-    private createChatSession(schema: Schema, model?: string) {
+    private createChatSession(schema: Schema, model?: string, temperature?: number, topP?: number): Chat {
         return this.geminiAi.chats.create({
             model: model ?? this.model,
             config: {
-                temperature: 0,
-                topP: 1,
+                temperature: temperature ?? 0.2,
+                topP: topP ?? 1,
                 seed: 0,
                 responseModalities: ["TEXT"],
                 responseSchema: schema,
@@ -128,20 +128,21 @@ export class GoogleProvider implements AiInterface {
         return await this.getBettingSuggestionsByMatch(match, live);
     }
     async getBettingVerifiedByEventId(eventId: number, live: boolean): Promise<BettingVerifiedResponse> {
-        const cachedBettingVeridiedResponse = await this.redis.get(`betting_verified_response_${eventId}`);
-        if (cachedBettingVeridiedResponse && !live) {
+        const cachedBettingVerifiedResponse = await this.redis.get(`betting_verified_response_${eventId}`);
+        if (cachedBettingVerifiedResponse && !live) {
             console.log(`Cache hit for eventId: ${eventId}`);
-            return JSON.parse(cachedBettingVeridiedResponse) as BettingVerifiedResponse;
+            return JSON.parse(cachedBettingVerifiedResponse) as BettingVerifiedResponse;
         }
         console.log(`Cache miss for eventId: ${eventId}`);
 
         const match = await this.matchService.getMatchByEventId(eventId, true);
         const bettingSuggestions = await this.getBettingSuggestionsByMatch(match, live);
         match.bettingSuggestions = bettingSuggestions.suggestions;
+        match.markets = undefined;
 
         if (!match) throw new NotFoundException("Match not found.");
 
-        const chat = this.createChatSession(bettingVerifiedSchema, "gemini-2.0-flash");
+        const chat = this.createChatSession(bettingVerifiedSchema, this.model, 0, 0);
 
         const response = await chat.sendMessage({
             message: [

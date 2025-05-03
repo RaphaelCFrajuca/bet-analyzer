@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GenerateContentResponse, GoogleGenAI } from "@google/genai";
 import Redis from "ioredis";
 import pLimit from "p-limit";
 import { AiInterface } from "src/ai/interfaces/ai.interface";
@@ -75,7 +75,25 @@ export class GoogleProvider implements AiInterface {
         }
         console.log(`Cache miss for match.id: ${match.id}`);
 
-        const chat = this.geminiAi.chats.create({
+        const chat = this.createChatSession();
+
+        const response = await chat.sendMessage({
+            message: [
+                {
+                    text: JSON.stringify(match),
+                },
+            ],
+        });
+
+        const message = this.parseBettingResponse(response);
+        return message;
+    }
+    private parseBettingResponse(response: GenerateContentResponse) {
+        return JSON.parse(response.text as string) as BettingResponse;
+    }
+
+    private createChatSession() {
+        return this.geminiAi.chats.create({
             model: this.model,
             config: {
                 temperature: 0,
@@ -86,18 +104,8 @@ export class GoogleProvider implements AiInterface {
                 responseMimeType: "application/json",
             },
         });
-
-        const response = await chat.sendMessage({
-            message: [
-                {
-                    text: JSON.stringify(match),
-                },
-            ],
-        });
-
-        const message = JSON.parse(response.text as string) as BettingResponse;
-        return message;
     }
+
     getBettingSuggestionsByEventId(eventId: number, live: boolean): Promise<BettingResponse> {
         throw new Error("Method not implemented.");
     }

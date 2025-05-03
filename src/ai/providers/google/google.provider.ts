@@ -87,6 +87,7 @@ export class GoogleProvider implements AiInterface {
         });
 
         const message = this.parseBettingResponse(response);
+        await this.redis.set(`betting_response_${match.id}`, JSON.stringify(message), "EX", 259200);
         return message;
     }
     private parseBettingResponse(response: GenerateContentResponse) {

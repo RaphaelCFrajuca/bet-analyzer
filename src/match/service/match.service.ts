@@ -4,6 +4,7 @@ import { RedisConfig } from "src/ai/providers/openai/interfaces/redis.config.int
 import { PerformanceService } from "src/performance/services/performance.service";
 import { DataProviderInterface } from "src/providers/interfaces/data-providers.interface";
 import { Event, EventList } from "src/providers/interfaces/events-list.interface";
+import { MarketsResponse } from "src/providers/interfaces/market.interface";
 import { Market, Match } from "../interfaces/match.interface";
 
 @Injectable()
@@ -174,6 +175,7 @@ export class MatchService {
                 awayTeamRecentForm,
             },
             markets: marketsList,
+            surebets: (await this.verifySureBets(event)) || [],
         };
         await this.redis.set(`match_${event.id}`, JSON.stringify(match), "EX", 259200);
         return match;
@@ -202,4 +204,87 @@ export class MatchService {
         const teamImage = await this.dataProvider.getTeamImageByTeamId(teamId);
         return teamImage;
     }
+
+    async verifySureBets(event: Event): Promise<SureBet[] | false> {
+        const marketsBet365: MarketsResponse = await this.dataProvider.getMarketOddsByEventId(event.id, 1);
+        const marketsBetano: MarketsResponse = await this.dataProvider.getMarketOddsByEventId(event.id, 100);
+
+        if (!marketsBet365 || !marketsBetano) {
+            return false;
+        }
+
+        const surebetsResults: SureBet[] = [];
+
+        if (!marketsBet365.markets || !marketsBetano.markets) {
+            return false;
+        }
+
+        for (const bet365Market of marketsBet365.markets) {
+            const betanoMarket = marketsBetano?.markets?.find(market => market.marketName === bet365Market.marketName && market.choiceGroup === bet365Market.choiceGroup);
+
+            if (!betanoMarket) continue;
+
+            const combinedChoices: { [name: string]: { odd: number; casa: string } } = {};
+
+            for (const choice of bet365Market.choices) {
+                combinedChoices[choice.name] = {
+                    odd: Number(choice.fractionalValue),
+                    casa: "Bet365",
+                };
+            }
+
+            for (const choice of betanoMarket.choices) {
+                const existing = combinedChoices[choice.name];
+                const odd = Number(choice.fractionalValue);
+
+                if (!existing || odd > existing.odd) {
+                    combinedChoices[choice.name] = {
+                        odd,
+                        casa: "Betano",
+                    };
+                }
+            }
+
+            const choiceEntries = Object.entries(combinedChoices);
+
+            if (choiceEntries.length !== 2) continue;
+
+            const [choiceA, dataA] = choiceEntries[0];
+            const [choiceB, dataB] = choiceEntries[1];
+
+            const areOpposites =
+                (choiceA.toLowerCase() === "over" && choiceB.toLowerCase() === "under") ||
+                (choiceA.toLowerCase() === "under" && choiceB.toLowerCase() === "over") ||
+                (choiceA === "1" && choiceB === "2") ||
+                (choiceA === "2" && choiceB === "1") ||
+                (choiceA === "Yes" && choiceB === "No") ||
+                (choiceA === "No" && choiceB === "Yes");
+
+            const casasDiferentes = dataA.casa !== dataB.casa;
+
+            if (!areOpposites || !casasDiferentes) continue;
+
+            const soma = 1 / dataA.odd + 1 / dataB.odd;
+
+            if (soma < 1) {
+                const lucroPercentual = Number(((1 - soma) * 100).toFixed(2));
+                surebetsResults.push({
+                    marketName: bet365Market.marketName,
+                    lucroPercentual,
+                    oddsUsadas: [
+                        { choice: choiceA, odd: dataA.odd, casa: dataA.casa },
+                        { choice: choiceB, odd: dataB.odd, casa: dataB.casa },
+                    ],
+                });
+            }
+        }
+
+        return surebetsResults.length > 0 ? surebetsResults : false;
+    }
+}
+
+export interface SureBet {
+    marketName: string;
+    lucroPercentual: number;
+    oddsUsadas: { choice: string; odd: number; casa: string }[];
 }

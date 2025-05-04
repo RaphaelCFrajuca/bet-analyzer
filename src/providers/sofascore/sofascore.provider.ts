@@ -82,10 +82,10 @@ export class SofascoreProvider implements DataProviderInterface {
         return (JSON.parse(body) as { event: Event }).event;
     }
 
-    async getMarketOddsByEventId(eventId: number): Promise<MarketsResponse> {
+    async getMarketOddsByEventId(eventId: number, bettingHouse?: number): Promise<MarketsResponse> {
         try {
             const page = await this.getPage();
-            await page.goto(`${this.config.apiUrl}/event/${eventId}/odds/1/all`);
+            await page.goto(`${this.config.apiUrl}/event/${eventId}/odds/${bettingHouse ?? 1}/all`);
             const body = await page.locator("body").innerText();
             await page.close();
             const parsedBody = JSON.parse(body) as MarketsResponse;

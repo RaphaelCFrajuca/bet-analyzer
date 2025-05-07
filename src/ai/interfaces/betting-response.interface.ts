@@ -4,6 +4,7 @@ export interface Bet {
     odd: number; // Valor atual da odd para a aposta sugerida
     confidence: number; // Nível de confiança de 0 a 100 indicando quão promissora é a aposta
     explanation: string; // Justificativa curta explicando por que essa aposta foi sugerida
+    ev: number; // Valor esperado da aposta, indicando o potencial de lucro
 }
 
 export interface BettingResponse {

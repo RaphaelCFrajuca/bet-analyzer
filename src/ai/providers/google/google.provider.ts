@@ -3,7 +3,7 @@ import { NotFoundException } from "@nestjs/common";
 import Redis from "ioredis";
 import pLimit from "p-limit";
 import { AiInterface } from "src/ai/interfaces/ai.interface";
-import { BettingResponse } from "src/ai/interfaces/betting-response.interface";
+import { Bet, BettingResponse } from "src/ai/interfaces/betting-response.interface";
 import { BettingSuggestions } from "src/ai/interfaces/betting-suggestions.interface";
 import { BettingVerifiedResponse } from "src/ai/interfaces/betting-verified.interface";
 import { Match } from "src/match/interfaces/match.interface";
@@ -101,9 +101,22 @@ export class GoogleProvider implements AiInterface {
         }
 
         const message = this.parseResponse(response) as BettingResponse;
+        message.suggestions = message.suggestions.map(suggestion => {
+            const ev = this.calculateExpectedValue(suggestion);
+            return {
+                ...suggestion,
+                ev: ev,
+            };
+        });
+
         await this.redis.set(`betting_response_${match.id}`, JSON.stringify(message), "EX", 259200);
         return message;
     }
+
+    private calculateExpectedValue(suggestion: Bet) {
+        return Number(((suggestion.confidence / 100) * (suggestion.odd - 1) - (1 - suggestion.confidence / 100) * 1).toFixed(2));
+    }
+
     private parseResponse(response: GenerateContentResponse): BettingResponse | BettingVerifiedResponse {
         return JSON.parse(response.text as string) as BettingResponse | BettingVerifiedResponse;
     }

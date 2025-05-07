@@ -111,6 +111,10 @@ export class OpenAiProvider implements AiInterface {
 
         const match = await this.matchService.getMatchByEventId(eventId, true);
         const bettingSuggestions = await this.getBettingSuggestionsByMatch(match, live);
+        bettingSuggestions.suggestions = bettingSuggestions.suggestions.map(suggestion => {
+            const ev = (suggestion.confidence / 100) * (suggestion.odd - 1) - (1 - suggestion.confidence / 100) * 1;
+            return { ...suggestion, ev };
+        });
         match.bettingSuggestions = bettingSuggestions.suggestions;
 
         if (!match) throw new NotFoundException("Match not found.");

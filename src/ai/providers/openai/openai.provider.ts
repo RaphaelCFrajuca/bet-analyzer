@@ -97,6 +97,10 @@ export class OpenAiProvider implements AiInterface {
 
         const thread = await this.generateThread(match);
         const bettingResponse = (await this.getMessage(thread)) as BettingResponse;
+        bettingResponse.suggestions = bettingResponse.suggestions.map(suggestion => {
+            const ev = this.calculateExpectedValue(suggestion);
+            return { ...suggestion, ev };
+        });
         await this.redis.set(`betting_response_${match.id}`, JSON.stringify(bettingResponse), "EX", 259200);
         return bettingResponse;
     }
@@ -111,10 +115,6 @@ export class OpenAiProvider implements AiInterface {
 
         const match = await this.matchService.getMatchByEventId(eventId, true);
         const bettingSuggestions = await this.getBettingSuggestionsByMatch(match, live);
-        bettingSuggestions.suggestions = bettingSuggestions.suggestions.map(suggestion => {
-            const ev = this.calculateExpectedValue(suggestion);
-            return { ...suggestion, ev };
-        });
         match.bettingSuggestions = bettingSuggestions.suggestions;
 
         if (!match) throw new NotFoundException("Match not found.");

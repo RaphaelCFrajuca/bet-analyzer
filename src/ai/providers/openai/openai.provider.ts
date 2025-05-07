@@ -9,7 +9,7 @@ import { Thread } from "openai/resources/beta/threads/threads";
 import { FileObject } from "openai/resources/files";
 import pLimit from "p-limit";
 import { AiInterface } from "src/ai/interfaces/ai.interface";
-import { BettingResponse } from "src/ai/interfaces/betting-response.interface";
+import { Bet, BettingResponse } from "src/ai/interfaces/betting-response.interface";
 import { BettingSuggestions } from "src/ai/interfaces/betting-suggestions.interface";
 import { BettingVerifiedResponse } from "src/ai/interfaces/betting-verified.interface";
 import { Match } from "src/match/interfaces/match.interface";
@@ -112,7 +112,7 @@ export class OpenAiProvider implements AiInterface {
         const match = await this.matchService.getMatchByEventId(eventId, true);
         const bettingSuggestions = await this.getBettingSuggestionsByMatch(match, live);
         bettingSuggestions.suggestions = bettingSuggestions.suggestions.map(suggestion => {
-            const ev = (suggestion.confidence / 100) * (suggestion.odd - 1) - (1 - suggestion.confidence / 100) * 1;
+            const ev = this.calculateExpectedValue(suggestion);
             return { ...suggestion, ev };
         });
         match.bettingSuggestions = bettingSuggestions.suggestions;
@@ -123,6 +123,10 @@ export class OpenAiProvider implements AiInterface {
         const bettingVerifiedResponse = (await this.getMessage(thread, this.openAiConfig.greenAssistantId)) as BettingVerifiedResponse;
         await this.redis.set(`betting_verified_response_${eventId}`, JSON.stringify(bettingVerifiedResponse), "EX", 259200);
         return bettingVerifiedResponse;
+    }
+
+    private calculateExpectedValue(suggestion: Bet) {
+        return Number(((suggestion.confidence / 100) * (suggestion.odd - 1) - (1 - suggestion.confidence / 100) * 1).toFixed(2));
     }
 
     private async getMessage(thread: OpenAI.Beta.Threads.Thread, assistantId?: string): Promise<BettingResponse | BettingVerifiedResponse> {

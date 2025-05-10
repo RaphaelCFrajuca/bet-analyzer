@@ -28,11 +28,11 @@ export interface Match {
     bettingSuggestions?: Bet[];
 }
 
-interface Round {
+export interface Round {
     round?: number;
 }
 
-interface Referee {
+export interface Referee {
     id?: number;
     name?: string;
     yellowCards?: number;
@@ -40,19 +40,19 @@ interface Referee {
     games?: number;
 }
 
-interface Lineup {
+export interface Lineup {
     confirmed?: boolean;
     homeTeam?: TeamLineup;
     awayTeam?: TeamLineup;
 }
 
-interface TeamLineup {
+export interface TeamLineup {
     formation?: string;
     players?: Player[];
     missingPlayers?: Player[];
 }
 
-interface Player {
+export interface Player {
     avgRating?: number;
     id?: number;
     name?: string;
@@ -61,11 +61,11 @@ interface Player {
     substitute?: boolean;
 }
 
-interface HomeTeamPerformance {
+export interface HomeTeamPerformance {
     homeTeamRecentForm?: RecentFormStatistics[];
 }
 
-interface AwayTeamPerformance {
+export interface AwayTeamPerformance {
     awayTeamRecentForm?: RecentFormStatistics[];
 }
 
@@ -76,7 +76,7 @@ export interface Market {
     choices: Choice[];
 }
 
-interface Choice {
+export interface Choice {
     name: string;
     initialOddValue: string;
     oddValue: string;

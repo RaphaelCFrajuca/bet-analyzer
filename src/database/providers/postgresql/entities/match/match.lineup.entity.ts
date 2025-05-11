@@ -4,16 +4,16 @@ import { TeamLineupEntity } from "../lineup/lineup.team-lineup.entity";
 @Entity("match_lineup")
 export class MatchLineupEntity {
     @PrimaryGeneratedColumn()
-    id: number;
+    id?: number;
 
     @Column({ type: "boolean", nullable: false })
     confirmed: boolean;
 
-    @OneToOne(() => TeamLineupEntity, teamLineup => teamLineup, { nullable: false, eager: true })
+    @OneToOne(() => TeamLineupEntity, teamLineup => teamLineup, { nullable: false, eager: true, cascade: true })
     @JoinColumn()
     home: TeamLineupEntity;
 
-    @OneToOne(() => TeamLineupEntity, teamLineup => teamLineup, { nullable: false, eager: true })
+    @OneToOne(() => TeamLineupEntity, teamLineup => teamLineup, { nullable: false, eager: true, cascade: true })
     @JoinColumn()
     away: TeamLineupEntity;
 }

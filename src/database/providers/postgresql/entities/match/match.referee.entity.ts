@@ -4,27 +4,27 @@ import { LineupCountryEntity } from "../lineup/lineup.country.entity";
 
 @Entity("match_referee")
 export class MatchRefereeEntity implements Partial<Referee> {
-    @Column({ type: "varchar", length: 255, nullable: false })
-    name: string;
+    @Column({ type: "varchar", length: 255, nullable: true })
+    name: string | undefined;
 
-    @Column({ type: "varchar", length: 255, nullable: false })
-    slug: string;
+    @Column({ type: "varchar", length: 255, nullable: true })
+    slug: string | undefined;
 
-    @Column({ type: "int", nullable: false })
-    yellowCards: number;
+    @Column({ type: "int", nullable: true })
+    yellowCards: number | undefined;
 
-    @Column({ type: "int", nullable: false })
-    redCards: number;
+    @Column({ type: "int", nullable: true })
+    redCards: number | undefined;
 
-    @Column({ type: "int", nullable: false })
-    yellowRedCards: number;
+    @Column({ type: "int", nullable: true })
+    yellowRedCards: number | undefined;
 
-    @Column({ type: "int", nullable: false })
-    games: number;
+    @Column({ type: "int", nullable: true })
+    games: number | undefined;
 
     @PrimaryGeneratedColumn()
-    id: number;
+    id: number | undefined;
 
-    @OneToOne(() => LineupCountryEntity, country => country, { nullable: false, eager: true })
-    country: LineupCountryEntity;
+    @OneToOne(() => LineupCountryEntity, country => country, { nullable: true, eager: true, cascade: true })
+    country: LineupCountryEntity | undefined;
 }

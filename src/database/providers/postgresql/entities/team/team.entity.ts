@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { MatchEntity } from "../match/match.entity";
+import { MatchStatsEntity } from "../match/match.stats.entity";
 
 @Entity("team")
 export class TeamEntity {
@@ -9,6 +9,6 @@ export class TeamEntity {
     @Column({ type: "varchar", length: 255, nullable: false })
     name: string;
 
-    @OneToMany(() => MatchEntity, match => match, { nullable: true, eager: true })
-    recentForm?: MatchEntity[];
+    @OneToMany(() => MatchStatsEntity, matchStats => matchStats, { nullable: true, eager: true, cascade: true })
+    recentForm?: MatchStatsEntity[];
 }

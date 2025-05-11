@@ -5,7 +5,7 @@ import { MatchStatsEntity } from "../match/match.stats.entity";
 @Entity("stats")
 export class StatsEntity implements Statistic {
     @PrimaryGeneratedColumn()
-    id: number;
+    id?: number;
 
     @Column({ type: "varchar", length: 50, nullable: false })
     home: string;
@@ -16,6 +16,6 @@ export class StatsEntity implements Statistic {
     @Column({ type: "varchar", length: 50, nullable: true })
     statisticsType?: string | undefined;
 
-    @OneToOne(() => MatchStatsEntity, matchStats => matchStats, { nullable: false })
-    matchStats: MatchStatsEntity;
+    @OneToOne(() => MatchStatsEntity, matchStats => matchStats, { nullable: true })
+    matchStats?: MatchStatsEntity;
 }

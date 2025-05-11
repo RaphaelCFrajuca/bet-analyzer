@@ -8,23 +8,23 @@ export class LineupPlayerEntity implements Partial<Player> {
     id: number;
 
     @ManyToOne(() => TeamLineupEntity, teamLineup => teamLineup.players, { nullable: false })
-    teamLineUp: TeamLineupEntity;
+    teamLineUp?: TeamLineupEntity;
 
-    @Column({ type: "int", nullable: false })
-    avgRating: number;
+    @Column({ type: "int", nullable: true })
+    avgRating: number | undefined;
 
-    @Column({ type: "int", nullable: false })
-    teamId: number;
+    @Column({ type: "int", nullable: true })
+    teamId: number | undefined;
 
-    @Column({ type: "int", nullable: false })
-    shirtNumber: number;
+    @Column({ type: "int", nullable: true })
+    shirtNumber: number | undefined;
 
-    @Column({ type: "varchar", length: 255, nullable: false })
-    jerseyNumber: string;
+    @Column({ type: "varchar", length: 255, nullable: true })
+    jerseyNumber: string | undefined;
 
-    @Column({ type: "varchar", length: 255, nullable: false })
-    position: string;
+    @Column({ type: "varchar", length: 255, nullable: true })
+    position: string | undefined;
 
-    @Column({ type: "boolean", nullable: false })
-    substitute: boolean;
+    @Column({ type: "boolean", nullable: true })
+    substitute: boolean | undefined;
 }

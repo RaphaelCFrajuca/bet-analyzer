@@ -1,6 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import Redis from "ioredis";
 import { RedisConfig } from "src/ai/providers/openai/interfaces/redis.config.interface";
+import { Database } from "src/database/providers/interfaces/database.interface";
+import { MatchEntity } from "src/database/providers/postgresql/entities/match/match.entity";
 import { PerformanceService } from "src/performance/services/performance.service";
 import { DataProviderInterface } from "src/providers/interfaces/data-providers.interface";
 import { Event, EventList } from "src/providers/interfaces/events-list.interface";
@@ -17,6 +19,7 @@ export class MatchService {
         private readonly performanceService: PerformanceService,
         @Inject("REDIS_CONFIG")
         private readonly redisConfig: RedisConfig,
+        @Inject("DATABASE_PROVIDER") private readonly databaseProvider: Database,
     ) {
         this.redis = new Redis({
             host: this.redisConfig.host,
@@ -178,6 +181,91 @@ export class MatchService {
             surebets: (await this.verifySureBets(event)) || [],
         };
         await this.redis.set(`match_${event.id}`, JSON.stringify(match), "EX", 259200);
+
+        const matchEntity: MatchEntity = {
+            id: event.id,
+            date: new Date(event.startTimestamp * 1000),
+            homeTeam: {
+                id: event.homeTeam.id,
+                name: event.homeTeam.name,
+                recentForm: homeTeamRecentForm,
+            },
+            awayTeam: {
+                id: event.awayTeam.id,
+                name: event.awayTeam.name,
+                recentForm: awayTeamRecentForm,
+            },
+            actualHomeScore: event?.homeScore?.current,
+            actualAwayScore: event?.awayScore?.current,
+            tournament: event.tournament.name,
+            matchStatistics: actualMatchStatistics,
+            country: event.venue?.country?.name,
+            status: {
+                code: event.status.code,
+                description: event.status.description,
+                type: event.status.type,
+            },
+            recentDuels,
+            roundNumber: event.roundInfo?.round,
+            referee: {
+                id: event?.referee?.id,
+                name: event?.referee?.name,
+                yellowCards: event?.referee?.yellowCards,
+                yellowRedCards: event?.referee?.yellowRedCards,
+                slug: event?.referee?.slug,
+                redCards: event?.referee?.redCards,
+                games: event?.referee?.games,
+                country: event.referee?.country,
+            },
+            lineups: {
+                confirmed: lineups?.confirmed,
+                home: {
+                    formation: lineups?.home?.formation,
+                    players: lineups?.home?.players?.map(player => ({
+                        avgRating: player?.avgRating,
+                        id: player?.player?.id,
+                        name: player?.player?.name,
+                        jerseyNumber: player?.jerseyNumber,
+                        position: player?.position,
+                        substitute: player?.substitute,
+                        teamId: player?.teamId,
+                        shirtNumber: player?.shirtNumber,
+                    })),
+                    missingPlayers: lineups?.home?.missingPlayers?.map(missingPlayer => ({
+                        id: missingPlayer?.player?.id,
+                        name: missingPlayer?.player?.name,
+                        jerseyNumber: missingPlayer?.player?.jerseyNumber,
+                        position: missingPlayer?.player?.position,
+                        type: missingPlayer?.type,
+                        reason: missingPlayer?.reason,
+                    })),
+                },
+                away: {
+                    formation: lineups?.away?.formation,
+                    players: lineups?.away?.players?.map(player => ({
+                        avgRating: player?.avgRating,
+                        id: player?.player?.id,
+                        name: player?.player?.name,
+                        jerseyNumber: player?.jerseyNumber,
+                        position: player?.position,
+                        substitute: player?.substitute,
+                        teamId: player?.teamId,
+                        shirtNumber: player?.shirtNumber,
+                    })),
+                    missingPlayers: lineups?.away?.missingPlayers?.map(missingPlayer => ({
+                        id: missingPlayer?.player?.id,
+                        name: missingPlayer?.player?.name,
+                        jerseyNumber: missingPlayer?.player?.jerseyNumber,
+                        position: missingPlayer?.player?.position,
+                        type: missingPlayer?.type,
+                        reason: missingPlayer?.reason,
+                    })),
+                },
+            },
+            homeTeamRecentForm,
+            awayTeamRecentForm,
+            markets: marketsList,
+        };
 
         return match;
     }

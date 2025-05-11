@@ -5,11 +5,11 @@ import { MatchMarketEntity } from "../match/match.market.entity";
 @Entity("market_choices")
 export class MarketChoicesEntity implements Choice {
     @PrimaryGeneratedColumn()
-    id: number;
+    id?: number;
 
     @ManyToOne(() => MatchMarketEntity, matchMarket => matchMarket.choices, { nullable: false })
     @JoinColumn()
-    market: MatchMarketEntity;
+    market?: MatchMarketEntity;
 
     @Column({ type: "varchar", length: 255, nullable: false })
     name: string;

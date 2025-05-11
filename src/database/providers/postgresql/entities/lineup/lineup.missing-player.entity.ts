@@ -7,7 +7,7 @@ export class MissingPlayerEntity {
     id: number;
 
     @ManyToOne(() => TeamLineupEntity, teamLineup => teamLineup.missingPlayers, { nullable: false })
-    teamLineUp: TeamLineupEntity;
+    teamLineUp?: TeamLineupEntity;
 
     @Column({ type: "varchar", length: 255, nullable: false })
     name: string;

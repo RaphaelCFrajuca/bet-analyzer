@@ -5,7 +5,7 @@ import { MatchEntity } from "./match.entity";
 @Entity("match_status")
 export class MatchStatusEntity implements Status {
     @PrimaryGeneratedColumn()
-    id: number;
+    id?: number;
 
     @Column({ type: "int", nullable: false })
     code: number;
@@ -17,5 +17,5 @@ export class MatchStatusEntity implements Status {
     type: string;
 
     @OneToOne(() => MatchEntity, match => match.status, { nullable: false })
-    match: MatchEntity;
+    match?: MatchEntity;
 }

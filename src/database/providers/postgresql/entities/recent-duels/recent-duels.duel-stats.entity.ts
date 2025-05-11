@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 @Entity("recent-duels_duel-stats")
 export class RecentDuelsDuelStatsEntity implements DuelStats {
     @PrimaryGeneratedColumn()
-    id: number;
+    id?: number;
 
     @Column({ type: "int", nullable: false })
     homeWins: number;

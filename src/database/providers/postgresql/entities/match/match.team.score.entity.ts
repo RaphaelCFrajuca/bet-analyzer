@@ -5,7 +5,7 @@ import { MatchStatsEntity } from "./match.stats.entity";
 @Entity("match_team_score")
 export class MatchTeamScoreEntity implements TeamScore {
     @PrimaryGeneratedColumn()
-    id: number;
+    id?: number;
 
     @Column({ type: "int", nullable: false })
     total: number;
@@ -16,6 +16,6 @@ export class MatchTeamScoreEntity implements TeamScore {
     @Column({ type: "int", nullable: false })
     secondHalf: number;
 
-    @OneToOne(() => MatchStatsEntity, { nullable: false, eager: true })
-    matchStats: MatchStatsEntity;
+    @OneToOne(() => MatchStatsEntity, { nullable: false, eager: true, cascade: true })
+    matchStats?: MatchStatsEntity;
 }

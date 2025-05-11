@@ -5,7 +5,7 @@ import { LineupPlayerEntity } from "./lineup.player.entity";
 @Entity("lineup_team-lineup")
 export class TeamLineupEntity {
     @PrimaryGeneratedColumn()
-    id: number;
+    id?: number;
 
     @OneToMany(() => LineupPlayerEntity, player => player.teamLineUp, { nullable: false })
     players: LineupPlayerEntity[];

@@ -5,13 +5,13 @@ import { RecentDuelsDuelStatsEntity } from "../recent-duels/recent-duels.duel-st
 @Entity("match_recent-duels")
 export class MatchRecentDuelsEntity implements RecentDuels {
     @PrimaryGeneratedColumn()
-    id: number;
+    id?: number;
 
-    @OneToOne(() => RecentDuelsDuelStatsEntity, duelStats => duelStats, { nullable: false, eager: true })
+    @OneToOne(() => RecentDuelsDuelStatsEntity, duelStats => duelStats, { nullable: false, eager: true, cascade: true })
     @JoinColumn()
     teamDuel: RecentDuelsDuelStatsEntity;
 
-    @OneToOne(() => RecentDuelsDuelStatsEntity, duelStats => duelStats, { nullable: false, eager: true })
+    @OneToOne(() => RecentDuelsDuelStatsEntity, duelStats => duelStats, { nullable: false, eager: true, cascade: true })
     @JoinColumn()
     managerDuel: RecentDuelsDuelStatsEntity;
 }

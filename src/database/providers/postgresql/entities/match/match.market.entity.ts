@@ -6,10 +6,10 @@ import { MatchEntity } from "./match.entity";
 @Entity("match_market")
 export class MatchMarketEntity implements Market {
     @PrimaryGeneratedColumn()
-    id: number;
+    id?: number;
 
     @ManyToOne(() => MatchEntity, match => match.markets, { nullable: false })
-    match: MatchEntity;
+    match?: MatchEntity;
 
     @Column({ type: "int", nullable: false })
     marketId: number;
@@ -20,6 +20,6 @@ export class MatchMarketEntity implements Market {
     @Column({ type: "varchar", length: 255, nullable: true })
     choiceGroup?: string | undefined;
 
-    @OneToMany(() => MarketChoicesEntity, choice => choice.market, { nullable: false, eager: true })
+    @OneToMany(() => MarketChoicesEntity, choice => choice.market, { nullable: false, eager: true, cascade: true })
     choices: MarketChoicesEntity[];
 }

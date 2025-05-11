@@ -1,0 +1,27 @@
+import { Bet } from "src/ai/interfaces/betting-response.interface";
+import { Column, Entity, ManyToOne } from "typeorm";
+import { MatchEntity } from "./match.entity";
+
+@Entity("match_bet")
+export class MatchBetEntity implements Bet {
+    @ManyToOne(() => MatchEntity, match => match.bettingSuggestions, { nullable: false })
+    match: MatchEntity;
+
+    @Column({ type: "varchar", length: 255, nullable: false })
+    marketName: string;
+
+    @Column({ type: "varchar", length: 255, nullable: false })
+    bet: string;
+
+    @Column({ type: "float", nullable: false })
+    odd: number;
+
+    @Column({ type: "number", nullable: false })
+    confidence: number;
+
+    @Column({ type: "varchar", length: 255, nullable: false })
+    explanation: string;
+
+    @Column({ type: "float", nullable: false })
+    ev: number;
+}

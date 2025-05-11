@@ -1,7 +1,6 @@
-import { Bet } from "src/ai/interfaces/betting-response.interface";
-import { SureBet } from "src/match/service/match.service";
 import { RecentDuels } from "src/providers/interfaces/recent-duels.interface";
 import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { MatchBetEntity } from "./match.bet.entity";
 import { MatchLineupEntity } from "./match.lineup.entity";
 import { MatchMarketEntity } from "./match.market.entity";
 import { MatchRecentDuelsEntity } from "./match.recent-duels.entity";
@@ -63,6 +62,6 @@ export class MatchEntity {
     @OneToMany(() => MatchMarketEntity, matchMarket => matchMarket.match, { nullable: true })
     markets?: MatchMarketEntity[] | undefined;
 
-    surebets?: SureBet[] | undefined;
-    bettingSuggestions?: Bet[] | undefined;
+    @OneToMany(() => MatchBetEntity, matchBet => matchBet.match, { nullable: true })
+    bettingSuggestions?: MatchBetEntity[] | undefined;
 }

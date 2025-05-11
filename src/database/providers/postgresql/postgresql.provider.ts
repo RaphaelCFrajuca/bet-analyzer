@@ -13,9 +13,9 @@ export class PostgresqlProvider implements Database {
             username: this.postgresqlConfig.user,
             password: this.postgresqlConfig.password,
             database: this.postgresqlConfig.database,
-            entities: [Auth],
+            entities: [__dirname + "/entities/**/*.{ts,js}"],
             synchronize: true,
-            logging: false,
+            logging: true,
         });
     }
     async createUser(username: string, password: string): Promise<void> {

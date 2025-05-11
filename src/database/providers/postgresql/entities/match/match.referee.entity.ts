@@ -25,6 +25,6 @@ export class MatchRefereeEntity implements Partial<Referee> {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(() => LineupCountryEntity, country => country, { nullable: false })
+    @OneToOne(() => LineupCountryEntity, country => country, { nullable: false, eager: true })
     country: LineupCountryEntity;
 }

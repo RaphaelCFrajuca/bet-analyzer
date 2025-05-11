@@ -13,11 +13,11 @@ export class MatchEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => TeamEntity, team => team.id, { nullable: false })
+    @ManyToOne(() => TeamEntity, team => team.id, { nullable: false, eager: true })
     @JoinColumn()
     homeTeam: TeamEntity;
 
-    @ManyToOne(() => TeamEntity, team => team.id, { nullable: false })
+    @ManyToOne(() => TeamEntity, team => team.id, { nullable: false, eager: true })
     @JoinColumn()
     awayTeam: TeamEntity;
 
@@ -36,15 +36,15 @@ export class MatchEntity {
     @Column({ type: "varchar", length: 255, nullable: false })
     tournament: string;
 
-    @OneToOne(() => MatchStatusEntity, matchStatus => matchStatus.match, { nullable: false })
+    @OneToOne(() => MatchStatusEntity, matchStatus => matchStatus.match, { nullable: false, eager: true })
     @JoinColumn()
     status: MatchStatusEntity;
 
-    @OneToOne(() => MatchStatsEntity, matchStatistics => matchStatistics, { nullable: true })
+    @OneToOne(() => MatchStatsEntity, matchStatistics => matchStatistics, { nullable: true, eager: true })
     @JoinColumn()
     matchStatistics?: MatchStatsEntity | undefined;
 
-    @OneToOne(() => MatchRecentDuelsEntity, matchRecentDuels => matchRecentDuels, { nullable: true })
+    @OneToOne(() => MatchRecentDuelsEntity, matchRecentDuels => matchRecentDuels, { nullable: true, eager: true })
     @JoinColumn()
     recentDuels?: MatchRecentDuelsEntity | undefined;
 
@@ -59,15 +59,15 @@ export class MatchEntity {
     @JoinColumn()
     lineups?: MatchLineupEntity | undefined;
 
-    @OneToMany(() => MatchStatsEntity, matchStats => matchStats.match, { nullable: true })
+    @OneToMany(() => MatchStatsEntity, matchStats => matchStats.match, { nullable: true, eager: true })
     homeTeamRecentForm: MatchStatsEntity[];
 
-    @OneToMany(() => MatchStatsEntity, matchStats => matchStats.match, { nullable: true })
+    @OneToMany(() => MatchStatsEntity, matchStats => matchStats.match, { nullable: true, eager: true })
     awayTeamRecentForm: MatchStatsEntity[];
 
-    @OneToMany(() => MatchMarketEntity, matchMarket => matchMarket.match, { nullable: true })
+    @OneToMany(() => MatchMarketEntity, matchMarket => matchMarket.match, { nullable: true, eager: true })
     markets?: MatchMarketEntity[] | undefined;
 
-    @OneToMany(() => MatchBetEntity, matchBet => matchBet.match, { nullable: true })
+    @OneToMany(() => MatchBetEntity, matchBet => matchBet.match, { nullable: true, eager: true })
     bettingSuggestions?: MatchBetEntity[] | undefined;
 }

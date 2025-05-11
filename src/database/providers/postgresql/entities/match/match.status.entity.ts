@@ -16,6 +16,6 @@ export class MatchStatusEntity implements Status {
     @Column({ type: "varchar", length: 255, nullable: false })
     type: string;
 
-    @OneToOne(() => MatchEntity, match => match.status, { nullable: false })
+    @OneToOne(() => MatchEntity, match => match.status, { nullable: false, eager: true })
     match: MatchEntity;
 }

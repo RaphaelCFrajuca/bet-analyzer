@@ -7,11 +7,11 @@ export class MatchRecentDuelsEntity implements RecentDuels {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(() => RecentDuelsDuelStatsEntity, duelStats => duelStats, { nullable: false })
+    @OneToOne(() => RecentDuelsDuelStatsEntity, duelStats => duelStats, { nullable: false, eager: true })
     @JoinColumn()
     teamDuel: RecentDuelsDuelStatsEntity;
 
-    @OneToOne(() => RecentDuelsDuelStatsEntity, duelStats => duelStats, { nullable: false })
+    @OneToOne(() => RecentDuelsDuelStatsEntity, duelStats => duelStats, { nullable: false, eager: true })
     @JoinColumn()
     managerDuel: RecentDuelsDuelStatsEntity;
 }

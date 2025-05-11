@@ -20,6 +20,6 @@ export class MatchMarketEntity implements Market {
     @Column({ type: "varchar", length: 255, nullable: true })
     choiceGroup?: string | undefined;
 
-    @OneToMany(() => MarketChoicesEntity, choice => choice.market, { nullable: false })
+    @OneToMany(() => MarketChoicesEntity, choice => choice.market, { nullable: false, eager: true })
     choices: MarketChoicesEntity[];
 }

@@ -9,6 +9,6 @@ export class TeamEntity {
     @Column({ type: "varchar", length: 255, nullable: false })
     name: string;
 
-    @OneToMany(() => MatchEntity, match => match)
+    @OneToMany(() => MatchEntity, match => match, { nullable: true, eager: true })
     recentForm?: MatchEntity[];
 }

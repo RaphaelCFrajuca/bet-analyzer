@@ -178,6 +178,7 @@ export class MatchService {
             surebets: (await this.verifySureBets(event)) || [],
         };
         await this.redis.set(`match_${event.id}`, JSON.stringify(match), "EX", 259200);
+
         return match;
     }
 

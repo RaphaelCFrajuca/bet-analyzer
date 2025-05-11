@@ -1,14 +1,14 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { StatsAttackEntity } from "../stats/stats.attack.entity";
+import { StatsDefendingEntity } from "../stats/stats.defending.entity";
+import { StatsDuelsEntity } from "../stats/stats.duels.entity";
+import { StatsEntity } from "../stats/stats.entity";
+import { StatsGoalkeepingEntity } from "../stats/stats.goalkeeping.entity";
+import { StatsPassesDetailsEntity } from "../stats/stats.passes-details.entity";
+import { StatsShotsEntity } from "../stats/stats.shots.entity";
+import { TeamEntity } from "../team/team.entity";
 import { MatchEntity } from "./match.entity";
 import { MatchTeamScoreEntity } from "./match.team.score.entity";
-import { StatsAttackEntity } from "./stats.attack.entity";
-import { StatsDefendingEntity } from "./stats.defending.entity";
-import { StatsDuelsEntity } from "./stats.duels.entity";
-import { StatsEntity } from "./stats.entity";
-import { StatsGoalkeepingEntity } from "./stats.goalkeeping.entity";
-import { StatsPassesDetailsEntity } from "./stats.passes-details.entity";
-import { StatsShotsEntity } from "./stats.shots.entity";
-import { TeamEntity } from "./team.entity";
 
 @Entity("match_stats")
 export class MatchStatsEntity {

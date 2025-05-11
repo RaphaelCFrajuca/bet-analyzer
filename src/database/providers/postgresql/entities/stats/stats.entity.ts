@@ -1,6 +1,6 @@
 import { Statistic } from "src/performance/interfaces/recent-form-statistics.interface";
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { MatchStatsEntity } from "./match.stats.entity";
+import { MatchStatsEntity } from "../match/match.stats.entity";
 
 @Entity("stats")
 export class StatsEntity implements Statistic {

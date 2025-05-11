@@ -1,6 +1,6 @@
 import { Market } from "src/match/interfaces/match.interface";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { MarketChoicesEntity } from "./market.choices.entity";
+import { MarketChoicesEntity } from "../market/market.choices.entity";
 import { MatchEntity } from "./match.entity";
 
 @Entity("match_market")

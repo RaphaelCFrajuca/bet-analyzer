@@ -1,5 +1,5 @@
-import { RecentDuels } from "src/providers/interfaces/recent-duels.interface";
 import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { TeamEntity } from "../team/team.entity";
 import { MatchBetEntity } from "./match.bet.entity";
 import { MatchLineupEntity } from "./match.lineup.entity";
 import { MatchMarketEntity } from "./match.market.entity";
@@ -7,7 +7,6 @@ import { MatchRecentDuelsEntity } from "./match.recent-duels.entity";
 import { MatchRefereeEntity } from "./match.referee.entity";
 import { MatchStatsEntity } from "./match.stats.entity";
 import { MatchStatusEntity } from "./match.status.entity";
-import { TeamEntity } from "./team.entity";
 
 @Entity("match")
 export class MatchEntity {
@@ -42,7 +41,7 @@ export class MatchEntity {
     matchStatistics?: MatchStatsEntity | undefined;
 
     @OneToOne(() => MatchRecentDuelsEntity, matchRecentDuels => matchRecentDuels, { nullable: true })
-    recentDuels?: RecentDuels | undefined;
+    recentDuels?: MatchRecentDuelsEntity | undefined;
 
     @Column({ type: "int", nullable: true })
     roundNumber?: number | undefined;

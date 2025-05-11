@@ -1,6 +1,6 @@
 import { Referee } from "src/providers/interfaces/events-list.interface";
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { LineupCountryEntity } from "./lineup.country.entity";
+import { LineupCountryEntity } from "../lineup/lineup.country.entity";
 
 @Entity("match_referee")
 export class MatchRefereeEntity implements Partial<Referee> {

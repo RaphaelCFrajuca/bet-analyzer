@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
-import { TeamLineupEntity } from "./lineup.team-lineup.entity";
+import { TeamLineupEntity } from "../lineup/lineup.team-lineup.entity";
 
 @Entity("match_lineup")
 export class MatchLineupEntity {

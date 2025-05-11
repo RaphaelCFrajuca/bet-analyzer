@@ -14,5 +14,5 @@ export class MatchStatusEntity implements Status {
     type: string;
 
     @OneToOne(() => MatchEntity, match => match.status, { nullable: false })
-    match: MatchStatusEntity;
+    match: MatchEntity;
 }

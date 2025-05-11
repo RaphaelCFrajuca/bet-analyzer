@@ -15,7 +15,7 @@ export class MatchStatsEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => MatchEntity, match => match, { nullable: false, eager: true })
+    @ManyToOne(() => MatchEntity, match => match, { nullable: false })
     @JoinColumn()
     match: MatchEntity;
 

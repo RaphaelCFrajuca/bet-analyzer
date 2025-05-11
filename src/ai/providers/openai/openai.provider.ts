@@ -33,6 +33,7 @@ export class OpenAiProvider implements AiInterface {
     ) {
         this.openAi = new OpenAI({
             apiKey: openAiConfig.apiKey,
+            timeout: 1200000,
         });
         this.redis = new Redis({
             host: this.redisConfig.host,

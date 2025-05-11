@@ -1,8 +1,9 @@
 import { Bet } from "src/ai/interfaces/betting-response.interface";
-import { AwayTeamPerformance, HomeTeamPerformance, Lineup, Market } from "src/match/interfaces/match.interface";
 import { SureBet } from "src/match/service/match.service";
 import { RecentDuels } from "src/providers/interfaces/recent-duels.interface";
-import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { MatchLineupEntity } from "./match.lineup.entity";
+import { MatchMarketEntity } from "./match.market.entity";
 import { MatchRecentDuelsEntity } from "./match.recent-duels.entity";
 import { MatchRefereeEntity } from "./match.referee.entity";
 import { MatchStatsEntity } from "./match.stats.entity";
@@ -50,10 +51,18 @@ export class MatchEntity {
     @OneToOne(() => MatchRefereeEntity, referee => referee, { nullable: true })
     referee?: MatchRefereeEntity | undefined;
 
-    lineups?: Lineup | undefined;
-    homeTeamPerformance: HomeTeamPerformance;
-    awayTeamPerformance: AwayTeamPerformance;
-    markets?: Market[] | undefined;
+    @OneToOne(() => MatchLineupEntity, matchLineup => matchLineup, { nullable: true, eager: true })
+    lineups?: MatchLineupEntity | undefined;
+
+    @OneToMany(() => MatchStatsEntity, matchStats => matchStats.match, { nullable: true })
+    homeTeamRecentForm: MatchStatsEntity[];
+
+    @OneToMany(() => MatchStatsEntity, matchStats => matchStats.match, { nullable: true })
+    awayTeamRecentForm: MatchStatsEntity[];
+
+    @OneToMany(() => MatchMarketEntity, matchMarket => matchMarket.match, { nullable: true })
+    markets?: MatchMarketEntity[] | undefined;
+
     surebets?: SureBet[] | undefined;
     bettingSuggestions?: Bet[] | undefined;
 }

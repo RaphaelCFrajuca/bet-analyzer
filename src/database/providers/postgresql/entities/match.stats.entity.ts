@@ -1,4 +1,5 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { MatchEntity } from "./match.entity";
 import { MatchTeamScoreEntity } from "./match.team.score.entity";
 import { StatsAttackEntity } from "./stats.attack.entity";
 import { StatsDefendingEntity } from "./stats.defending.entity";
@@ -13,6 +14,10 @@ import { TeamEntity } from "./team.entity";
 export class MatchStatsEntity {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @ManyToOne(() => MatchEntity, match => match, { nullable: false })
+    @JoinColumn()
+    match: MatchEntity;
 
     @Column({ type: "date", nullable: false })
     date: Date;

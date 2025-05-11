@@ -1,18 +1,17 @@
 import { DuelStats } from "src/providers/interfaces/recent-duels.interface";
-import { Entity, JoinColumn, OneToOne } from "typeorm";
-import { MatchRecentDuelsEntity } from "../match/match.recent-duels.entity";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("recent-duels_duel-stats")
 export class RecentDuelsDuelStatsEntity implements DuelStats {
-    @OneToOne(() => MatchRecentDuelsEntity, matchRecentDuels => matchRecentDuels, { nullable: false })
-    @JoinColumn()
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column({ type: "int", nullable: false })
     homeWins: number;
 
-    @OneToOne(() => MatchRecentDuelsEntity, matchRecentDuels => matchRecentDuels, { nullable: false })
-    @JoinColumn()
+    @Column({ type: "int", nullable: false })
     awayWins: number;
 
-    @OneToOne(() => MatchRecentDuelsEntity, matchRecentDuels => matchRecentDuels, { nullable: false })
-    @JoinColumn()
+    @Column({ type: "int", nullable: false })
     draws: number;
 }

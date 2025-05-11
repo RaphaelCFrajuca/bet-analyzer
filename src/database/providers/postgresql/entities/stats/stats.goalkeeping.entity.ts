@@ -1,8 +1,11 @@
-import { Entity, JoinColumn, OneToOne } from "typeorm";
+import { Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { StatsEntity } from "./stats.entity";
 
 @Entity("stats_goalkeeping")
 export class StatsGoalkeepingEntity {
+    @PrimaryGeneratedColumn()
+    id: number;
+
     @OneToOne(() => StatsEntity, { nullable: true, eager: true })
     @JoinColumn()
     totalSaves?: StatsEntity;

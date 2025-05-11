@@ -23,68 +23,89 @@ export class MatchStatsEntity {
     date: Date;
 
     @OneToOne(() => TeamEntity, team => team, { nullable: false })
+    @JoinColumn()
     homeTeam: TeamEntity;
 
     @OneToOne(() => TeamEntity, team => team, { nullable: false })
+    @JoinColumn()
     awayTeam: TeamEntity;
 
     @OneToOne(() => MatchTeamScoreEntity, matchTeamScore => matchTeamScore, { nullable: false })
+    @JoinColumn()
     homeTeamScore: MatchTeamScoreEntity;
 
     @OneToOne(() => MatchTeamScoreEntity, matchTeamScore => matchTeamScore, { nullable: false })
+    @JoinColumn()
     awayTeamScore: MatchTeamScoreEntity;
 
     @Column({ type: "varchar", length: 255, nullable: false })
     tournament: string;
 
     @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true })
+    @JoinColumn()
     ballPossession?: StatsEntity | undefined;
 
     @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true })
+    @JoinColumn()
     expectedGoals?: StatsEntity | undefined;
 
     @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true })
+    @JoinColumn()
     totalShots?: StatsEntity | undefined;
 
     @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true })
+    @JoinColumn()
     goalkeeperSaves?: StatsEntity | undefined;
 
     @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true })
+    @JoinColumn()
     cornerKicks?: StatsEntity | undefined;
 
     @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true })
+    @JoinColumn()
     fouls?: StatsEntity | undefined;
 
     @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true })
+    @JoinColumn()
     passes?: StatsEntity | undefined;
 
     @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true })
+    @JoinColumn()
     tackles?: StatsEntity | undefined;
 
     @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true })
+    @JoinColumn()
     freeKicks?: StatsEntity | undefined;
 
     @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true })
+    @JoinColumn()
     yellowCards?: StatsEntity | undefined;
 
     @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true })
+    @JoinColumn()
     redCards?: StatsEntity | undefined;
 
     @OneToOne(() => StatsShotsEntity, statsShots => statsShots, { nullable: true })
+    @JoinColumn()
     shots?: StatsShotsEntity | undefined;
 
     @OneToOne(() => StatsAttackEntity, statsAttack => statsAttack, { nullable: true })
+    @JoinColumn()
     attack?: StatsAttackEntity | undefined;
 
     @OneToOne(() => StatsPassesDetailsEntity, statsPassesDetails => statsPassesDetails, { nullable: true })
+    @JoinColumn()
     passesDetails?: StatsPassesDetailsEntity | undefined;
 
     @OneToOne(() => StatsDuelsEntity, StatsDuelsEntity => StatsDuelsEntity, { nullable: true })
+    @JoinColumn()
     duels?: StatsDuelsEntity | undefined;
 
     @OneToOne(() => StatsDefendingEntity, statsDefending => statsDefending, { nullable: true })
+    @JoinColumn()
     defending?: StatsDefendingEntity | undefined;
 
     @OneToOne(() => StatsGoalkeepingEntity, statsGoalkeeping => statsGoalkeeping, { nullable: true })
+    @JoinColumn()
     goalkeeping?: StatsGoalkeepingEntity | undefined;
 }

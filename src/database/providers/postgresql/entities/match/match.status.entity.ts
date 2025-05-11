@@ -1,9 +1,12 @@
 import { Status } from "src/providers/interfaces/events-list.interface";
-import { Column, Entity, OneToOne } from "typeorm";
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { MatchEntity } from "./match.entity";
 
 @Entity("match_status")
 export class MatchStatusEntity implements Status {
+    @PrimaryGeneratedColumn()
+    id: number;
+
     @Column({ type: "int", nullable: false })
     code: number;
 

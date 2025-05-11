@@ -1,8 +1,11 @@
-import { Entity, JoinColumn, OneToOne } from "typeorm";
+import { Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { StatsEntity } from "./stats.entity";
 
 @Entity("stats_attack")
 export class StatsAttackEntity {
+    @PrimaryGeneratedColumn()
+    id: number;
+
     @OneToOne(() => StatsEntity, { eager: true })
     @JoinColumn()
     bigChancesScored?: StatsEntity;

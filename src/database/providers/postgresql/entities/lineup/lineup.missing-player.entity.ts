@@ -1,8 +1,11 @@
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { TeamLineupEntity } from "./lineup.team-lineup.entity";
 
 @Entity("lineup_missing-player")
 export class MissingPlayerEntity {
+    @PrimaryGeneratedColumn()
+    id: number;
+
     @ManyToOne(() => TeamLineupEntity, teamLineup => teamLineup.missingPlayers, { nullable: false })
     teamLineUp: TeamLineupEntity;
 

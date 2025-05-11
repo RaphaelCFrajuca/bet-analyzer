@@ -1,8 +1,11 @@
-import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { TeamLineupEntity } from "../lineup/lineup.team-lineup.entity";
 
 @Entity("match_lineup")
 export class MatchLineupEntity {
+    @PrimaryGeneratedColumn()
+    id: number;
+
     @Column({ type: "boolean", nullable: false })
     confirmed: boolean;
 

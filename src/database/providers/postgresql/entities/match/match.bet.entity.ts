@@ -1,10 +1,14 @@
 import { Bet } from "src/ai/interfaces/betting-response.interface";
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { MatchEntity } from "./match.entity";
 
 @Entity("match_bet")
 export class MatchBetEntity implements Bet {
+    @PrimaryGeneratedColumn()
+    id: number;
+
     @ManyToOne(() => MatchEntity, match => match.bettingSuggestions, { nullable: false })
+    @JoinColumn()
     match: MatchEntity;
 
     @Column({ type: "varchar", length: 255, nullable: false })
@@ -16,7 +20,7 @@ export class MatchBetEntity implements Bet {
     @Column({ type: "float", nullable: false })
     odd: number;
 
-    @Column({ type: "number", nullable: false })
+    @Column({ type: "int", nullable: false })
     confidence: number;
 
     @Column({ type: "varchar", length: 255, nullable: false })

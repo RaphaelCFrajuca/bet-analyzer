@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { TeamEntity } from "../team/team.entity";
 import { MatchBetEntity } from "./match.bet.entity";
 import { MatchLineupEntity } from "./match.lineup.entity";
@@ -14,9 +14,11 @@ export class MatchEntity {
     id: number;
 
     @ManyToOne(() => TeamEntity, team => team.id, { nullable: false })
+    @JoinColumn()
     homeTeam: TeamEntity;
 
     @ManyToOne(() => TeamEntity, team => team.id, { nullable: false })
+    @JoinColumn()
     awayTeam: TeamEntity;
 
     @Column({ type: "int", nullable: false })
@@ -35,21 +37,26 @@ export class MatchEntity {
     tournament: string;
 
     @OneToOne(() => MatchStatusEntity, matchStatus => matchStatus.match, { nullable: false })
+    @JoinColumn()
     status: MatchStatusEntity;
 
     @OneToOne(() => MatchStatsEntity, matchStatistics => matchStatistics, { nullable: true })
+    @JoinColumn()
     matchStatistics?: MatchStatsEntity | undefined;
 
     @OneToOne(() => MatchRecentDuelsEntity, matchRecentDuels => matchRecentDuels, { nullable: true })
+    @JoinColumn()
     recentDuels?: MatchRecentDuelsEntity | undefined;
 
     @Column({ type: "int", nullable: true })
     roundNumber?: number | undefined;
 
     @OneToOne(() => MatchRefereeEntity, referee => referee, { nullable: true })
+    @JoinColumn()
     referee?: MatchRefereeEntity | undefined;
 
     @OneToOne(() => MatchLineupEntity, matchLineup => matchLineup, { nullable: true, eager: true })
+    @JoinColumn()
     lineups?: MatchLineupEntity | undefined;
 
     @OneToMany(() => MatchStatsEntity, matchStats => matchStats.match, { nullable: true })

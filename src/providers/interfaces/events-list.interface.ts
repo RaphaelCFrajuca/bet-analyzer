@@ -27,7 +27,7 @@ export interface Event {
     winnerCode?: number;
 
     venue?: Venue;
-    referee?: Referee;
+    referee: Referee;
     defaultPeriodCount?: number;
     defaultPeriodLength?: number;
     defaultOvertimeLength?: number;

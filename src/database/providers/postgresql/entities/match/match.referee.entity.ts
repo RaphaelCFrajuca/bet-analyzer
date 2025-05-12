@@ -1,13 +1,13 @@
 import { Referee } from "src/providers/interfaces/events-list.interface";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from "typeorm";
 import { LineupCountryEntity } from "../lineup/lineup.country.entity";
 
 @Entity("match_referee")
 export class MatchRefereeEntity implements Partial<Referee> {
-    @Column({ type: "varchar", length: 255, nullable: true })
+    @Column({ type: "varchar", length: 255, nullable: false })
     name: string | undefined;
 
-    @Column({ type: "varchar", length: 255, nullable: true })
+    @Column({ type: "varchar", length: 255, nullable: false })
     slug: string | undefined;
 
     @Column({ type: "int", nullable: true })
@@ -22,8 +22,8 @@ export class MatchRefereeEntity implements Partial<Referee> {
     @Column({ type: "int", nullable: true })
     games: number | undefined;
 
-    @PrimaryGeneratedColumn()
-    id: number | undefined;
+    @PrimaryColumn()
+    id: number;
 
     @OneToOne(() => LineupCountryEntity, { nullable: true, eager: true, cascade: true })
     @JoinColumn()

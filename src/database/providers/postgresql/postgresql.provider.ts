@@ -1,8 +1,7 @@
-import { DataSource, Repository } from "typeorm";
+import { DataSource, DeepPartial, Repository } from "typeorm";
 import { Database } from "../interfaces/database.interface";
 import { Auth } from "./entities/auth.entity";
 import { MatchEntity } from "./entities/match/match.entity";
-import { MatchRefereeEntity } from "./entities/match/match.referee.entity";
 import { PostgresqlConfig } from "./interfaces/postgresql-config.interface";
 
 export class PostgresqlProvider implements Database {
@@ -17,22 +16,39 @@ export class PostgresqlProvider implements Database {
             database: this.postgresqlConfig.database,
             entities: [__dirname + "/entities/**/*.{ts,js}"],
             synchronize: true,
-            logging: false,
+            logging: true,
         });
     }
 
-    async createMatch(match: MatchEntity): Promise<MatchEntity> {
+    async createMatch(matchInput: DeepPartial<MatchEntity>): Promise<MatchEntity> {
         const dataSource = await this.connect();
-        const matchRepository: Repository<MatchEntity> = dataSource.getRepository(MatchEntity);
-        const refereeRepository: Repository<MatchRefereeEntity> = dataSource.getRepository(MatchRefereeEntity);
-        if (match.referee) {
-            match.referee = refereeRepository.create(match.referee);
-            match.referee = await refereeRepository.save(match.referee);
+        const queryRunner = dataSource.createQueryRunner();
+
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+            const matchRepo = queryRunner.manager.getRepository(MatchEntity);
+
+            // ⚠️  IMPORTANTE:
+            // - Para INSERT: deixe sub-entidades sem `id`.
+            // - Para UPDATE: inclua o `id` e só os campos que quer alterar.
+            // O TypeORM decide se insere ou atualiza cada node da árvore.
+
+            const savedMatch = await matchRepo.save(matchInput, { reload: true });
+
+            await queryRunner.commitTransaction();
+            return savedMatch;
+        } catch (err) {
+            await queryRunner.rollbackTransaction();
+            console.error("Erro ao salvar match:", err);
+            throw err;
+        } finally {
+            await queryRunner.release();
+            await this.disconnect();
         }
-        const matchCreated = await matchRepository.save(match);
-        await this.disconnect();
-        return matchCreated;
     }
+
     async createUser(username: string, password: string): Promise<void> {
         const dataSource = await this.connect();
         const authRepository: Repository<Auth> = dataSource.getRepository(Auth);
@@ -61,7 +77,11 @@ export class PostgresqlProvider implements Database {
     }
 
     async connect(): Promise<DataSource> {
-        return await this.dataSource.initialize();
+        if (!this.dataSource.isInitialized) {
+            return await this.dataSource.initialize();
+        } else {
+            return this.dataSource;
+        }
     }
     async disconnect(): Promise<void> {
         if (this.dataSource.isInitialized) {

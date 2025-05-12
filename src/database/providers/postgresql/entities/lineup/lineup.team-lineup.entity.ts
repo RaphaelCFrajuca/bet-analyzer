@@ -10,8 +10,8 @@ export class TeamLineupEntity {
     @OneToMany(() => LineupPlayerEntity, player => player.teamLineUp, { nullable: false })
     players: LineupPlayerEntity[];
 
-    @Column({ type: "varchar", length: 255, nullable: false })
-    formation: string;
+    @Column({ type: "varchar", length: 255, nullable: true })
+    formation?: string | undefined;
 
     @OneToMany(() => MissingPlayerEntity, missingPlayer => missingPlayer.teamLineUp, { nullable: false })
     missingPlayers: MissingPlayerEntity[];

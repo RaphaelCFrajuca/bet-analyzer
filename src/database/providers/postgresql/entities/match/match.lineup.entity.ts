@@ -6,7 +6,7 @@ export class MatchLineupEntity {
     @PrimaryGeneratedColumn()
     id?: number;
 
-    @Column({ type: "boolean", nullable: false })
+    @Column({ type: "boolean", nullable: true })
     confirmed: boolean;
 
     @OneToOne(() => TeamLineupEntity, teamLineup => teamLineup, { nullable: false, eager: true, cascade: true })

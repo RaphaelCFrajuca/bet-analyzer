@@ -1,10 +1,10 @@
 import { Player } from "src/providers/interfaces/lineup.interface";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { TeamLineupEntity } from "./lineup.team-lineup.entity";
 
 @Entity("lineup_player")
 export class LineupPlayerEntity implements Partial<Player> {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn()
     id: number;
 
     @ManyToOne(() => TeamLineupEntity, teamLineup => teamLineup.players, { nullable: false })

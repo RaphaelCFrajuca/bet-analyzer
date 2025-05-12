@@ -1,9 +1,9 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { TeamLineupEntity } from "./lineup.team-lineup.entity";
 
 @Entity("lineup_missing-player")
 export class MissingPlayerEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn()
     id: number;
 
     @ManyToOne(() => TeamLineupEntity, teamLineup => teamLineup.missingPlayers, { nullable: false })

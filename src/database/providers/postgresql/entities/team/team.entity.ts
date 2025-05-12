@@ -1,14 +1,21 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { MatchStatsEntity } from "../match/match.stats.entity";
+import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { MatchEntity } from "../match/match.entity";
+import { TeamRecentFormEntity } from "./team.recent-form.entity";
 
 @Entity("team")
 export class TeamEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn()
     id: number;
+
+    @OneToMany(() => MatchEntity, match => match.homeTeam)
+    homeMatches?: MatchEntity[];
+
+    @OneToMany(() => MatchEntity, match => match.awayTeam)
+    awayMatches?: MatchEntity[];
+
+    @OneToMany(() => TeamRecentFormEntity, recentForm => recentForm.team, { eager: true, orphanedRowAction: "delete" })
+    recentForm: TeamRecentFormEntity[];
 
     @Column({ type: "varchar", length: 255, nullable: false })
     name: string;
-
-    @OneToMany(() => MatchStatsEntity, matchStats => matchStats, { nullable: true, eager: true, cascade: true })
-    recentForm?: MatchStatsEntity[];
 }

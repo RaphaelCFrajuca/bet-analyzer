@@ -7,8 +7,8 @@ export class MarketChoicesEntity implements Choice {
     @PrimaryGeneratedColumn()
     id?: number;
 
-    @ManyToOne(() => MatchMarketEntity, matchMarket => matchMarket.choices, { nullable: false })
-    @JoinColumn()
+    @ManyToOne(() => MatchMarketEntity, market => market.choices, { onDelete: "CASCADE" })
+    @JoinColumn({ name: "marketId" })
     market?: MatchMarketEntity;
 
     @Column({ type: "varchar", length: 255, nullable: false })

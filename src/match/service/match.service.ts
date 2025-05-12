@@ -1,8 +1,9 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import Redis from "ioredis";
 import { RedisConfig } from "src/ai/providers/openai/interfaces/redis.config.interface";
 import { Database } from "src/database/providers/interfaces/database.interface";
 import { MatchEntity } from "src/database/providers/postgresql/entities/match/match.entity";
+import { TeamEntity } from "src/database/providers/postgresql/entities/team/team.entity";
 import { RecentFormStatistics } from "src/performance/interfaces/recent-form-statistics.interface";
 import { PerformanceService } from "src/performance/services/performance.service";
 import { DataProviderInterface } from "src/providers/interfaces/data-providers.interface";
@@ -185,8 +186,14 @@ export class MatchService {
         };
         await this.redis.set(`match_${event.id}`, JSON.stringify(match), "EX", 259200);
 
-        const matchEntity: MatchEntity = this.createMatchEntity(event, homeTeamRecentForm, awayTeamRecentForm, actualMatchStatistics, recentDuels, lineups, marketsList);
-        await this.databaseProvider.createMatch(matchEntity);
+        try {
+            const matchEntity: MatchEntity = this.createMatchEntity(event, homeTeamRecentForm, awayTeamRecentForm, actualMatchStatistics, recentDuels, lineups, marketsList);
+            await this.databaseProvider.createMatch(matchEntity);
+        } catch (error: unknown) {
+            console.error("Error creating match entity:", error);
+            const errorMessage = error instanceof Error ? `${error.message}, ${match.id}` : "Unknown error";
+            throw new InternalServerErrorException("Error creating match entity", errorMessage);
+        }
 
         return match;
     }
@@ -206,12 +213,18 @@ export class MatchService {
             homeTeam: {
                 id: event.homeTeam.id,
                 name: event.homeTeam.name,
-                recentForm: homeTeamRecentForm,
+                recentForm: homeTeamRecentForm.map(stat => ({
+                    team: { id: event.homeTeam.id } as TeamEntity,
+                    stats: stat,
+                })),
             },
             awayTeam: {
                 id: event.awayTeam.id,
                 name: event.awayTeam.name,
-                recentForm: awayTeamRecentForm,
+                recentForm: awayTeamRecentForm.map(stat => ({
+                    team: { id: event.awayTeam.id } as TeamEntity,
+                    stats: stat,
+                })),
             },
             actualHomeScore: event?.homeScore?.current,
             actualAwayScore: event?.awayScore?.current,
@@ -280,8 +293,6 @@ export class MatchService {
                     })),
                 },
             },
-            homeTeamRecentForm,
-            awayTeamRecentForm,
             markets: marketsList,
         };
     }

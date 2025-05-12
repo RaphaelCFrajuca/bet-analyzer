@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
 import { TeamEntity } from "../team/team.entity";
 import { MatchBetEntity } from "./match.bet.entity";
 import { MatchLineupEntity } from "./match.lineup.entity";
@@ -10,14 +10,14 @@ import { MatchStatusEntity } from "./match.status.entity";
 
 @Entity("match")
 export class MatchEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn({ unique: true })
     id: number;
 
-    @ManyToOne(() => TeamEntity, { eager: true, cascade: true })
+    @ManyToOne(() => TeamEntity, team => team.homeMatches, { eager: true, cascade: true })
     @JoinColumn()
     homeTeam: TeamEntity;
 
-    @ManyToOne(() => TeamEntity, { eager: true, cascade: true })
+    @ManyToOne(() => TeamEntity, team => team.awayMatches, { eager: true, cascade: true })
     @JoinColumn()
     awayTeam: TeamEntity;
 
@@ -40,7 +40,7 @@ export class MatchEntity {
     @JoinColumn()
     status: MatchStatusEntity;
 
-    @OneToOne(() => MatchStatsEntity, { eager: true, cascade: true })
+    @OneToOne(() => MatchStatsEntity, matchStats => matchStats.match, { eager: true, cascade: true })
     @JoinColumn()
     matchStatistics?: MatchStatsEntity;
 
@@ -59,15 +59,9 @@ export class MatchEntity {
     @JoinColumn()
     lineups?: MatchLineupEntity;
 
-    @OneToMany(() => MatchStatsEntity, matchStats => matchStats)
-    homeTeamRecentForm?: MatchStatsEntity[];
-
-    @OneToMany(() => MatchStatsEntity, matchStats => matchStats)
-    awayTeamRecentForm?: MatchStatsEntity[];
-
-    @OneToMany(() => MatchMarketEntity, market => market)
+    @OneToMany(() => MatchMarketEntity, market => market.match, { nullable: true, eager: true, cascade: true, orphanedRowAction: "delete" })
     markets?: MatchMarketEntity[];
 
-    @OneToMany(() => MatchBetEntity, bet => bet)
+    @OneToMany(() => MatchBetEntity, bet => bet.match, { nullable: true, eager: true, cascade: true, orphanedRowAction: "delete" })
     bettingSuggestions?: MatchBetEntity[];
 }

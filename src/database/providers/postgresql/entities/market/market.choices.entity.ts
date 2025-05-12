@@ -20,7 +20,7 @@ export class MarketChoicesEntity implements Choice {
     @Column({ type: "varchar", length: 255, nullable: false })
     oddValue: string;
 
-    @Column({ type: "varchar", length: 255, nullable: false })
+    @Column({ type: "varchar", length: 255, nullable: true })
     slipContent: string;
 
     @Column({ type: "int", nullable: false })

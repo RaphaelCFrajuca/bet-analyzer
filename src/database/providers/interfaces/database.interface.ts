@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import { Auth } from "../postgresql/entities/auth.entity";
+import { MatchEntity } from "../postgresql/entities/match/match.entity";
 
 export interface Database {
     connect(): Promise<DataSource>;
@@ -7,4 +8,5 @@ export interface Database {
     findById(id: string): Promise<Auth | null>;
     findByUsername(username: string): Promise<Auth | null>;
     createUser(username: string, password: string): Promise<void>;
+    createMatch(match: MatchEntity): Promise<MatchEntity>;
 }

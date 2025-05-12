@@ -1,21 +1,17 @@
 import { TeamScore } from "src/performance/interfaces/recent-form-statistics.interface";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { MatchStatsEntity } from "./match.stats.entity";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("match_team_score")
 export class MatchTeamScoreEntity implements TeamScore {
     @PrimaryGeneratedColumn()
     id?: number;
 
-    @Column({ type: "int", nullable: false })
+    @Column({ type: "int", nullable: true })
     total: number;
 
-    @Column({ type: "int", nullable: false })
+    @Column({ type: "int", nullable: true })
     firstHalf: number;
 
-    @Column({ type: "int", nullable: false })
+    @Column({ type: "int", nullable: true })
     secondHalf: number;
-
-    @OneToOne(() => MatchStatsEntity, { nullable: false, eager: true, cascade: true })
-    matchStats?: MatchStatsEntity;
 }

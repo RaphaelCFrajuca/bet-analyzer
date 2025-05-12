@@ -1,6 +1,8 @@
 import { DataSource, Repository } from "typeorm";
 import { Database } from "../interfaces/database.interface";
 import { Auth } from "./entities/auth.entity";
+import { MatchEntity } from "./entities/match/match.entity";
+import { MatchRefereeEntity } from "./entities/match/match.referee.entity";
 import { PostgresqlConfig } from "./interfaces/postgresql-config.interface";
 
 export class PostgresqlProvider implements Database {
@@ -17,6 +19,19 @@ export class PostgresqlProvider implements Database {
             synchronize: true,
             logging: false,
         });
+    }
+
+    async createMatch(match: MatchEntity): Promise<MatchEntity> {
+        const dataSource = await this.connect();
+        const matchRepository: Repository<MatchEntity> = dataSource.getRepository(MatchEntity);
+        const refereeRepository: Repository<MatchRefereeEntity> = dataSource.getRepository(MatchRefereeEntity);
+        if (match.referee) {
+            match.referee = refereeRepository.create(match.referee);
+            match.referee = await refereeRepository.save(match.referee);
+        }
+        const matchCreated = await matchRepository.save(match);
+        await this.disconnect();
+        return matchCreated;
     }
     async createUser(username: string, password: string): Promise<void> {
         const dataSource = await this.connect();

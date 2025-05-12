@@ -1,5 +1,5 @@
 import { Referee } from "src/providers/interfaces/events-list.interface";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { LineupCountryEntity } from "../lineup/lineup.country.entity";
 
 @Entity("match_referee")
@@ -25,6 +25,7 @@ export class MatchRefereeEntity implements Partial<Referee> {
     @PrimaryGeneratedColumn()
     id: number | undefined;
 
-    @OneToOne(() => LineupCountryEntity, country => country, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => LineupCountryEntity, { nullable: true, eager: true, cascade: true })
+    @JoinColumn()
     country: LineupCountryEntity | undefined;
 }

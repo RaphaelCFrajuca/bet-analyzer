@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { StatsAttackEntity } from "../stats/stats.attack.entity";
 import { StatsDefendingEntity } from "../stats/stats.defending.entity";
 import { StatsDuelsEntity } from "../stats/stats.duels.entity";
@@ -6,8 +6,6 @@ import { StatsEntity } from "../stats/stats.entity";
 import { StatsGoalkeepingEntity } from "../stats/stats.goalkeeping.entity";
 import { StatsPassesDetailsEntity } from "../stats/stats.passes-details.entity";
 import { StatsShotsEntity } from "../stats/stats.shots.entity";
-import { TeamEntity } from "../team/team.entity";
-import { MatchEntity } from "./match.entity";
 import { MatchTeamScoreEntity } from "./match.team.score.entity";
 
 @Entity("match_stats")
@@ -15,73 +13,67 @@ export class MatchStatsEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => MatchEntity, match => match, { nullable: true })
-    @JoinColumn()
-    match?: MatchEntity;
-
     @Column({ type: "date", nullable: false })
     date: Date;
 
-    @OneToOne(() => TeamEntity, team => team.name, { nullable: false, eager: true, cascade: true })
-    @JoinColumn()
+    @Column({ type: "varchar", length: 255, nullable: false })
     homeTeam: string;
 
-    @OneToOne(() => TeamEntity, team => team.name, { nullable: false, eager: true, cascade: true })
-    @JoinColumn()
+    @Column({ type: "varchar", length: 255, nullable: false })
     awayTeam: string;
 
-    @OneToOne(() => MatchTeamScoreEntity, matchTeamScore => matchTeamScore, { nullable: false, eager: true, cascade: true })
+    @OneToOne(() => MatchTeamScoreEntity, { nullable: false, eager: true, cascade: true })
     @JoinColumn()
     homeTeamScore: MatchTeamScoreEntity;
 
-    @OneToOne(() => MatchTeamScoreEntity, matchTeamScore => matchTeamScore, { nullable: false, eager: true, cascade: true })
+    @OneToOne(() => MatchTeamScoreEntity, { nullable: false, eager: true, cascade: true })
     @JoinColumn()
     awayTeamScore: MatchTeamScoreEntity;
 
     @Column({ type: "varchar", length: 255, nullable: false })
     tournament: string;
 
-    @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => StatsEntity, { nullable: true, eager: true, cascade: true })
     @JoinColumn()
     ballPossession?: StatsEntity | undefined;
 
-    @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => StatsEntity, { nullable: true, eager: true, cascade: true })
     @JoinColumn()
     expectedGoals?: StatsEntity | undefined;
 
-    @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => StatsEntity, { nullable: true, eager: true, cascade: true })
     @JoinColumn()
     totalShots?: StatsEntity | undefined;
 
-    @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => StatsEntity, { nullable: true, eager: true, cascade: true })
     @JoinColumn()
     goalkeeperSaves?: StatsEntity | undefined;
 
-    @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => StatsEntity, { nullable: true, eager: true, cascade: true })
     @JoinColumn()
     cornerKicks?: StatsEntity | undefined;
 
-    @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => StatsEntity, { nullable: true, eager: true, cascade: true })
     @JoinColumn()
     fouls?: StatsEntity | undefined;
 
-    @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => StatsEntity, { nullable: true, eager: true, cascade: true })
     @JoinColumn()
     passes?: StatsEntity | undefined;
 
-    @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => StatsEntity, { nullable: true, eager: true, cascade: true })
     @JoinColumn()
     tackles?: StatsEntity | undefined;
 
-    @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => StatsEntity, { nullable: true, eager: true, cascade: true })
     @JoinColumn()
     freeKicks?: StatsEntity | undefined;
 
-    @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => StatsEntity, { nullable: true, eager: true, cascade: true })
     @JoinColumn()
     yellowCards?: StatsEntity | undefined;
 
-    @OneToOne(() => StatsEntity, stats => stats.matchStats, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => StatsEntity, { nullable: true, eager: true, cascade: true })
     @JoinColumn()
     redCards?: StatsEntity | undefined;
 

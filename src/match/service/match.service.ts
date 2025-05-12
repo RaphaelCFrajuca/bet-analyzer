@@ -3,10 +3,13 @@ import Redis from "ioredis";
 import { RedisConfig } from "src/ai/providers/openai/interfaces/redis.config.interface";
 import { Database } from "src/database/providers/interfaces/database.interface";
 import { MatchEntity } from "src/database/providers/postgresql/entities/match/match.entity";
+import { RecentFormStatistics } from "src/performance/interfaces/recent-form-statistics.interface";
 import { PerformanceService } from "src/performance/services/performance.service";
 import { DataProviderInterface } from "src/providers/interfaces/data-providers.interface";
 import { Event, EventList } from "src/providers/interfaces/events-list.interface";
+import { Lineup } from "src/providers/interfaces/lineup.interface";
 import { MarketsResponse } from "src/providers/interfaces/market.interface";
+import { RecentDuels } from "src/providers/interfaces/recent-duels.interface";
 import { Market, Match } from "../interfaces/match.interface";
 
 @Injectable()
@@ -182,7 +185,22 @@ export class MatchService {
         };
         await this.redis.set(`match_${event.id}`, JSON.stringify(match), "EX", 259200);
 
-        const matchEntity: MatchEntity = {
+        const matchEntity: MatchEntity = this.createMatchEntity(event, homeTeamRecentForm, awayTeamRecentForm, actualMatchStatistics, recentDuels, lineups, marketsList);
+        await this.databaseProvider.createMatch(matchEntity);
+
+        return match;
+    }
+
+    private createMatchEntity(
+        event: Event,
+        homeTeamRecentForm: RecentFormStatistics[],
+        awayTeamRecentForm: RecentFormStatistics[],
+        actualMatchStatistics: RecentFormStatistics,
+        recentDuels: RecentDuels,
+        lineups: Lineup,
+        marketsList: Market[],
+    ): MatchEntity {
+        return {
             id: event.id,
             date: new Date(event.startTimestamp * 1000),
             homeTeam: {
@@ -266,8 +284,6 @@ export class MatchService {
             awayTeamRecentForm,
             markets: marketsList,
         };
-
-        return match;
     }
 
     async getMatchByEventId(eventId: number, live: boolean): Promise<Match> {

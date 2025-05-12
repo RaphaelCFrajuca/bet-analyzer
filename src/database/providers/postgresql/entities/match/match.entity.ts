@@ -13,61 +13,61 @@ export class MatchEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => TeamEntity, team => team.id, { nullable: false, eager: true, cascade: true })
+    @ManyToOne(() => TeamEntity, { eager: true, cascade: true })
     @JoinColumn()
     homeTeam: TeamEntity;
 
-    @ManyToOne(() => TeamEntity, team => team.id, { nullable: false, eager: true, cascade: true })
+    @ManyToOne(() => TeamEntity, { eager: true, cascade: true })
     @JoinColumn()
     awayTeam: TeamEntity;
 
-    @Column({ type: "int", nullable: false })
-    actualHomeScore?: number | undefined;
+    @Column({ type: "int", nullable: true })
+    actualHomeScore?: number;
 
-    @Column({ type: "int", nullable: false })
-    actualAwayScore?: number | undefined;
+    @Column({ type: "int", nullable: true })
+    actualAwayScore?: number;
 
-    @Column({ type: "date", nullable: false })
+    @Column({ type: "date" })
     date: Date;
 
-    @Column({ type: "varchar", length: 255, nullable: false })
-    country?: string | undefined;
+    @Column({ type: "varchar", length: 255, nullable: true })
+    country?: string;
 
-    @Column({ type: "varchar", length: 255, nullable: false })
+    @Column({ type: "varchar", length: 255 })
     tournament: string;
 
-    @OneToOne(() => MatchStatusEntity, matchStatus => matchStatus.match, { nullable: false, eager: true, cascade: true })
+    @OneToOne(() => MatchStatusEntity, { eager: true, cascade: true })
     @JoinColumn()
     status: MatchStatusEntity;
 
-    @OneToOne(() => MatchStatsEntity, matchStatistics => matchStatistics, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => MatchStatsEntity, { eager: true, cascade: true })
     @JoinColumn()
-    matchStatistics?: MatchStatsEntity | undefined;
+    matchStatistics?: MatchStatsEntity;
 
-    @OneToOne(() => MatchRecentDuelsEntity, matchRecentDuels => matchRecentDuels, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => MatchRecentDuelsEntity, { eager: true, cascade: true })
     @JoinColumn()
-    recentDuels?: MatchRecentDuelsEntity | undefined;
+    recentDuels?: MatchRecentDuelsEntity;
 
     @Column({ type: "int", nullable: true })
-    roundNumber?: number | undefined;
+    roundNumber?: number;
 
-    @OneToOne(() => MatchRefereeEntity, referee => referee, { nullable: true })
+    @OneToOne(() => MatchRefereeEntity, { eager: true, cascade: true })
     @JoinColumn()
-    referee?: MatchRefereeEntity | undefined;
+    referee?: MatchRefereeEntity;
 
-    @OneToOne(() => MatchLineupEntity, matchLineup => matchLineup, { nullable: true, eager: true, cascade: true })
+    @OneToOne(() => MatchLineupEntity, { eager: true, cascade: true })
     @JoinColumn()
-    lineups?: MatchLineupEntity | undefined;
+    lineups?: MatchLineupEntity;
 
-    @OneToMany(() => MatchStatsEntity, matchStats => matchStats.match, { nullable: true, eager: true, cascade: true })
+    @OneToMany(() => MatchStatsEntity, matchStats => matchStats)
     homeTeamRecentForm?: MatchStatsEntity[];
 
-    @OneToMany(() => MatchStatsEntity, matchStats => matchStats.match, { nullable: true, eager: true, cascade: true })
+    @OneToMany(() => MatchStatsEntity, matchStats => matchStats)
     awayTeamRecentForm?: MatchStatsEntity[];
 
-    @OneToMany(() => MatchMarketEntity, matchMarket => matchMarket.match, { nullable: true, eager: true, cascade: true })
-    markets?: MatchMarketEntity[] | undefined;
+    @OneToMany(() => MatchMarketEntity, market => market)
+    markets?: MatchMarketEntity[];
 
-    @OneToMany(() => MatchBetEntity, matchBet => matchBet.match, { nullable: true, eager: true, cascade: true })
-    bettingSuggestions?: MatchBetEntity[] | undefined;
+    @OneToMany(() => MatchBetEntity, bet => bet)
+    bettingSuggestions?: MatchBetEntity[];
 }

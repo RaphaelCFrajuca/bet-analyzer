@@ -1,6 +1,5 @@
 import { Status } from "src/providers/interfaces/events-list.interface";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { MatchEntity } from "./match.entity";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("match_status")
 export class MatchStatusEntity implements Status {
@@ -15,7 +14,4 @@ export class MatchStatusEntity implements Status {
 
     @Column({ type: "varchar", length: 255, nullable: false })
     type: string;
-
-    @OneToOne(() => MatchEntity, match => match.status, { nullable: false })
-    match?: MatchEntity;
 }

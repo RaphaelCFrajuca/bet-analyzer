@@ -1,6 +1,5 @@
 import { Statistic } from "src/performance/interfaces/recent-form-statistics.interface";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { MatchStatsEntity } from "../match/match.stats.entity";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("stats")
 export class StatsEntity implements Statistic {
@@ -15,7 +14,4 @@ export class StatsEntity implements Statistic {
 
     @Column({ type: "varchar", length: 50, nullable: true })
     statisticsType?: string | undefined;
-
-    @OneToOne(() => MatchStatsEntity, matchStats => matchStats, { nullable: true })
-    matchStats?: MatchStatsEntity;
 }

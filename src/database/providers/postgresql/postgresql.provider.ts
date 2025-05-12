@@ -17,6 +17,9 @@ export class PostgresqlProvider implements Database {
             entities: [__dirname + "/entities/**/*.{ts,js}"],
             synchronize: true,
             logging: false,
+            extra: {
+                max: 150,
+            },
         });
     }
 
@@ -24,16 +27,14 @@ export class PostgresqlProvider implements Database {
         const dataSource = await this.connect();
         const queryRunner = dataSource.createQueryRunner();
 
-        await queryRunner.connect();
         await queryRunner.startTransaction();
 
         try {
             const matchRepo = queryRunner.manager.getRepository(MatchEntity);
 
-            // ⚠️  IMPORTANTE:
-            // - Para INSERT: deixe sub-entidades sem `id`.
-            // - Para UPDATE: inclua o `id` e só os campos que quer alterar.
-            // O TypeORM decide se insere ou atualiza cada node da árvore.
+            if (!matchInput.referee?.id) {
+                matchInput.referee = undefined;
+            }
 
             const savedMatch = await matchRepo.save(matchInput, { reload: true });
 
@@ -45,7 +46,6 @@ export class PostgresqlProvider implements Database {
             throw err;
         } finally {
             await queryRunner.release();
-            await this.disconnect();
         }
     }
 

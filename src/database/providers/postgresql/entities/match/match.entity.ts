@@ -27,7 +27,7 @@ export class MatchEntity {
     @Column({ type: "int", nullable: true })
     actualAwayScore?: number;
 
-    @Column({ type: "date" })
+    @Column({ type: "timestamptz" })
     date: Date;
 
     @Column({ type: "varchar", length: 255, nullable: true })

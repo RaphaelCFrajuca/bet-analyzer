@@ -9,11 +9,11 @@ export class MatchLineupEntity {
     @Column({ type: "boolean", nullable: true })
     confirmed: boolean;
 
-    @OneToOne(() => TeamLineupEntity, teamLineup => teamLineup, { nullable: false, eager: true, cascade: true })
+    @OneToOne(() => TeamLineupEntity, teamLineup => teamLineup.lineupHome, { nullable: false, eager: true, cascade: true })
     @JoinColumn()
     home: TeamLineupEntity;
 
-    @OneToOne(() => TeamLineupEntity, teamLineup => teamLineup, { nullable: false, eager: true, cascade: true })
+    @OneToOne(() => TeamLineupEntity, teamLineup => teamLineup.lineupAway, { nullable: false, eager: true, cascade: true })
     @JoinColumn()
     away: TeamLineupEntity;
 }

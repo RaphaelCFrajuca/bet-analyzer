@@ -13,6 +13,9 @@ export class MissingPlayerEntity {
     @Column({ type: "varchar", length: 255, nullable: false })
     name: string;
 
+    @Column({ type: "varchar", length: 255, nullable: true })
+    jerseyNumber: string | undefined;
+
     @Column({ type: "varchar", length: 255, nullable: false })
     position: string;
 

@@ -297,6 +297,100 @@ export class MatchService {
         };
     }
 
+    private convertMatchEntityToMatch(matchEntity: MatchEntity): Match {
+        return {
+            id: matchEntity.id,
+            date: matchEntity.date,
+            homeTeam: matchEntity.homeTeam.name,
+            homeTeamId: matchEntity.homeTeam.id,
+            awayTeam: matchEntity.awayTeam.name,
+            awayTeamId: matchEntity.awayTeam.id,
+            actualHomeScore: matchEntity.actualHomeScore,
+            actualAwayScore: matchEntity.actualAwayScore,
+            tournament: matchEntity.tournament,
+            actualMatchStatistics: matchEntity.matchStatistics
+                ? {
+                      ...matchEntity.matchStatistics,
+                      id: matchEntity.matchStatistics.id,
+                      homeTeam: matchEntity.homeTeam.name,
+                      awayTeam: matchEntity.awayTeam.name,
+                  }
+                : undefined,
+            country: matchEntity.country,
+            status: matchEntity.status,
+            recentDuels: matchEntity.recentDuels,
+            roundInfo: {
+                round: matchEntity.roundNumber,
+            },
+            referee: {
+                id: matchEntity.referee?.id,
+                name: matchEntity.referee?.name,
+                yellowCards: matchEntity.referee?.yellowCards,
+                redCards: matchEntity.referee?.redCards,
+                games: matchEntity.referee?.games,
+            },
+            lineups: {
+                confirmed: matchEntity.lineups?.confirmed,
+                homeTeam: {
+                    formation: matchEntity.lineups?.home?.formation,
+                    players: matchEntity.lineups?.home?.players?.map(player => ({
+                        avgRating: player.avgRating,
+                        id: player.id,
+                        name: player.name,
+                        jerseyNumber: player.jerseyNumber,
+                        position: player.position,
+                        substitute: player.substitute,
+                    })),
+                    missingPlayers: matchEntity.lineups?.home?.missingPlayers?.map(missingPlayer => ({
+                        id: missingPlayer.id,
+                        name: missingPlayer.name,
+                        jerseyNumber: missingPlayer.jerseyNumber,
+                        position: missingPlayer.position,
+                    })),
+                },
+                awayTeam: {
+                    formation: matchEntity.lineups?.away?.formation,
+                    players: matchEntity.lineups?.away?.players?.map(player => ({
+                        avgRating: player.avgRating,
+                        id: player.id,
+                        name: player.name,
+                        jerseyNumber: player.jerseyNumber,
+                        position: player.position,
+                        substitute: player.substitute,
+                    })),
+                    missingPlayers: matchEntity.lineups?.away?.missingPlayers?.map(missingPlayer => ({
+                        id: missingPlayer.id,
+                        name: missingPlayer.name,
+                        jerseyNumber: missingPlayer.jerseyNumber,
+                        position: missingPlayer.position,
+                    })),
+                },
+            },
+            homeTeamPerformance: {
+                homeTeamRecentForm: matchEntity.homeTeam.recentForm.map(form => {
+                    return {
+                        ...form.stats,
+                        id: form.stats.id,
+                        homeTeam: matchEntity.homeTeam.name,
+                        awayTeam: matchEntity.awayTeam.name,
+                    };
+                }),
+            },
+            awayTeamPerformance: {
+                awayTeamRecentForm: matchEntity.awayTeam.recentForm.map(form => {
+                    return {
+                        ...form.stats,
+                        id: form.stats.id,
+                        homeTeam: matchEntity.homeTeam.name,
+                        awayTeam: matchEntity.awayTeam.name,
+                    };
+                }),
+            },
+            markets: matchEntity.markets,
+            surebets: [], // Adicione lógica para preencher surebets, se necessário
+        };
+    }
+
     async getMatchByEventId(eventId: number, live: boolean): Promise<Match> {
         const cachedMatch = await this.redis.get(`match_${eventId}`);
         if (cachedMatch && !live) {

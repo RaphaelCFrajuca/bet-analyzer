@@ -7,6 +7,9 @@ export class LineupPlayerEntity implements Partial<Player> {
     @PrimaryColumn()
     id: number;
 
+    @Column({ type: "varchar", length: 255, nullable: false })
+    name: string;
+
     @ManyToOne(() => TeamLineupEntity, teamLineup => teamLineup.players, { nullable: false })
     @JoinColumn()
     teamLineUp?: TeamLineupEntity;

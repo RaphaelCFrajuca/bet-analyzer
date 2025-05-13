@@ -1,52 +1,67 @@
-import { Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { StatsEntity } from "../stats/stats.entity";
+import { MatchStatsEntity } from "./match.stats.entity";
 
 @Entity("match_stats_general")
 export class MatchStatsGeneralEntity {
     @PrimaryGeneratedColumn()
-    id: number;
+    id?: number;
 
-    @OneToOne(() => StatsEntity, { nullable: true, cascade: true })
+    @OneToOne(() => MatchStatsEntity, matchStats => matchStats.general)
+    matchStats?: MatchStatsEntity;
+
+    @Index()
+    @OneToOne(() => StatsEntity, { nullable: true, cascade: true, eager: true })
     @JoinColumn()
     ballPossession?: StatsEntity;
 
-    @OneToOne(() => StatsEntity, { nullable: true, cascade: true })
+    @Index()
+    @OneToOne(() => StatsEntity, { nullable: true, cascade: true, eager: true })
     @JoinColumn()
     expectedGoals?: StatsEntity;
 
-    @OneToOne(() => StatsEntity, { nullable: true, cascade: true })
+    @Index()
+    @OneToOne(() => StatsEntity, { nullable: true, cascade: true, eager: true })
     @JoinColumn()
     totalShots?: StatsEntity;
 
-    @OneToOne(() => StatsEntity, { nullable: true, cascade: true })
+    @Index()
+    @OneToOne(() => StatsEntity, { nullable: true, cascade: true, eager: true })
     @JoinColumn()
     goalkeeperSaves?: StatsEntity;
 
-    @OneToOne(() => StatsEntity, { nullable: true, cascade: true })
+    @Index()
+    @OneToOne(() => StatsEntity, { nullable: true, cascade: true, eager: true })
     @JoinColumn()
     cornerKicks?: StatsEntity;
 
-    @OneToOne(() => StatsEntity, { nullable: true, cascade: true })
+    @Index()
+    @OneToOne(() => StatsEntity, { nullable: true, cascade: true, eager: true })
     @JoinColumn()
     fouls?: StatsEntity;
 
-    @OneToOne(() => StatsEntity, { nullable: true, cascade: true })
+    @Index()
+    @OneToOne(() => StatsEntity, { nullable: true, cascade: true, eager: true })
     @JoinColumn()
     passes?: StatsEntity;
 
-    @OneToOne(() => StatsEntity, { nullable: true, cascade: true })
+    @Index()
+    @OneToOne(() => StatsEntity, { nullable: true, cascade: true, eager: true })
     @JoinColumn()
     tackles?: StatsEntity;
 
-    @OneToOne(() => StatsEntity, { nullable: true, cascade: true })
+    @Index()
+    @OneToOne(() => StatsEntity, { nullable: true, cascade: true, eager: true })
     @JoinColumn()
     freeKicks?: StatsEntity;
 
-    @OneToOne(() => StatsEntity, { nullable: true, cascade: true })
+    @Index()
+    @OneToOne(() => StatsEntity, { nullable: true, cascade: true, eager: true })
     @JoinColumn()
     yellowCards?: StatsEntity;
 
-    @OneToOne(() => StatsEntity, { nullable: true, cascade: true })
+    @Index()
+    @OneToOne(() => StatsEntity, { nullable: true, cascade: true, eager: true })
     @JoinColumn()
     redCards?: StatsEntity;
 }

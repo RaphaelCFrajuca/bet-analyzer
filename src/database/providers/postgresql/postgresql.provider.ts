@@ -16,11 +16,19 @@ export class PostgresqlProvider implements Database {
             database: this.postgresqlConfig.database,
             entities: [__dirname + "/entities/**/*.{ts,js}"],
             synchronize: true,
-            logging: false,
+            logging: true,
             extra: {
                 max: 150,
             },
         });
+    }
+    async getMatchById(id: number): Promise<MatchEntity | null> {
+        const dataSource = await this.connect();
+        const matchRepo = dataSource.getRepository(MatchEntity);
+        const match = await matchRepo.findOne({ where: { id } });
+        await this.disconnect();
+        if (!match) return null;
+        return match;
     }
 
     async createMatch(matchInput: DeepPartial<MatchEntity>): Promise<MatchEntity> {
@@ -36,6 +44,42 @@ export class PostgresqlProvider implements Database {
                 matchInput.referee = undefined;
             }
 
+            const stats = matchInput.matchStatistics;
+            if (stats) {
+                if (stats.general) {
+                    stats.general.matchStats = stats;
+                }
+
+                if (stats.detailed) {
+                    stats.detailed.matchStats = stats;
+                }
+            }
+
+            // ✅ Associar os forms corretamente e garantir que a team tem a lista completa
+            if (matchInput.homeTeam?.recentForm?.length) {
+                for (const form of matchInput.homeTeam.recentForm) {
+                    form.team = matchInput.homeTeam;
+                }
+
+                // Garante que é entidade, não só objeto solto
+                matchInput.homeTeam = {
+                    ...matchInput.homeTeam,
+                    recentForm: matchInput.homeTeam.recentForm,
+                };
+            }
+
+            if (matchInput.awayTeam?.recentForm?.length) {
+                for (const form of matchInput.awayTeam.recentForm) {
+                    form.team = matchInput.awayTeam;
+                }
+
+                matchInput.awayTeam = {
+                    ...matchInput.awayTeam,
+                    recentForm: matchInput.awayTeam.recentForm,
+                };
+            }
+
+            // 🚨 Aqui é onde o TypeORM vai aplicar o cascade se estiver tudo certo nas entidades
             const savedMatch = await matchRepo.save(matchInput, { reload: true });
 
             await queryRunner.commitTransaction();

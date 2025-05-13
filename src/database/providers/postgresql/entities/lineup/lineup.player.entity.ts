@@ -1,9 +1,10 @@
 import { Player } from "src/providers/interfaces/lineup.interface";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { TeamLineupEntity } from "./lineup.team-lineup.entity";
 
 @Entity("lineup_player")
 export class LineupPlayerEntity implements Partial<Player> {
+    @Index()
     @PrimaryColumn()
     id: number;
 
@@ -14,7 +15,7 @@ export class LineupPlayerEntity implements Partial<Player> {
     @JoinColumn()
     teamLineUp?: TeamLineupEntity;
 
-    @Column({ type: "int", nullable: true })
+    @Column({ type: "float", nullable: true })
     avgRating: number | undefined;
 
     @Column({ type: "int", nullable: true })

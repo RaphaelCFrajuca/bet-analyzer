@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
 import { TeamEntity } from "../team/team.entity";
 import { MatchBetEntity } from "./match.bet.entity";
 import { MatchLineupEntity } from "./match.lineup.entity";
@@ -10,6 +10,7 @@ import { MatchStatusEntity } from "./match.status.entity";
 
 @Entity("match")
 export class MatchEntity {
+    @Index()
     @PrimaryColumn({ unique: true })
     id: number;
 
@@ -40,11 +41,11 @@ export class MatchEntity {
     @JoinColumn()
     status: MatchStatusEntity;
 
-    @OneToOne(() => MatchStatsEntity, matchStats => matchStats.match, { eager: true, cascade: true })
+    @OneToOne(() => MatchStatsEntity, { eager: true, cascade: true })
     @JoinColumn()
     matchStatistics?: MatchStatsEntity;
 
-    @OneToOne(() => MatchRecentDuelsEntity, { eager: true, cascade: true })
+    @OneToOne(() => MatchRecentDuelsEntity, recentDuels => recentDuels.match, { eager: true, cascade: true })
     @JoinColumn()
     recentDuels?: MatchRecentDuelsEntity;
 
@@ -55,7 +56,7 @@ export class MatchEntity {
     @JoinColumn()
     referee?: MatchRefereeEntity;
 
-    @OneToOne(() => MatchLineupEntity, { eager: true, cascade: true })
+    @OneToOne(() => MatchLineupEntity, matchLineup => matchLineup.match, { eager: true, cascade: true })
     @JoinColumn()
     lineups?: MatchLineupEntity;
 

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, OneToOne, PrimaryColumn } from "typeorm";
 import { MatchEntity } from "./match.entity";
 import { MatchStatsDetailedEntity } from "./match.stats.detailed.entity";
 import { MatchStatsGeneralEntity } from "./match.stats.general.entity";
@@ -6,6 +6,7 @@ import { MatchTeamScoreEntity } from "./match.team.score.entity";
 
 @Entity("match_stats")
 export class MatchStatsEntity {
+    @Index()
     @PrimaryColumn()
     id: number;
 
@@ -26,11 +27,13 @@ export class MatchStatsEntity {
     @Column({ type: "varchar", length: 255, nullable: false })
     tournament: string;
 
-    @OneToOne(() => MatchStatsGeneralEntity, { nullable: true, eager: true, cascade: true })
+    @Index()
+    @OneToOne(() => MatchStatsGeneralEntity, matchStatsGeneral => matchStatsGeneral.matchStats, { nullable: true, eager: true, cascade: true })
     @JoinColumn()
     general?: MatchStatsGeneralEntity;
 
-    @OneToOne(() => MatchStatsDetailedEntity, { nullable: true, eager: true, cascade: true })
+    @Index()
+    @OneToOne(() => MatchStatsDetailedEntity, matchStatsDetailed => matchStatsDetailed.matchStats, { nullable: true, eager: true, cascade: true })
     @JoinColumn()
     detailed?: MatchStatsDetailedEntity;
 }

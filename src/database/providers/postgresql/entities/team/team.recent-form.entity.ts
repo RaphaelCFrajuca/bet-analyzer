@@ -1,4 +1,4 @@
-import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { MatchStatsEntity } from "../match/match.stats.entity";
 import { TeamEntity } from "./team.entity";
 
@@ -7,11 +7,13 @@ export class TeamRecentFormEntity {
     @PrimaryGeneratedColumn()
     id?: number;
 
+    @Index()
     @ManyToOne(() => TeamEntity, team => team.recentForm)
     @JoinColumn({ name: "team_id" })
     team: TeamEntity;
 
-    @ManyToOne(() => MatchStatsEntity, { eager: true, orphanedRowAction: "delete" })
+    @Index()
+    @ManyToOne(() => MatchStatsEntity, { eager: true, cascade: true, orphanedRowAction: "delete" })
     @JoinColumn({ name: "match_stats_id" })
     stats: MatchStatsEntity;
 }

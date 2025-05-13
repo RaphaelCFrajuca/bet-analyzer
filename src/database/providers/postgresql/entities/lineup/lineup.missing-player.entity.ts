@@ -1,8 +1,9 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { TeamLineupEntity } from "./lineup.team-lineup.entity";
 
 @Entity("lineup_missing-player")
 export class MissingPlayerEntity {
+    @Index()
     @PrimaryColumn()
     id: number;
 

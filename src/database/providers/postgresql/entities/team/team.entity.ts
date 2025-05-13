@@ -1,9 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, Index, OneToMany, PrimaryColumn } from "typeorm";
 import { MatchEntity } from "../match/match.entity";
 import { TeamRecentFormEntity } from "./team.recent-form.entity";
 
 @Entity("team")
 export class TeamEntity {
+    @Index()
     @PrimaryColumn()
     id: number;
 
@@ -13,7 +14,7 @@ export class TeamEntity {
     @OneToMany(() => MatchEntity, match => match.awayTeam)
     awayMatches?: MatchEntity[];
 
-    @OneToMany(() => TeamRecentFormEntity, recentForm => recentForm.team, { eager: true, orphanedRowAction: "delete" })
+    @OneToMany(() => TeamRecentFormEntity, recentForm => recentForm.team, { eager: true, cascade: true, orphanedRowAction: "delete" })
     recentForm: TeamRecentFormEntity[];
 
     @Column({ type: "varchar", length: 255, nullable: false })

@@ -9,4 +9,5 @@ export interface Database {
     findByUsername(username: string): Promise<Auth | null>;
     createUser(username: string, password: string): Promise<void>;
     createMatch(match: MatchEntity): Promise<MatchEntity>;
+    getMatchById(id: number): Promise<MatchEntity | null>;
 }

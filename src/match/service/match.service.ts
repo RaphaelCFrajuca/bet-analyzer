@@ -3,7 +3,9 @@ import Redis from "ioredis";
 import { RedisConfig } from "src/ai/providers/openai/interfaces/redis.config.interface";
 import { Database } from "src/database/providers/interfaces/database.interface";
 import { MatchEntity } from "src/database/providers/postgresql/entities/match/match.entity";
+import { MatchStatsEntity } from "src/database/providers/postgresql/entities/match/match.stats.entity";
 import { TeamEntity } from "src/database/providers/postgresql/entities/team/team.entity";
+import { TeamRecentFormEntity } from "src/database/providers/postgresql/entities/team/team.recent-form.entity";
 import { RecentFormStatistics } from "src/performance/interfaces/recent-form-statistics.interface";
 import { PerformanceService } from "src/performance/services/performance.service";
 import { DataProviderInterface } from "src/providers/interfaces/data-providers.interface";
@@ -207,29 +209,92 @@ export class MatchService {
         lineups: Lineup,
         marketsList: Market[],
     ): MatchEntity {
+        const mapRecentForm = (teamId: number, statsList: RecentFormStatistics[]): TeamRecentFormEntity[] => {
+            return statsList.map(stat => {
+                const stats: MatchStatsEntity = {
+                    ...stat,
+                    general: {
+                        ballPossession: stat.ballPossession,
+                        cornerKicks: stat.cornerKicks,
+                        expectedGoals: stat.expectedGoals,
+                        fouls: stat.fouls,
+                        freeKicks: stat.freeKicks,
+                        goalkeeperSaves: stat.goalkeeperSaves,
+                        passes: stat.passes,
+                        redCards: stat.redCards,
+                        tackles: stat.tackles,
+                        totalShots: stat.totalShots,
+                        yellowCards: stat.yellowCards,
+                        matchStats: {} as MatchStatsEntity,
+                    },
+                    detailed: {
+                        attack: stat.attack,
+                        defending: stat.defending,
+                        duels: stat.duels,
+                        goalkeeping: stat.goalkeeping,
+                        passesDetails: stat.passesDetails,
+                        shots: stat.shots,
+                        matchStats: {} as MatchStatsEntity,
+                    },
+                };
+
+                if (stats.general) stats.general.matchStats = stats;
+                if (stats.detailed) stats.detailed.matchStats = stats;
+
+                return {
+                    team: { id: teamId } as TeamEntity,
+                    stats,
+                };
+            });
+        };
+
+        const actualStats: MatchStatsEntity = {
+            ...actualMatchStatistics,
+            general: {
+                ballPossession: actualMatchStatistics.ballPossession,
+                cornerKicks: actualMatchStatistics.cornerKicks,
+                expectedGoals: actualMatchStatistics.expectedGoals,
+                fouls: actualMatchStatistics.fouls,
+                freeKicks: actualMatchStatistics.freeKicks,
+                goalkeeperSaves: actualMatchStatistics.goalkeeperSaves,
+                passes: actualMatchStatistics.passes,
+                redCards: actualMatchStatistics.redCards,
+                tackles: actualMatchStatistics.tackles,
+                totalShots: actualMatchStatistics.totalShots,
+                yellowCards: actualMatchStatistics.yellowCards,
+                matchStats: {} as MatchStatsEntity,
+            },
+            detailed: {
+                attack: actualMatchStatistics.attack,
+                defending: actualMatchStatistics.defending,
+                duels: actualMatchStatistics.duels,
+                goalkeeping: actualMatchStatistics.goalkeeping,
+                passesDetails: actualMatchStatistics.passesDetails,
+                shots: actualMatchStatistics.shots,
+                matchStats: {} as MatchStatsEntity,
+            },
+        };
+
+        if (actualStats.general) actualStats.general.matchStats = actualStats;
+        if (actualStats.detailed) actualStats.detailed.matchStats = actualStats;
+
         return {
             id: event.id,
             date: new Date(event.startTimestamp * 1000),
             homeTeam: {
                 id: event.homeTeam.id,
                 name: event.homeTeam.name,
-                recentForm: homeTeamRecentForm.map(stat => ({
-                    team: { id: event.homeTeam.id } as TeamEntity,
-                    stats: stat,
-                })),
+                recentForm: mapRecentForm(event.homeTeam.id, homeTeamRecentForm),
             },
             awayTeam: {
                 id: event.awayTeam.id,
                 name: event.awayTeam.name,
-                recentForm: awayTeamRecentForm.map(stat => ({
-                    team: { id: event.awayTeam.id } as TeamEntity,
-                    stats: stat,
-                })),
+                recentForm: mapRecentForm(event.awayTeam.id, awayTeamRecentForm),
             },
             actualHomeScore: event?.homeScore?.current,
             actualAwayScore: event?.awayScore?.current,
             tournament: event.tournament.name,
-            matchStatistics: actualMatchStatistics,
+            matchStatistics: actualStats,
             country: event.venue?.country?.name,
             status: {
                 code: event.status.code,
@@ -395,6 +460,13 @@ export class MatchService {
         const cachedMatch = await this.redis.get(`match_${eventId}`);
         if (cachedMatch && !live) {
             console.log(`Cache hit for eventId: ${eventId}`);
+            const matchEntity = await this.databaseProvider.getMatchById(eventId);
+            if (matchEntity) {
+                console.log(`MatchEntity found for event.id: ${eventId}`);
+                return this.convertMatchEntityToMatch(matchEntity);
+            } else {
+                console.log(`MatchEntity not found for event.id: ${eventId}`);
+            }
             return JSON.parse(cachedMatch) as Match;
         }
         console.log(`Cache miss for eventId: ${eventId}`);

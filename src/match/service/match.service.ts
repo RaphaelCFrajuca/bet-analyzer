@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import Redis from "ioredis";
 import { RedisConfig } from "src/ai/providers/openai/interfaces/redis.config.interface";
 import { Database } from "src/database/providers/interfaces/database.interface";
@@ -188,14 +188,14 @@ export class MatchService {
         };
         await this.redis.set(`match_${event.id}`, JSON.stringify(match), "EX", 259200);
 
-        // try {
-        //     const matchEntity: MatchEntity = this.createMatchEntity(event, homeTeamRecentForm, awayTeamRecentForm, actualMatchStatistics, recentDuels, lineups, marketsList);
-        //     await this.databaseProvider.createMatch(matchEntity);
-        // } catch (error: unknown) {
-        //     console.error("Error creating match entity:", error);
-        //     const errorMessage = error instanceof Error ? `${error.message}, ${match.id}` : "Unknown error";
-        //     throw new InternalServerErrorException("Error creating match entity", errorMessage);
-        // }
+        try {
+            const matchEntity: MatchEntity = this.createMatchEntity(event, homeTeamRecentForm, awayTeamRecentForm, actualMatchStatistics, recentDuels, lineups, marketsList);
+            await this.databaseProvider.createMatch(matchEntity);
+        } catch (error: unknown) {
+            console.error("Error creating match entity:", error);
+            const errorMessage = error instanceof Error ? `${error.message}, ${match.id}` : "Unknown error";
+            throw new InternalServerErrorException("Error creating match entity", errorMessage);
+        }
 
         return match;
     }
@@ -225,7 +225,6 @@ export class MatchService {
                         tackles: stat.tackles,
                         totalShots: stat.totalShots,
                         yellowCards: stat.yellowCards,
-                        matchStats: {} as MatchStatsEntity,
                     },
                     detailed: {
                         attack: stat.attack,
@@ -262,7 +261,6 @@ export class MatchService {
                 tackles: actualMatchStatistics.tackles,
                 totalShots: actualMatchStatistics.totalShots,
                 yellowCards: actualMatchStatistics.yellowCards,
-                matchStats: {} as MatchStatsEntity,
             },
             detailed: {
                 attack: actualMatchStatistics.attack,
@@ -432,7 +430,7 @@ export class MatchService {
                 },
             },
             homeTeamPerformance: {
-                homeTeamRecentForm: matchEntity.homeTeam.recentForm.map(form => {
+                homeTeamRecentForm: matchEntity.homeTeam?.recentForm?.map(form => {
                     return {
                         ...form.stats,
                         id: form.stats.id,
@@ -442,7 +440,7 @@ export class MatchService {
                 }),
             },
             awayTeamPerformance: {
-                awayTeamRecentForm: matchEntity.awayTeam.recentForm.map(form => {
+                awayTeamRecentForm: matchEntity.awayTeam?.recentForm?.map(form => {
                     return {
                         ...form.stats,
                         id: form.stats.id,
@@ -460,13 +458,13 @@ export class MatchService {
         const cachedMatch = await this.redis.get(`match_${eventId}`);
         if (cachedMatch && !live) {
             console.log(`Cache hit for eventId: ${eventId}`);
-            // const matchEntity = await this.databaseProvider.getMatchById(eventId);
-            // if (matchEntity) {
-            //     console.log(`MatchEntity found for event.id: ${eventId}`);
-            //     return this.convertMatchEntityToMatch(matchEntity);
-            // } else {
-            //     console.log(`MatchEntity not found for event.id: ${eventId}`);
-            // }
+            const matchEntity = await this.databaseProvider.getMatchById(eventId);
+            if (matchEntity) {
+                console.log(`MatchEntity found for event.id: ${eventId}`);
+                return this.convertMatchEntityToMatch(matchEntity);
+            } else {
+                console.log(`MatchEntity not found for event.id: ${eventId}`);
+            }
             return JSON.parse(cachedMatch) as Match;
         }
         console.log(`Cache miss for eventId: ${eventId}`);

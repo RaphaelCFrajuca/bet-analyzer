@@ -15,6 +15,7 @@ export class PostgresqlProvider implements Database {
             password: this.postgresqlConfig.password,
             database: this.postgresqlConfig.database,
             entities: [__dirname + "/entities/**/*.{ts,js}"],
+            ssl: true,
             synchronize: true,
             logging: false,
             extra: {
@@ -55,13 +56,11 @@ export class PostgresqlProvider implements Database {
                 }
             }
 
-            // ✅ Associar os forms corretamente e garantir que a team tem a lista completa
             if (matchInput.homeTeam?.recentForm?.length) {
                 for (const form of matchInput.homeTeam.recentForm) {
                     form.team = matchInput.homeTeam;
                 }
 
-                // Garante que é entidade, não só objeto solto
                 matchInput.homeTeam = {
                     ...matchInput.homeTeam,
                     recentForm: matchInput.homeTeam.recentForm,
@@ -79,7 +78,6 @@ export class PostgresqlProvider implements Database {
                 };
             }
 
-            // 🚨 Aqui é onde o TypeORM vai aplicar o cascade se estiver tudo certo nas entidades
             const savedMatch = await matchRepo.save(matchInput, { reload: true });
 
             await queryRunner.commitTransaction();

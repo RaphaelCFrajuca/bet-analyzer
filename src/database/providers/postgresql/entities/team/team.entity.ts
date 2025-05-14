@@ -14,7 +14,7 @@ export class TeamEntity {
     @OneToMany(() => MatchEntity, match => match.awayTeam)
     awayMatches?: MatchEntity[];
 
-    @OneToMany(() => TeamRecentFormEntity, recentForm => recentForm.team, { eager: true, cascade: true, orphanedRowAction: "delete" })
+    @OneToMany(() => TeamRecentFormEntity, recentForm => recentForm.team, { eager: false, cascade: true, orphanedRowAction: "delete" })
     recentForm: TeamRecentFormEntity[];
 
     @Column({ type: "varchar", length: 255, nullable: false })

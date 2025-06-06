@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import Redis from "ioredis";
 import { RedisConfig } from "src/ai/providers/openai/interfaces/redis.config.interface";
 import { Database } from "src/database/providers/interfaces/database.interface";
@@ -188,14 +188,14 @@ export class MatchService {
         };
         await this.redis.set(`match_${event.id}`, JSON.stringify(match), "EX", 259200);
 
-        try {
-            const matchEntity: MatchEntity = this.createMatchEntity(event, homeTeamRecentForm, awayTeamRecentForm, actualMatchStatistics, recentDuels, lineups, marketsList);
-            await this.databaseProvider.createMatch(matchEntity);
-        } catch (error: unknown) {
-            console.error("Error creating match entity:", error);
-            const errorMessage = error instanceof Error ? `${error.message}, ${match.id}` : "Unknown error";
-            throw new InternalServerErrorException("Error creating match entity", errorMessage);
-        }
+        // try {
+        //     const matchEntity: MatchEntity = this.createMatchEntity(event, homeTeamRecentForm, awayTeamRecentForm, actualMatchStatistics, recentDuels, lineups, marketsList);
+        //     await this.databaseProvider.createMatch(matchEntity);
+        // } catch (error: unknown) {
+        //     console.error("Error creating match entity:", error);
+        //     const errorMessage = error instanceof Error ? `${error.message}, ${match.id}` : "Unknown error";
+        //     throw new InternalServerErrorException("Error creating match entity", errorMessage);
+        // }
 
         return match;
     }

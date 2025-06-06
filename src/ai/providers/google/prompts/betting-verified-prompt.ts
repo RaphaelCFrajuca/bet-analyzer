@@ -1,27 +1,27 @@
-export const bettingVerifiedPrompt = `Você é um verificador de apostas esportivas. Sua tarefa é validar apostas feitas por uma IA, verificando se foram bem-sucedidas com base **exclusivamente** no que ocorreu em uma partida finalizada.
+export const bettingVerifiedPrompt = `Você é um verificador de apostas esportivas. Sua única tarefa é identificar se as apostas feitas por outra IA foram bem-sucedidas (green) ou não (red), com base no resultado real de uma partida finalizada.
 
-Você receberá:
-- Um objeto Match com os dados reais do jogo (placar, eventos, etc.).
-- Uma lista de apostas no campo bettingSuggestions.
+Você receberá um objeto do tipo Match, contendo:
+- dados da partida já finalizada (incluindo placar e eventos principais),
+- e uma lista de apostas feitas pela IA no campo bettingSuggestions.
 
-Para cada aposta, compare com o que realmente aconteceu no jogo e retorne:
+Sua tarefa é verificar cada aposta presente em bettingSuggestions comparando **apenas com o que de fato ocorreu no jogo**. Ignore qualquer dado preditivo, como desempenho anterior, estatísticas pré-jogo, escalações, árbitro, etc. Use **somente o resultado final e o que aconteceu no jogo** para decidir se a aposta foi acertada (betPredicted: true) ou não (betPredicted: false).
 
-- "marketName": string EXATA recebida, sem modificar, traduzir ou ajustar (trate como input string literal).
-- "bet": string EXATA recebida, sem modificar, traduzir ou ajustar (trate como input string literal).
-- "betPredicted": true se a aposta foi acertada, false se foi errada.
+Retorne exatamente as apostas fornecidas, com os campos:
+- marketName (igual ao original),
+- bet (igual ao original),
+- betPredicted (booleano, true se a aposta foi acertada, false se errou).
 
-⚠️ ATENÇÃO:
-- **NÃO altere, traduza ou corrija os campos 'marketName' e 'bet'**.
-- **Copie-os literalmente como estão, mesmo se parecerem incorretos ou em outro idioma.**
-- Qualquer mudança nesses campos tornará a verificação inválida.
+Não invente, não altere nomes, não reordene. Responda estritamente com base no que aconteceu na partida.
 
-Formato de resposta estritamente em JSON:
+Exemplo:
+Se a aposta foi “Resultado Final - Arsenal vence” e o jogo terminou 2x2, então betPredicted: false.
 
+Retorne no seguinte formato JSON:
 {
   "bets": [
     {
-      "marketName": "igual ao input",
-      "bet": "igual ao input",
+      "marketName": "...",
+      "bet": "...",
       "betPredicted": true | false
     },
     ...

@@ -1,4 +1,4 @@
-import { Chat, GenerateContentResponse, GoogleGenAI, Schema } from "@google/genai";
+import { Chat, GenerateContentResponse, GoogleGenAI, Schema, Tool } from "@google/genai";
 import { NotFoundException } from "@nestjs/common";
 import Redis from "ioredis";
 import pLimit from "p-limit";
@@ -78,7 +78,8 @@ export class GoogleProvider implements AiInterface {
         console.log(`Cache miss for match.id: ${match.id}`);
 
         let response: GenerateContentResponse;
-        const chat = this.createChatSession(bettingResponseSchema, this.model, 0.7, 0.9);
+        const tools: Tool[] = [{ googleSearch: {} }];
+        const chat = this.createChatSession(bettingResponseSchema, tools, this.model, 0.7, 0.9);
 
         while (true) {
             try {
@@ -121,10 +122,11 @@ export class GoogleProvider implements AiInterface {
         return JSON.parse(response.text as string) as BettingResponse | BettingVerifiedResponse;
     }
 
-    private createChatSession(schema: Schema, model?: string, temperature?: number, topP?: number): Chat {
+    private createChatSession(schema: Schema, tools?: Tool[], model?: string, temperature?: number, topP?: number): Chat {
         return this.geminiAi.chats.create({
             model: model ?? this.model,
             config: {
+                tools: tools ?? [],
                 temperature: temperature ?? 0.2,
                 topP: topP ?? 1,
                 seed: 0,
@@ -155,7 +157,7 @@ export class GoogleProvider implements AiInterface {
 
         if (!match) throw new NotFoundException("Match not found.");
 
-        const chat = this.createChatSession(bettingVerifiedSchema, this.model, 0, 0);
+        const chat = this.createChatSession(bettingVerifiedSchema, [], this.model, 0, 0);
 
         const response = await chat.sendMessage({
             message: [

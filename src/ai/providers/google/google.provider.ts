@@ -15,7 +15,7 @@ import { bettingVerifiedSchema } from "./schemas/betting-verified.schema";
 
 export class GoogleProvider implements AiInterface {
     private geminiAi: GoogleGenAI;
-    private model = "gemini-2.5-pro-preview-03-25";
+    private model = "gemini-2.5-flash-preview-05-20";
     private redis: Redis;
 
     constructor(

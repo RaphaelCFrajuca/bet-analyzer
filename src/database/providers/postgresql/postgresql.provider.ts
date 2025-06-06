@@ -15,7 +15,6 @@ export class PostgresqlProvider implements Database {
             password: this.postgresqlConfig.password,
             database: this.postgresqlConfig.database,
             entities: [__dirname + "/entities/**/*.{ts,js}"],
-            ssl: true,
             synchronize: true,
             logging: false,
             extra: {

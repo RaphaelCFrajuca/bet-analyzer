@@ -10,6 +10,7 @@ import { Match } from "src/match/interfaces/match.interface";
 import { MatchService } from "src/match/service/match.service";
 import { BatchBettingResponse } from "../openai/interfaces/batch-betting-response.interface";
 import { RedisConfig } from "../openai/interfaces/redis.config.interface";
+import { bettingSuggestionPrompt } from "./prompts/betting-suggestion.prompt";
 import { bettingResponseSchema } from "./schemas/betting-suggestion.schema";
 import { bettingVerifiedSchema } from "./schemas/betting-verified.schema";
 
@@ -126,13 +127,18 @@ export class GoogleProvider implements AiInterface {
         return this.geminiAi.chats.create({
             model: model ?? this.model,
             config: {
-                tools: tools ?? [],
+                // tools: tools ?? [],
                 temperature: temperature ?? 0.2,
                 topP: topP ?? 1,
                 seed: 0,
                 responseModalities: ["TEXT"],
                 responseSchema: schema,
                 responseMimeType: "application/json",
+                systemInstruction: [
+                    {
+                        text: bettingSuggestionPrompt,
+                    },
+                ],
             },
         });
     }

@@ -37,6 +37,7 @@ import { SofascoreConfig } from "src/providers/sofascore/interfaces/sofascore-co
                 apiKey: process.env.OPENAI_API_KEY,
                 assistantId: process.env.OPENAI_ASSISTANT_ID,
                 greenAssistantId: process.env.OPENAI_GREEN_ASSISTANT_ID,
+                leverageAssistantId: process.env.OPENAI_LEVERAGE_ASSISTANT_ID,
             },
         },
         {

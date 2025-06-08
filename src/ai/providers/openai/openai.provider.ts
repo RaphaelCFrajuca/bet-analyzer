@@ -9,6 +9,7 @@ import { Thread } from "openai/resources/beta/threads/threads";
 import { FileObject } from "openai/resources/files";
 import pLimit from "p-limit";
 import { AiInterface } from "src/ai/interfaces/ai.interface";
+import { BettingLeverage } from "src/ai/interfaces/betting-leverage.interface";
 import { Bet, BettingResponse } from "src/ai/interfaces/betting-response.interface";
 import { BettingSuggestions } from "src/ai/interfaces/betting-suggestions.interface";
 import { BettingVerifiedResponse } from "src/ai/interfaces/betting-verified.interface";
@@ -41,6 +42,23 @@ export class OpenAiProvider implements AiInterface {
             password: this.redisConfig.password,
             username: this.redisConfig.user,
         });
+    }
+
+    async getBettingLeverageSuggestions(date: string): Promise<BettingLeverage> {
+        const cachedLeverage = await this.redis.get(`betting_leverage_${date}`);
+        if (cachedLeverage) {
+            console.log(`Cache hit for date: ${date}`);
+            return JSON.parse(cachedLeverage) as BettingLeverage;
+        }
+
+        console.log(`Cache miss for date: ${date}`);
+
+        const bettingSuggestions = await this.getBettingSuggestions(date, false);
+
+        const thread = await this.generateThread(bettingSuggestions);
+        const bettingLeverage = (await this.getMessage(thread, this.openAiConfig.leverageAssistantId)) as BettingLeverage;
+        await this.redis.set(`betting_leverage_${date}`, JSON.stringify(bettingLeverage), "EX", 259200);
+        return bettingLeverage;
     }
 
     async getBettingSuggestionsByEventId(eventId: number, live: boolean): Promise<BettingResponse> {
@@ -130,7 +148,7 @@ export class OpenAiProvider implements AiInterface {
         return Number(((suggestion.confidence / 100) * (suggestion.odd - 1) - (1 - suggestion.confidence / 100) * 1).toFixed(2));
     }
 
-    private async getMessage(thread: OpenAI.Beta.Threads.Thread, assistantId?: string): Promise<BettingResponse | BettingVerifiedResponse> {
+    private async getMessage(thread: OpenAI.Beta.Threads.Thread, assistantId?: string): Promise<BettingResponse | BettingVerifiedResponse | BettingLeverage> {
         let run = await this.runThread(thread, assistantId);
 
         while (run.status !== "completed") {
@@ -146,7 +164,7 @@ export class OpenAiProvider implements AiInterface {
         if (!messageParsed) {
             throw new InternalServerErrorException("Failed to parse assistant message.");
         }
-        const parsedResponse = JSON.parse(assistantMessage?.text?.value) as BettingResponse | BettingVerifiedResponse;
+        const parsedResponse = JSON.parse(assistantMessage?.text?.value) as BettingResponse | BettingVerifiedResponse | BettingLeverage;
         return parsedResponse;
     }
 
@@ -156,13 +174,13 @@ export class OpenAiProvider implements AiInterface {
         });
     }
 
-    private async generateThread(match: Match): Promise<Thread> {
+    private async generateThread(data: Match | BettingSuggestions[]): Promise<Thread> {
         try {
             return await this.openAi.beta.threads.create({
                 messages: [
                     {
                         role: "user",
-                        content: JSON.stringify(match),
+                        content: JSON.stringify(data),
                     },
                 ],
             });

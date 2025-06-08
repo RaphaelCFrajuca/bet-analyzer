@@ -40,6 +40,7 @@ jobs:
                     --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
                     --build-arg OPENAI_ASSISTANT_ID=${{ secrets.OPENAI_ASSISTANT_ID }} \
                     --build-arg OPENAI_GREEN_ASSISTANT_ID=${{ secrets.OPENAI_GREEN_ASSISTANT_ID }} \
+                    --build-arg OPENAI_LEVERAGE_ASSISTANT_ID=${{ secrets.OPENAI_LEVERAGE_ASSISTANT_ID }} \
                     --build-arg SOFASCORE_PROVIDER_API_URL=${{ vars.SOFASCORE_PROVIDER_API_URL }} \
                     --build-arg PROVIDER=${{ vars.PROVIDER }} \
                     --build-arg AI_PROVIDER=${{ vars.AI_PROVIDER }} \
@@ -73,4 +74,4 @@ jobs:
                     --network=default \
                     --subnet=default \
                     --timeout 3600 \
-                    --set-env-vars "SOFASCORE_PROVIDER_API_URL=${{ vars.SOFASCORE_PROVIDER_API_URL }},PROVIDER=${{ vars.PROVIDER }},AI_PROVIDER=${{ vars.AI_PROVIDER }},OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},OPENAI_ASSISTANT_ID=${{ secrets.OPENAI_ASSISTANT_ID }},OPENAI_GREEN_ASSISTANT_ID=${{ secrets.OPENAI_GREEN_ASSISTANT_ID }},REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=${{ secrets.REDIS_PORT }},REDIS_USER=${{ secrets.REDIS_USER }},REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }},JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET }},DATABASE=${{ secrets.DATABASE }},POSTGRESQL_HOST=${{ secrets.POSTGRESQL_HOST }},POSTGRESQL_PORT=${{ secrets.POSTGRESQL_PORT }},POSTGRESQL_USER=${{ secrets.POSTGRESQL_USER }},POSTGRESQL_PASSWORD=${{ secrets.POSTGRESQL_PASSWORD }},POSTGRESQL_DB=${{ secrets.POSTGRESQL_DB }}" \
+                    --set-env-vars "SOFASCORE_PROVIDER_API_URL=${{ vars.SOFASCORE_PROVIDER_API_URL }},PROVIDER=${{ vars.PROVIDER }},AI_PROVIDER=${{ vars.AI_PROVIDER }},OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},OPENAI_ASSISTANT_ID=${{ secrets.OPENAI_ASSISTANT_ID }},OPENAI_GREEN_ASSISTANT_ID=${{ secrets.OPENAI_GREEN_ASSISTANT_ID }},REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=${{ secrets.REDIS_PORT }},REDIS_USER=${{ secrets.REDIS_USER }},REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }},JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET }},DATABASE=${{ secrets.DATABASE }},POSTGRESQL_HOST=${{ secrets.POSTGRESQL_HOST }},POSTGRESQL_PORT=${{ secrets.POSTGRESQL_PORT }},POSTGRESQL_USER=${{ secrets.POSTGRESQL_USER }},POSTGRESQL_PASSWORD=${{ secrets.POSTGRESQL_PASSWORD }},POSTGRESQL_DB=${{ secrets.POSTGRESQL_DB }},OPENAI_LEVERAGE_ASSISTANT_ID=${{ secrets.OPENAI_LEVERAGE_ASSISTANT_ID }}" \

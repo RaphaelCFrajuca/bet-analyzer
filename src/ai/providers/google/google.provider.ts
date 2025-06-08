@@ -3,6 +3,7 @@ import { NotFoundException } from "@nestjs/common";
 import Redis from "ioredis";
 import pLimit from "p-limit";
 import { AiInterface } from "src/ai/interfaces/ai.interface";
+import { BettingLeverage } from "src/ai/interfaces/betting-leverage.interface";
 import { Bet, BettingResponse } from "src/ai/interfaces/betting-response.interface";
 import { BettingSuggestions } from "src/ai/interfaces/betting-suggestions.interface";
 import { BettingVerifiedResponse } from "src/ai/interfaces/betting-verified.interface";
@@ -35,6 +36,11 @@ export class GoogleProvider implements AiInterface {
             password: this.redisConfig.password,
             username: this.redisConfig.user,
         });
+    }
+
+    getBettingLeverageSuggestions(date: string): Promise<BettingLeverage> {
+        console.log(date);
+        throw new Error("Method not implemented.");
     }
 
     async getBettingSuggestions(date: string, live: boolean): Promise<BettingSuggestions[]> {

@@ -45,4 +45,9 @@ export class AiController {
     async getBettingVerifiedByEventId(@Param() params: GetSuggestionsEventDto) {
         return this.aiService.getBettingVerifiedByEventId(params.eventId, false);
     }
+
+    @Get("betting/leverage/:suggestionsDate")
+    async getBettingLeverageSuggestions(@Param() params: GetSuggestionsDataDto) {
+        return this.aiService.getBettingLeverageSuggestions(params.suggestionsDate.toISOString().split("T")[0]);
+    }
 }

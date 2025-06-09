@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import Redis from "ioredis";
 import { RedisConfig } from "src/ai/providers/openai/interfaces/redis.config.interface";
 import { Database } from "src/database/providers/interfaces/database.interface";
@@ -481,7 +481,18 @@ export class MatchService {
     }
 
     async getTeamImage(teamId: number): Promise<Buffer> {
+        const cachedImage = await this.redis.get(`team_image_${teamId}`);
+        if (cachedImage) {
+            console.log(`Cache hit for teamId: ${teamId}`);
+            return Buffer.from(cachedImage, "base64");
+        }
+        console.log(`Cache miss for teamId: ${teamId}`);
         const teamImage = await this.dataProvider.getTeamImageByTeamId(teamId);
+        if (!teamImage) {
+            throw new NotFoundException("Team image not found");
+        }
+        await this.redis.set(`team_image_${teamId}`, teamImage.toString("base64"), "EX", 21600);
+
         return teamImage;
     }
 

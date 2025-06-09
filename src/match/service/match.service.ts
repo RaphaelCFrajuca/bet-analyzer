@@ -458,13 +458,6 @@ export class MatchService {
         const cachedMatch = await this.redis.get(`match_${eventId}`);
         if (cachedMatch && !live) {
             console.log(`Cache hit for eventId: ${eventId}`);
-            const matchEntity = await this.databaseProvider.getMatchById(eventId);
-            if (matchEntity) {
-                console.log(`MatchEntity found for event.id: ${eventId}`);
-                return this.convertMatchEntityToMatch(matchEntity);
-            } else {
-                console.log(`MatchEntity not found for event.id: ${eventId}`);
-            }
             return JSON.parse(cachedMatch) as Match;
         }
         console.log(`Cache miss for eventId: ${eventId}`);
@@ -472,7 +465,7 @@ export class MatchService {
         const event: Event = await this.dataProvider.getEventByEventId(eventId);
 
         if (!event) {
-            throw new Error("Event not found");
+            throw new NotFoundException("Event not found");
         }
 
         const match = await this.getMatchByEvent(event, live);

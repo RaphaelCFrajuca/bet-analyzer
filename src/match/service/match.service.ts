@@ -473,13 +473,13 @@ export class MatchService {
         return match;
     }
 
-    async getTeamImage(teamId: number): Promise<string> {
+    async getTeamImage(teamId: number): Promise<Buffer> {
         const cacheKey = `team_image_${teamId}`;
-        const cachedBase64 = await this.redis.get(cacheKey);
+        const cachedImage = await this.redis.getBuffer(cacheKey); // importante: getBuffer
 
-        if (cachedBase64) {
+        if (cachedImage) {
             console.log(`Cache hit for teamId: ${teamId}`);
-            return cachedBase64;
+            return cachedImage;
         }
 
         console.log(`Cache miss for teamId: ${teamId}`);
@@ -489,10 +489,8 @@ export class MatchService {
             throw new NotFoundException("Team image not found");
         }
 
-        const base64 = teamImage.toString("base64");
-        await this.redis.set(cacheKey, base64, "EX", 21600);
-
-        return base64;
+        await this.redis.set(cacheKey, teamImage, "EX", 21600);
+        return teamImage;
     }
 
     async verifySureBets(event: Event): Promise<SureBet[] | false> {

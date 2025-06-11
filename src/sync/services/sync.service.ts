@@ -35,7 +35,6 @@ export class SyncService {
         if (matches.length === 0) return;
 
         console.log("Syncing Betting Suggestions...");
-        await this.aiService.getBettingLeverageSuggestions(date);
         await this.aiService.syncBettingSuggestionsByMatch(matches, date);
         console.log("Sync batched successfully.");
     }

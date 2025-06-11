@@ -81,7 +81,7 @@ export class OpenAiProvider implements AiInterface {
         }
 
         console.log(`Cache miss for date: ${date}`);
-        const limit = pLimit(10);
+        const limit = pLimit(5);
         const matches: Match[] = await this.matchService.getMatch(date, false);
         const suggestions = await Promise.all(
             matches.map(match =>
@@ -109,10 +109,10 @@ export class OpenAiProvider implements AiInterface {
     async getBettingSuggestionsByMatch(match: Match, live: boolean): Promise<BettingResponse> {
         const cachedBettingResponse = await this.redis.get(`betting_response_${match.id}`);
         if (cachedBettingResponse && !live) {
-            console.log(`Cache hit for match.id: ${match.id}`);
+            console.log(`Cache betting suggestion hit for match.id: ${match.id}`);
             return JSON.parse(cachedBettingResponse) as BettingResponse;
         }
-        console.log(`Cache miss for match.id: ${match.id}`);
+        console.log(`Cache betting suggestion miss for match.id: ${match.id}`);
 
         const thread = await this.generateThread(match);
         const bettingResponse = (await this.getMessage(thread)) as BettingResponse;
